@@ -1,0 +1,6 @@
+Name: liblangtag-gobject Uninstalled
+Description: GObject based interface to access tags for identifying languages
+Version: @VERSION@
+Requires: gobject-2.0 liblangtag
+Libs: ${pc_top_builddir}/${pcfiledir}/liblangtag-gobject/liblangtag-gobject.la
+Cflags: -I${pc_top_builddir}/${pcfiledir} -I${pc_top_builddir}/${pcfiledir}/@srcdir@
