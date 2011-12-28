@@ -41,9 +41,9 @@ dnl    then set AGE to 0.
 dnl
 
 dnl for libeasyfc.la
-LT_CURRENT=1
+LT_CURRENT=0
 LT_REVISION=0
-LT_AGE=1
+LT_AGE=0
 
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
