@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-lang.c
+ * lt-lang-db.c
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -27,7 +27,7 @@
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-mem.h"
-#include "lt-lang.h"
+#include "lt-lang-db.h"
 
 
 typedef enum _lt_lang_entry_type_t {
@@ -53,16 +53,16 @@ typedef struct _lt_lang_entry_t {
 	} iso;
 } lt_lang_entry_t;
 
-struct _lt_lang_t {
+struct _lt_lang_db_t {
 	lt_mem_t    parent;
 	GHashTable *languages;
 	GHashTable *lang_codes;
 };
 
-typedef gboolean (* lt_xpath_func_t) (lt_lang_t          *lang,
-				      xmlDocPtr           doc,
-				      lt_lang_options_t   options,
-				      GError            **error);
+typedef gboolean (* lt_xpath_func_t) (lt_lang_db_t          *lang,
+				      xmlDocPtr              doc,
+				      lt_lang_db_options_t   options,
+				      GError               **error);
 
 /*< private >*/
 static lt_lang_entry_t *
@@ -213,8 +213,8 @@ lt_lang_entry_get_code(const lt_lang_entry_t *entry,
 	return retval;
 }
 
-static lt_lang_options_t
-_lt_lang_options_get_scope_from_string(const xmlChar *str)
+static lt_lang_db_options_t
+_lt_lang_db_options_get_scope_from_string(const xmlChar *str)
 {
 	static const gchar *scopes[] = {
 		"I", "M", "C", "D", "R", "S", NULL
@@ -223,14 +223,14 @@ _lt_lang_options_get_scope_from_string(const xmlChar *str)
 
 	for (i = 0; scopes[i] != NULL; i++) {
 		if (g_strcmp0(scopes[i], (const gchar *)str) == 0)
-			return i + LT_LANG_SCOPE_BEGIN;
+			return i + LT_LANG_DB_SCOPE_BEGIN;
 	}
 
 	return 0;
 }
 
-static lt_lang_options_t
-_lt_lang_options_get_type_from_string(const xmlChar *str)
+static lt_lang_db_options_t
+_lt_lang_db_options_get_type_from_string(const xmlChar *str)
 {
 	static const gchar *types[] = {
 		"L", "E", "A", "H", "C", NULL
@@ -239,7 +239,7 @@ _lt_lang_options_get_type_from_string(const xmlChar *str)
 
 	for (i = 0; types[i] != NULL; i++) {
 		if (g_strcmp0(types[i], (const gchar *)str) == 0)
-			return i + LT_LANG_TYPE_BEGIN;
+			return i + LT_LANG_DB_TYPE_BEGIN;
 	}
 
 	/* XXX: what is the type "S" ? */
@@ -248,11 +248,11 @@ _lt_lang_options_get_type_from_string(const xmlChar *str)
 }
 
 static gboolean
-_lt_lang_parse(lt_lang_t          *lang,
-	       const gchar        *filename,
-	       lt_lang_options_t   options,
-	       lt_xpath_func_t     func,
-	       GError            **error)
+_lt_lang_db_parse(lt_lang_db_t          *lang,
+		  const gchar           *filename,
+		  lt_lang_db_options_t   options,
+		  lt_xpath_func_t        func,
+		  GError               **error)
 {
 	xmlParserCtxtPtr xmlparser = xmlNewParserCtxt();
 	xmlDocPtr doc = NULL;
@@ -293,10 +293,10 @@ _lt_lang_parse(lt_lang_t          *lang,
 }
 
 static gboolean
-_lt_lang_parse_639(lt_lang_t          *lang,
-		   xmlDocPtr           doc,
-		   lt_lang_options_t   options,
-		   GError            **error)
+_lt_lang_db_parse_639(lt_lang_db_t          *lang,
+		      xmlDocPtr              doc,
+		      lt_lang_db_options_t   options,
+		      GError               **error)
 {
 	xmlXPathContextPtr xctxt = xmlXPathNewContext(doc);
 	xmlXPathObjectPtr xobj = NULL;
@@ -351,7 +351,7 @@ _lt_lang_parse_639(lt_lang_t          *lang,
 					     (gchar *)lt_lang_entry_get_code(le, LT_LANG_CODE_1),
 					     lt_lang_entry_ref(le));
 		}
-		if (options & LT_LANG_READ_BIBLIOGRAPHIC) {
+		if (options & LT_LANG_DB_READ_BIBLIOGRAPHIC) {
 			p = xmlGetProp(ent, (const xmlChar *)"iso_639_2B_code");
 			lt_lang_entry_set_code(le,
 					       LT_LANG_CODE_2B,
@@ -361,7 +361,7 @@ _lt_lang_parse_639(lt_lang_t          *lang,
 					     (gchar *)lt_lang_entry_get_code(le, LT_LANG_CODE_2B),
 					     lt_lang_entry_ref(le));
 		}
-		if (options & LT_LANG_READ_TERMINOLOGY) {
+		if (options & LT_LANG_DB_READ_TERMINOLOGY) {
 			p = xmlGetProp(ent, (const xmlChar *)"iso_639_2T_code");
 			lt_lang_entry_set_code(le,
 					       LT_LANG_CODE_2T,
@@ -383,10 +383,10 @@ _lt_lang_parse_639(lt_lang_t          *lang,
 }
 
 static gboolean
-_lt_lang_parse_639_3(lt_lang_t          *lang,
-		     xmlDocPtr           doc,
-		     lt_lang_options_t   options,
-		     GError            **error)
+_lt_lang_db_parse_639_3(lt_lang_db_t          *lang,
+			xmlDocPtr              doc,
+			lt_lang_db_options_t   options,
+			GError               **error)
 {
 	xmlXPathContextPtr xctxt = xmlXPathNewContext(doc);
 	xmlXPathObjectPtr xobj = NULL;
@@ -413,7 +413,7 @@ _lt_lang_parse_639_3(lt_lang_t          *lang,
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 		xmlChar *p, *type, *scope;
 		lt_lang_entry_t *le;
-		lt_lang_options_t oscope, otype;
+		lt_lang_db_options_t oscope, otype;
 
 		if (!ent) {
 			g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
@@ -422,8 +422,8 @@ _lt_lang_parse_639_3(lt_lang_t          *lang,
 		}
 		scope = xmlGetProp(ent, (const xmlChar *)"scope");
 		type = xmlGetProp(ent, (const xmlChar *)"type");
-		oscope = _lt_lang_options_get_scope_from_string(scope);
-		otype = _lt_lang_options_get_type_from_string(type);
+		oscope = _lt_lang_db_options_get_scope_from_string(scope);
+		otype = _lt_lang_db_options_get_type_from_string(type);
 		xmlFree(scope);
 		xmlFree(type);
 		if ((options & (oscope|otype))) {
@@ -480,9 +480,9 @@ _lt_lang_parse_639_3(lt_lang_t          *lang,
 }
 
 static gboolean
-lt_lang_parse(lt_lang_t          *lang,
-	      lt_lang_options_t   options,
-	      GError            **error)
+lt_lang_db_parse(lt_lang_db_t          *lang,
+		 lt_lang_db_options_t   options,
+		 GError               **error)
 {
 	gchar *iso639, *iso639_3;
 	gboolean retval;
@@ -492,12 +492,12 @@ lt_lang_parse(lt_lang_t          *lang,
 	iso639 = g_build_filename(ISO_PREFIX, "iso_639.xml", NULL);
 	iso639_3 = g_build_filename(ISO_PREFIX, "iso_639_3.xml", NULL);
 
-	if (!(retval = _lt_lang_parse(lang, iso639, options,
-				      _lt_lang_parse_639,
+	if (!(retval = _lt_lang_db_parse(lang, iso639, options,
+				      _lt_lang_db_parse_639,
 				      error)))
 		goto bail;
-	if (!(retval = _lt_lang_parse(lang, iso639_3, options,
-				      _lt_lang_parse_639_3,
+	if (!(retval = _lt_lang_db_parse(lang, iso639_3, options,
+				      _lt_lang_db_parse_639_3,
 				      error)))
 		goto bail;
 
@@ -509,10 +509,10 @@ lt_lang_parse(lt_lang_t          *lang,
 }
 
 /*< public >*/
-lt_lang_t *
-lt_lang_new(lt_lang_options_t options)
+lt_lang_db_t *
+lt_lang_db_new(lt_lang_db_options_t options)
 {
-	lt_lang_t *retval = lt_mem_alloc_object(sizeof (lt_lang_t));
+	lt_lang_db_t *retval = lt_mem_alloc_object(sizeof (lt_lang_db_t));
 
 	if (retval) {
 		GError *err = NULL;
@@ -530,10 +530,10 @@ lt_lang_new(lt_lang_options_t options)
 		lt_mem_add_ref(&retval->parent, retval->lang_codes,
 			       (lt_destroy_func_t)g_hash_table_destroy);
 
-		lt_lang_parse(retval, options, &err);
+		lt_lang_db_parse(retval, options, &err);
 		if (err) {
 			g_printerr(err->message);
-			lt_lang_unref(retval);
+			lt_lang_db_unref(retval);
 			retval = NULL;
 			g_error_free(err);
 		}
@@ -542,8 +542,8 @@ lt_lang_new(lt_lang_options_t options)
 	return retval;
 }
 
-lt_lang_t *
-lt_lang_ref(lt_lang_t *lang)
+lt_lang_db_t *
+lt_lang_db_ref(lt_lang_db_t *lang)
 {
 	g_return_val_if_fail (lang != NULL, NULL);
 
@@ -551,14 +551,14 @@ lt_lang_ref(lt_lang_t *lang)
 }
 
 void
-lt_lang_unref(lt_lang_t *lang)
+lt_lang_db_unref(lt_lang_db_t *lang)
 {
 	if (lang)
 		lt_mem_unref(&lang->parent);
 }
 
 GList *
-lt_lang_get_languages(lt_lang_t *lang)
+lt_lang_db_get_languages(lt_lang_db_t *lang)
 {
 	g_return_val_if_fail (lang != NULL, NULL);
 
@@ -566,8 +566,8 @@ lt_lang_get_languages(lt_lang_t *lang)
 }
 
 const gchar *
-lt_lang_lookup_language(lt_lang_t   *lang,
-			const gchar *code)
+lt_lang_db_lookup_language(lt_lang_db_t *lang,
+			   const gchar  *code)
 {
 	lt_lang_entry_t *le;
 
@@ -582,9 +582,9 @@ lt_lang_lookup_language(lt_lang_t   *lang,
 }
 
 const gchar *
-lt_lang_lookup_code(lt_lang_t      *lang,
-		    const gchar    *language,
-		    lt_lang_code_t  type)
+lt_lang_db_lookup_code(lt_lang_db_t   *lang,
+		       const gchar    *language,
+		       lt_lang_code_t  type)
 {
 	lt_lang_entry_t *le;
 

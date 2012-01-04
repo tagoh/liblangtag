@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lang.c
- * Copyright (C) 2011 Akira TAGOH
+ * lang-db.c
+ * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
  *   Akira TAGOH  <akira@tagoh.org>
@@ -24,34 +24,34 @@
 #endif
 
 #include <locale.h>
-#include "lt-lang.h"
+#include "lt-lang-db.h"
 
 int
 main(int    argc,
      char **argv)
 {
-	lt_lang_t *lang;
+	lt_lang_db_t *langdb;
 
 	setlocale(LC_ALL, "");
 
-	lang = lt_lang_new(LT_LANG_READ_MINIMAL);
+	langdb = lt_lang_db_new(LT_LANG_DB_READ_MINIMAL);
 
 	if (g_strcmp0(argv[1], "list") == 0) {
-		GList *l = lt_lang_get_languages(lang), *ll;
+		GList *l = lt_lang_db_get_languages(langdb), *ll;
 
 		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
 			g_print("%s\n", (gchar *)ll->data);
 		}
 		g_list_free(l);
 	} else if (g_strcmp0(argv[1], "code") == 0) {
-		g_print("%s\n", lt_lang_lookup_code(lang, argv[2], LT_LANG_CODE_ID));
-		g_print("%s\n", lt_lang_lookup_code(lang, argv[2], LT_LANG_CODE_PART1));
-		g_print("%s\n", lt_lang_lookup_code(lang, argv[2], LT_LANG_CODE_PART2));
+		g_print("%s\n", lt_lang_db_lookup_code(langdb, argv[2], LT_LANG_CODE_ID));
+		g_print("%s\n", lt_lang_db_lookup_code(langdb, argv[2], LT_LANG_CODE_PART1));
+		g_print("%s\n", lt_lang_db_lookup_code(langdb, argv[2], LT_LANG_CODE_PART2));
 	} else if (g_strcmp0(argv[1], "lang") == 0) {
-		g_print("%s\n", lt_lang_lookup_language(lang, argv[2]));
+		g_print("%s\n", lt_lang_db_lookup_language(langdb, argv[2]));
 	}
 
-	lt_lang_unref(lang);
+	lt_lang_db_unref(langdb);
 
 	return 0;
 }

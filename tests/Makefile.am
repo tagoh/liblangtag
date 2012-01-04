@@ -37,13 +37,13 @@ noinst_HEADERS =				\
 	$(common_private_headers)		\
 	$(NULL)
 noinst_PROGRAMS =				\
-	test-lang				\
+	test-lang-db				\
 	test-region				\
 	test-script				\
 	$(NULL)
 #
-test_lang_SOURCES =	\
-	lang.c		\
+test_lang_db_SOURCES =	\
+	lang-db.c	\
 	$(NULL)
 #
 test_region_SOURCES =	\
