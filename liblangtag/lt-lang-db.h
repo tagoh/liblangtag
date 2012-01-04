@@ -23,6 +23,7 @@
 #define __LT_LANG_DB_H__
 
 #include <glib.h>
+#include <liblangtag/lt-lang.h>
 
 G_BEGIN_DECLS
 
@@ -51,30 +52,18 @@ enum _lt_lang_db_options_t {
 	LT_LANG_DB_READ_SCOPE_INDIVIDUAL|			\
 	LT_LANG_DB_READ_TYPE_LIVING))
 
-enum _lt_lang_code_t {
-	LT_LANG_CODE_1  = 1,
-	LT_LANG_CODE_2B = 2,
-	LT_LANG_CODE_2T = 3,
-	LT_LANG_CODE_ID = LT_LANG_CODE_2T,
-	LT_LANG_CODE_PART1 = LT_LANG_CODE_1,
-	LT_LANG_CODE_PART2 = LT_LANG_CODE_2B,
-	LT_LANG_CODE_END
-};
-
 typedef struct _lt_lang_db_t		lt_lang_db_t;
 typedef enum _lt_lang_db_options_t	lt_lang_db_options_t;
-typedef enum _lt_lang_code_t		lt_lang_code_t;
 
 
-lt_lang_db_t *lt_lang_db_new            (lt_lang_db_options_t  options);
-lt_lang_db_t *lt_lang_db_ref            (lt_lang_db_t         *parser);
-void          lt_lang_db_unref          (lt_lang_db_t         *parser);
-GList        *lt_lang_db_get_languages  (lt_lang_db_t         *lang);
-const gchar  *lt_lang_db_lookup_language(lt_lang_db_t         *lang,
-                                         const gchar          *code);
-const gchar  *lt_lang_db_lookup_code    (lt_lang_db_t         *lang,
-                                         const gchar          *language,
-                                         lt_lang_code_t        type);
+lt_lang_db_t *lt_lang_db_new                 (lt_lang_db_options_t  options);
+lt_lang_db_t *lt_lang_db_ref                 (lt_lang_db_t         *parser);
+void          lt_lang_db_unref               (lt_lang_db_t         *parser);
+GList        *lt_lang_db_get_languages       (lt_lang_db_t         *lang);
+lt_lang_t    *lt_lang_db_lookup_from_code    (lt_lang_db_t         *lang,
+                                              const gchar          *code);
+lt_lang_t    *lt_lang_db_lookup_from_language(lt_lang_db_t         *lang,
+                                              const gchar          *language);
 
 G_END_DECLS
 
