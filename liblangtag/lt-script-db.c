@@ -39,7 +39,7 @@ struct _lt_script_db_t {
 /*< private >*/
 static gboolean
 lt_script_db_parse(lt_script_db_t  *script,
-		GError      **error)
+		   GError         **error)
 {
 	gchar *iso15924;
 	xmlParserCtxtPtr xmlparser = xmlNewParserCtxt();
