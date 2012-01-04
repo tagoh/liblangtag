@@ -38,7 +38,7 @@ noinst_HEADERS =				\
 	$(NULL)
 noinst_PROGRAMS =				\
 	test-lang-db				\
-	test-region				\
+	test-region-db				\
 	test-script-db				\
 	$(NULL)
 #
@@ -46,8 +46,8 @@ test_lang_db_SOURCES =	\
 	lang-db.c	\
 	$(NULL)
 #
-test_region_SOURCES =	\
-	region.c	\
+test_region_db_SOURCES =	\
+	region-db.c		\
 	$(NULL)
 #
 test_script_db_SOURCES =	\

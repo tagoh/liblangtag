@@ -34,16 +34,20 @@ BUILT_FILES =					\
 ##
 # Local definitions
 liblangtag_public_headers =			\
+	lt-division.h				\
 	lt-error.h				\
 	lt-lang.h				\
 	lt-lang-db.h				\
 	lt-region.h				\
+	lt-region-db.h				\
 	lt-script.h				\
 	lt-script-db.h				\
 	$(NULL)
 liblangtag_private_headers =			\
+	lt-division-private.h			\
 	lt-lang-private.h			\
 	lt-mem.h				\
+	lt-region-private.h			\
 	lt-script-private.h			\
 	$(NULL)
 liblangtag_built_public_headers =		\
@@ -55,11 +59,13 @@ liblangtag_built_sources =			\
 	$(NULL)
 liblangtag_sources =				\
 	$(liblangtag_built_sources)		\
+	lt-division.c				\
 	lt-error.c				\
 	lt-lang.c				\
 	lt-lang-db.c				\
 	lt-mem.c				\
 	lt-region.c				\
+	lt-region-db.c				\
 	lt-script.c				\
 	lt-script-db.c				\
 	$(NULL)

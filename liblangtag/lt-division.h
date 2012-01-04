@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-region.h
+ * lt-division.h
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -19,32 +19,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __LT_REGION_H__
-#define __LT_REGION_H__
+#ifndef __LT_DIVISION_H__
+#define __LT_DIVISION_H__
 
 #include <glib.h>
 
 G_BEGIN_DECLS
 
-enum _lt_region_code_t {
-	LT_REGION_CODE_NUMERIC = 1,
-	LT_REGION_CODE_ALPHA_2,
-	LT_REGION_CODE_ALPHA_3,
-	LT_REGION_CODE_ALPHA_4,
-};
-
-typedef struct _lt_region_t	lt_region_t;
-typedef enum _lt_region_code_t	lt_region_code_t;
+typedef struct _lt_division_t	lt_division_t;
 
 
-lt_region_t *lt_region_ref             (lt_region_t       *region);
-void         lt_region_unref           (lt_region_t       *region);
-gboolean     lt_region_has_alpha_2_code(const lt_region_t *region);
-gboolean     lt_region_has_alpha_4_code(const lt_region_t *region);
-const gchar *lt_region_get_name        (const lt_region_t *region);
-const gchar *lt_region_get_code        (const lt_region_t *region,
-                                        lt_region_code_t   code_type);
+lt_division_t *lt_division_ref             (lt_division_t       *division);
+void           lt_division_unref           (lt_division_t       *division);
+const gchar   *lt_division_get_country_code(const lt_division_t *division);
+const gchar   *lt_division_get_type        (const lt_division_t *division);
+const gchar   *lt_division_get_code        (const lt_division_t *division);
+const gchar   *lt_division_get_name        (const lt_division_t *division);
 
 G_END_DECLS
 
-#endif /* __LT_REGION_H__ */
+#endif /* __LT_DIVISION_H__ */

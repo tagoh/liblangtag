@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * region.c
+ * region-db.c
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -24,60 +24,78 @@
 #endif
 
 #include <locale.h>
-#include "lt-region.h"
+#include "lt-region-db.h"
 
 int
 main(int    argc,
      char **argv)
 {
-	lt_region_t *region;
+	lt_region_db_t *regiondb;
 
 	setlocale(LC_ALL, "");
 
-	region = lt_region_new();
+	regiondb = lt_region_db_new();
 
 	if (g_strcmp0(argv[1], "list") == 0) {
-		GList *l = lt_region_get_regions(region), *ll;
+		GList *l = lt_region_db_get_regions(regiondb), *ll;
 
 		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
 			g_print("%s\n", (gchar *)ll->data);
 		}
 		g_list_free(l);
 	} else if (g_strcmp0(argv[1], "code") == 0) {
-		g_print("%s\n", lt_region_lookup_code(region, argv[2], LT_REGION_CODE_NUMERIC));
-		g_print("%s\n", lt_region_lookup_code(region, argv[2], LT_REGION_CODE_ALPHA_2));
-		g_print("%s\n", lt_region_lookup_code(region, argv[2], LT_REGION_CODE_ALPHA_3));
-		g_print("%s\n", lt_region_lookup_code(region, argv[2], LT_REGION_CODE_ALPHA_4));
+		lt_region_t *region = lt_region_db_lookup_region_from_language(regiondb, argv[2]);
+
+		g_print("N: %s\n", lt_region_get_code(region, LT_REGION_CODE_NUMERIC));
+		g_print("2: %s\n", lt_region_has_alpha_2_code(region) ? lt_region_get_code(region, LT_REGION_CODE_ALPHA_2) : "N/A");
+		g_print("3: %s\n", lt_region_get_code(region, LT_REGION_CODE_ALPHA_3));
+		g_print("4: %s\n", lt_region_has_alpha_4_code(region) ? lt_region_get_code(region, LT_REGION_CODE_ALPHA_4) : "N/A");
+		lt_region_unref(region);
 	} else if (g_strcmp0(argv[1], "region") == 0) {
-		g_print("%s\n", lt_region_lookup_region(region, argv[2]));
+		lt_region_t *region = lt_region_db_lookup_region_from_code(regiondb, argv[2]);
+
+		g_print("%s\n", lt_region_get_name(region));
+		lt_region_unref(region);
 	} else if (g_strcmp0(argv[1], "subcode") == 0) {
-		g_print("%s\n", lt_region_lookup_subset_code(region, argv[2]));
+		lt_division_t *div = lt_region_db_lookup_division(regiondb, argv[2]);
+
+		g_print("%s\n", lt_division_get_code(div));
+		lt_division_unref(div);
 	} else if (g_strcmp0(argv[1], "subname") == 0) {
-		g_print("%s\n", lt_region_lookup_subset_name(region, argv[2]));
+		lt_division_t *div = lt_region_db_lookup_division(regiondb, argv[2]);
+
+		g_print("%s\n", lt_division_get_name(div));
+		lt_division_unref(div);
 	} else if (g_strcmp0(argv[1], "subtype") == 0) {
-		GList *l = lt_region_get_subset_type(region, argv[2]), *ll;
+		GList *l = lt_region_db_get_division_type(regiondb, argv[2]), *ll;
 
 		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
 			g_print("%s\n", (gchar *)ll->data);
 		}
 		g_list_free(l);
 	} else if (g_strcmp0(argv[1], "subnames") == 0) {
-		GList *l = lt_region_get_subset_names(region, argv[2], argv[3]), *ll;
+		GList *l = lt_region_db_get_divisions(regiondb, argv[2], argv[3]), *ll;
 
 		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
-			g_print("%s\n", (gchar *)ll->data);
+			lt_division_t *div = ll->data;
+
+			g_print("%s\n", lt_division_get_name(div));
+			lt_division_unref(div);
 		}
 		g_list_free(l);
 	} else if (g_strcmp0(argv[1], "subcodes") == 0) {
-		GList *l = lt_region_get_subset_codes(region, argv[2], argv[3]), *ll;
+		GList *l = lt_region_db_get_divisions(regiondb, argv[2], argv[3]), *ll;
 
 		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
-			g_print("%s\n", (gchar *)ll->data);
+			lt_division_t *div = ll->data;
+
+			g_print("%s\n", lt_division_get_code(div));
+			lt_division_unref(div);
 		}
 		g_list_free(l);
 	}
 
-	lt_region_unref(region);
+	lt_region_db_unref(regiondb);
 
 	return 0;
 }
