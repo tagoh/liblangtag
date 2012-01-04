@@ -72,8 +72,8 @@ lt_mem_unref(lt_mem_t *object)
 					((lt_destroy_func_t)unref)(p);
 				}
 			}
+			g_hash_table_destroy(object->refs);
 		}
-		g_hash_table_destroy(object->refs);
 		g_free(object);
 	}
 }
