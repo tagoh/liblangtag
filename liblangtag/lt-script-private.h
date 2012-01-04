@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-script.h
+ * lt-script-private.h
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -19,21 +19,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __LT_SCRIPT_H__
-#define __LT_SCRIPT_H__
+#ifndef __LT_SCRIPT_PRIVATE_H__
+#define __LT_SCRIPT_PRIVATE_H__
 
 #include <glib.h>
+#include "lt-script.h"
 
 G_BEGIN_DECLS
 
-typedef struct _lt_script_t	lt_script_t;
-
-
-lt_script_t *lt_script_ref             (lt_script_t       *script);
-void         lt_script_unref           (lt_script_t       *script);
-const gchar *lt_script_get_name        (const lt_script_t *script);
-const gchar *lt_script_get_alpha_code  (const lt_script_t *script);
-const gchar *lt_script_get_numeric_code(const lt_script_t *script);
+lt_script_t *lt_script_create  (void);
+void         lt_script_set_name(lt_script_t *script,
+                                const gchar *name);
+void         lt_script_set_code(lt_script_t *script,
+                                const gchar *code);
 
 G_END_DECLS
 

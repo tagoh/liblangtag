@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-script.h
+ * lt-script-db.h
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -19,22 +19,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __LT_SCRIPT_H__
-#define __LT_SCRIPT_H__
+#ifndef __LT_SCRIPT_DB_H__
+#define __LT_SCRIPT_DB_H__
 
 #include <glib.h>
+#include <liblangtag/lt-script.h>
 
 G_BEGIN_DECLS
 
-typedef struct _lt_script_t	lt_script_t;
+typedef struct _lt_script_db_t	lt_script_db_t;
 
 
-lt_script_t *lt_script_ref             (lt_script_t       *script);
-void         lt_script_unref           (lt_script_t       *script);
-const gchar *lt_script_get_name        (const lt_script_t *script);
-const gchar *lt_script_get_alpha_code  (const lt_script_t *script);
-const gchar *lt_script_get_numeric_code(const lt_script_t *script);
+lt_script_db_t *lt_script_db_new        (void);
+lt_script_db_t *lt_script_db_ref        (lt_script_db_t *scriptdb);
+void            lt_script_db_unref      (lt_script_db_t *scriptdb);
+GList          *lt_script_db_get_scripts(lt_script_db_t *scriptdb);
+lt_script_t    *lt_script_db_lookup     (lt_script_db_t *scriptdb,
+                                         const gchar    *script_name_or_alpha_code_or_num_code);
 
 G_END_DECLS
 
-#endif /* __LT_SCRIPT_H__ */
+#endif /* __LT_SCRIPT_DB_H__ */

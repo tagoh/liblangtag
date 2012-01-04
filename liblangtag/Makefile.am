@@ -39,10 +39,12 @@ liblangtag_public_headers =			\
 	lt-lang-db.h				\
 	lt-region.h				\
 	lt-script.h				\
-	$(NULL)	
+	lt-script-db.h				\
+	$(NULL)
 liblangtag_private_headers =			\
 	lt-lang-private.h			\
 	lt-mem.h				\
+	lt-script-private.h			\
 	$(NULL)
 liblangtag_built_public_headers =		\
 	$(NULL)
@@ -59,6 +61,7 @@ liblangtag_sources =				\
 	lt-mem.c				\
 	lt-region.c				\
 	lt-script.c				\
+	lt-script-db.c				\
 	$(NULL)
 #
 stamp_files =					\

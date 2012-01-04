@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * script.c
- * Copyright (C) 2011 Akira TAGOH
+ * script-db.c
+ * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
  *   Akira TAGOH  <akira@tagoh.org>
@@ -24,33 +24,39 @@
 #endif
 
 #include <locale.h>
-#include "lt-script.h"
+#include "lt-script-db.h"
 
 int
 main(int    argc,
      char **argv)
 {
-	lt_script_t *script;
+	lt_script_db_t *scriptdb;
 
 	setlocale(LC_ALL, "");
 
-	script = lt_script_new();
+	scriptdb = lt_script_db_new();
 
 	if (g_strcmp0(argv[1], "list") == 0) {
-		GList *l = lt_script_get_scripts(script), *ll;
+		GList *l = lt_script_db_get_scripts(scriptdb), *ll;
 
 		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
 			g_print("%s\n", (gchar *)ll->data);
 		}
 		g_list_free(l);
 	} else if (g_strcmp0(argv[1], "code") == 0) {
-		g_print("%s\n", lt_script_lookup_alpha_code(script, argv[2]));
-		g_print("%s\n", lt_script_lookup_numeric_code(script, argv[2]));
+		lt_script_t *script = lt_script_db_lookup(scriptdb, argv[2]);
+
+		g_print("%s\n", lt_script_get_alpha_code(script));
+		g_print("%s\n", lt_script_get_numeric_code(script));
+		lt_script_unref(script);
 	} else if (g_strcmp0(argv[1], "script") == 0) {
-		g_print("%s\n", lt_script_lookup_script(script, argv[2]));
+		lt_script_t *script = lt_script_db_lookup(scriptdb, argv[2]);
+
+		g_print("%s\n", lt_script_get_name(script));
+		lt_script_unref(script);
 	}
 
-	lt_script_unref(script);
+	lt_script_db_unref(scriptdb);
 
 	return 0;
 }
