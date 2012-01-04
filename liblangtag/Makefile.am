@@ -36,6 +36,7 @@ BUILT_FILES =					\
 liblangtag_public_headers =			\
 	lt-error.h				\
 	lt-lang.h				\
+	lt-region.h				\
 	lt-script.h				\
 	$(NULL)	
 liblangtag_private_headers =			\
@@ -53,6 +54,7 @@ liblangtag_sources =				\
 	lt-error.c				\
 	lt-lang.c				\
 	lt-mem.c				\
+	lt-region.c				\
 	lt-script.c				\
 	$(NULL)
 #

@@ -38,11 +38,16 @@ noinst_HEADERS =				\
 	$(NULL)
 noinst_PROGRAMS =				\
 	test-lang				\
+	test-region				\
 	test-script				\
 	$(NULL)
 #
 test_lang_SOURCES =	\
 	lang.c		\
+	$(NULL)
+#
+test_region_SOURCES =	\
+	region.c	\
 	$(NULL)
 #
 test_script_SOURCES =	\
