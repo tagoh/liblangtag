@@ -162,7 +162,7 @@ _lt_lang_db_parse_639(lt_lang_db_t          *lang,
 		le = lt_lang_create(LT_LANG_639_2);
 		if (!le) {
 			g_set_error(error, LT_ERROR, LT_ERR_OOM,
-				    "Unable to create an instance of lt_lang_entry_t.");
+				    "Unable to create an instance of lt_langt.");
 			goto bail;
 		}
 		p = xmlGetProp(ent, (const xmlChar *)"name");
@@ -260,7 +260,7 @@ _lt_lang_db_parse_639_3(lt_lang_db_t          *lang,
 			le = lt_lang_create(LT_LANG_639_3);
 			if (!lang) {
 				g_set_error(error, LT_ERROR, LT_ERR_OOM,
-					    "Unable to create an instance of lt_lang_entry_t.");
+					    "Unable to create an instance of lt_lang_t.");
 				goto bail;
 			}
 			p = xmlGetProp(ent, (const xmlChar *)"name");

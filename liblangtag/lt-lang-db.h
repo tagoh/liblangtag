@@ -57,12 +57,12 @@ typedef enum _lt_lang_db_options_t	lt_lang_db_options_t;
 
 
 lt_lang_db_t *lt_lang_db_new                 (lt_lang_db_options_t  options);
-lt_lang_db_t *lt_lang_db_ref                 (lt_lang_db_t         *parser);
-void          lt_lang_db_unref               (lt_lang_db_t         *parser);
-GList        *lt_lang_db_get_languages       (lt_lang_db_t         *lang);
-lt_lang_t    *lt_lang_db_lookup_from_code    (lt_lang_db_t         *lang,
+lt_lang_db_t *lt_lang_db_ref                 (lt_lang_db_t         *langdb);
+void          lt_lang_db_unref               (lt_lang_db_t         *langdb);
+GList        *lt_lang_db_get_languages       (lt_lang_db_t         *langdb);
+lt_lang_t    *lt_lang_db_lookup_from_code    (lt_lang_db_t         *langdb,
                                               const gchar          *code);
-lt_lang_t    *lt_lang_db_lookup_from_language(lt_lang_db_t         *lang,
+lt_lang_t    *lt_lang_db_lookup_from_language(lt_lang_db_t         *langdb,
                                               const gchar          *language);
 
 G_END_DECLS
