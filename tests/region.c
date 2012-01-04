@@ -55,21 +55,21 @@ main(int    argc,
 	} else if (g_strcmp0(argv[1], "subname") == 0) {
 		g_print("%s\n", lt_region_lookup_subset_name(region, argv[2]));
 	} else if (g_strcmp0(argv[1], "subtype") == 0) {
-		GList *l = lt_region_lookup_subset_type(region, argv[2]), *ll;
+		GList *l = lt_region_get_subset_type(region, argv[2]), *ll;
 
 		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
 			g_print("%s\n", (gchar *)ll->data);
 		}
 		g_list_free(l);
 	} else if (g_strcmp0(argv[1], "subnames") == 0) {
-		GList *l = lt_region_lookup_subset_names(region, argv[2], argv[3]), *ll;
+		GList *l = lt_region_get_subset_names(region, argv[2], argv[3]), *ll;
 
 		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
 			g_print("%s\n", (gchar *)ll->data);
 		}
 		g_list_free(l);
 	} else if (g_strcmp0(argv[1], "subcodes") == 0) {
-		GList *l = lt_region_lookup_subset_codes(region, argv[2], argv[3]), *ll;
+		GList *l = lt_region_get_subset_codes(region, argv[2], argv[3]), *ll;
 
 		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
 			g_print("%s\n", (gchar *)ll->data);
