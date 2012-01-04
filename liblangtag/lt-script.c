@@ -25,7 +25,6 @@
 
 #include <string.h>
 #include "lt-mem.h"
-#include "lt-script-db.h"
 #include "lt-script.h"
 #include "lt-script-private.h"
 

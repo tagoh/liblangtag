@@ -24,7 +24,6 @@
 #endif
 
 #include "lt-mem.h"
-#include "lt-region-db.h"
 #include "lt-region.h"
 #include "lt-region-private.h"
 

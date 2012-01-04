@@ -24,7 +24,6 @@
 #endif
 
 #include "lt-mem.h"
-#include "lt-lang-db.h"
 #include "lt-lang.h"
 #include "lt-lang-private.h"
 

@@ -35,4 +35,4 @@ void         lt_script_set_code(lt_script_t *script,
 
 G_END_DECLS
 
-#endif /* __LT_SCRIPT_H__ */
+#endif /* __LT_SCRIPT_PRIVATE_H__ */

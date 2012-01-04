@@ -45,4 +45,4 @@ void       lt_lang_set_code(lt_lang_t            *lang,
 
 G_END_DECLS
 
-#endif /* __LT_LANG_H__ */
+#endif /* __LT_LANG_PRIVATE_H__ */
