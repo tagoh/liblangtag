@@ -40,11 +40,12 @@ typedef struct _lt_lang_t	lt_lang_t;
 typedef enum _lt_lang_code_t	lt_lang_code_t;
 
 
-lt_lang_t   *lt_lang_ref     (lt_lang_t       *lang);
-void         lt_lang_unref   (lt_lang_t       *lang);
-const gchar *lt_lang_get_name(const lt_lang_t *lang);
-const gchar *lt_lang_get_code(const lt_lang_t *lang,
-                              lt_lang_code_t   code_type);
+lt_lang_t   *lt_lang_ref              (lt_lang_t       *lang);
+void         lt_lang_unref            (lt_lang_t       *lang);
+const gchar *lt_lang_get_name         (const lt_lang_t *lang);
+const gchar *lt_lang_get_code         (const lt_lang_t *lang,
+                                       lt_lang_code_t   code_type);
+const gchar *lt_lang_get_shortest_code(lt_lang_t       *lang);
 
 G_END_DECLS
 

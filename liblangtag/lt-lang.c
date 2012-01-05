@@ -197,3 +197,21 @@ lt_lang_get_code(const lt_lang_t *lang,
 
 	return retval;
 }
+
+const gchar *
+lt_lang_get_shortest_code(lt_lang_t *lang)
+{
+	const gchar *retval = NULL;
+
+	g_return_val_if_fail (lang != NULL, NULL);
+
+	retval = lt_lang_get_code(lang, LT_LANG_CODE_1);
+	if (!retval) {
+		retval = lt_lang_get_code(lang, LT_LANG_CODE_2T);
+		if (!retval) {
+			retval = lt_lang_get_code(lang, LT_LANG_CODE_2B);
+		}
+	}
+
+	return retval;
+}
