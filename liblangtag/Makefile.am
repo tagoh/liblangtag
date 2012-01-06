@@ -1,12 +1,14 @@
 ##
 # Global definitions
 NULL =
-INCLUDES =					\
-	-I$(top_srcdir)/liblangtag/		\
-	-I$(top_srcdir)				\
-	-D__LANGTAG_COMPILATION			\
-	$(GLIB_CFLAGS)				\
-	$(LIBXML2_CFLAGS)			\
+INCLUDES =						\
+	-I$(top_srcdir)/liblangtag/			\
+	-I$(top_srcdir)					\
+	-D__LANGTAG_COMPILATION				\
+	-DBUILDDIR="\"$(abs_top_builddir)\""		\
+	-DREGDATADIR="\"$(datadir)/liblangtag\""	\
+	$(GLIB_CFLAGS)					\
+	$(LIBXML2_CFLAGS)				\
 	$(NULL)
 LIBS =						\
 	@LDFLAGS@				\
@@ -36,19 +38,24 @@ BUILT_FILES =					\
 liblangtag_public_headers =			\
 	lt-division.h				\
 	lt-error.h				\
+	lt-extlang.h				\
+	lt-extlang-db.h				\
 	lt-lang.h				\
 	lt-lang-db.h				\
 	lt-region.h				\
 	lt-region-db.h				\
 	lt-script.h				\
 	lt-script-db.h				\
+	lt-tag.h				\
 	$(NULL)
 liblangtag_private_headers =			\
+	lt-extlang-private.h			\
 	lt-division-private.h			\
 	lt-lang-private.h			\
 	lt-mem.h				\
 	lt-region-private.h			\
 	lt-script-private.h			\
+	lt-utils.h				\
 	$(NULL)
 liblangtag_built_public_headers =		\
 	$(NULL)
@@ -61,6 +68,8 @@ liblangtag_sources =				\
 	$(liblangtag_built_sources)		\
 	lt-division.c				\
 	lt-error.c				\
+	lt-extlang.c				\
+	lt-extlang-db.c				\
 	lt-lang.c				\
 	lt-lang-db.c				\
 	lt-mem.c				\
@@ -68,6 +77,8 @@ liblangtag_sources =				\
 	lt-region-db.c				\
 	lt-script.c				\
 	lt-script-db.c				\
+	lt-tag.c				\
+	lt-utils.c				\
 	$(NULL)
 #
 stamp_files =					\

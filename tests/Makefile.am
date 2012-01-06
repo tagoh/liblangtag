@@ -37,9 +37,15 @@ noinst_HEADERS =				\
 	$(common_private_headers)		\
 	$(NULL)
 noinst_PROGRAMS =				\
+	test-extlang-db				\
 	test-lang-db				\
 	test-region-db				\
 	test-script-db				\
+	test-tag				\
+	$(NULL)
+#
+test_extlang_db_SOURCES =	\
+	extlang-db.c		\
 	$(NULL)
 #
 test_lang_db_SOURCES =	\
@@ -52,4 +58,8 @@ test_region_db_SOURCES =	\
 #
 test_script_db_SOURCES =	\
 	script-db.c		\
+	$(NULL)
+#
+test_tag_SOURCES =	\
+	tag.c		\
 	$(NULL)

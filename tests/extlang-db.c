@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-error.h
+ * extlang.c
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -19,31 +19,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __LT_ERROR_H__
-#define __LT_ERROR_H__
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <glib.h>
+#include <locale.h>
+#include "lt-extlang-db.h"
 
-G_BEGIN_DECLS
+int
+main(int    argc,
+     char **argv)
+{
+	lt_extlang_db_t *extlangdb;
 
-#define LT_ERROR	(lt_error_get_quark())
+	setlocale(LC_ALL, "");
 
-enum _lt_error_t {
-	LT_ERR_UNKNOWN = -1,
-	LT_ERR_SUCCESS = 0,
-	LT_ERR_OOM,
-	LT_ERR_FAIL_ON_XML,
-	LT_ERR_EOT,
-	LT_ERR_FAIL_ON_SCANNER,
-	LT_ERR_NO_TAG,
-	LT_ERR_END
-};
+	extlangdb = lt_extlang_db_new();
 
-typedef enum _lt_error_t	lt_error_t;
+	if (g_strcmp0(argv[1], "list") == 0) {
+	} else if (g_strcmp0(argv[1], "lookup") == 0) {
+		lt_extlang_t *extlang = lt_extlang_db_lookup(extlangdb, argv[2]);
 
+		if (extlang) {
+			g_print("desc: %s\n", lt_extlang_get_name(extlang));
+			g_print("lang: %s\n", lt_extlang_get_macro_language(extlang));
+			lt_extlang_unref(extlang);
+		} else {
+			g_print("no such extlang: %s\n", argv[2]);
+		}
+	}
 
-GQuark lt_error_get_quark(void);
+	lt_extlang_db_unref(extlangdb);
 
-G_END_DECLS
-
-#endif /* __LT_ERROR_H__ */
+	return 0;
+}

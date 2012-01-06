@@ -117,6 +117,7 @@ dnl output
 dnl ======================================================================
 AC_CONFIG_FILES([
 	Makefile
+	data/Makefile
 	liblangtag.pc
 	liblangtag-uninstalled.pc
 	liblangtag-gobject.pc
