@@ -133,3 +133,37 @@ lt_script_get_numeric_code(const lt_script_t *script)
 
 	return script->numeric_code;
 }
+
+const gchar *
+lt_script_convert_to_modifier(const lt_script_t *script)
+{
+	const gchar *p;
+	static const struct {
+		gchar *modifier;
+		gchar *script;
+	} modifiers[] = {
+		{"abegede", NULL},
+		{"cyrillic", "Cyrl"},
+		{"cyrillic", "Cyrs"},
+		{"devanagari", "Deva"},
+		{"euro", NULL},
+		{"iqtelif", NULL},
+		{"latin", "Latf"},
+		{"latin", "Latg"},
+		{"latin", "Latn"},
+		{"saaho", NULL},
+		{NULL, NULL}
+	};
+	static gsize len = G_N_ELEMENTS(modifiers), i;
+
+	g_return_val_if_fail (script != NULL, NULL);
+
+	p = lt_script_get_alpha_code(script);
+	for (i = 0; i < len; i++) {
+		if (modifiers[i].script &&
+		    g_ascii_strcasecmp(p, modifiers[i].script) == 0)
+			return modifiers[i].modifier;
+	}
+
+	return NULL;
+}
