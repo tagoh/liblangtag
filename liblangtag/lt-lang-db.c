@@ -27,6 +27,7 @@
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-mem.h"
+#include "lt-utils.h"
 #include "lt-lang-private.h"
 #include "lt-lang-db.h"
 
@@ -153,6 +154,7 @@ _lt_lang_db_parse_639(lt_lang_db_t          *lang,
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 		xmlChar *p;
 		lt_lang_t *le;
+		gchar *s;
 
 		if (!ent) {
 			g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
@@ -162,7 +164,7 @@ _lt_lang_db_parse_639(lt_lang_db_t          *lang,
 		le = lt_lang_create(LT_LANG_639_2);
 		if (!le) {
 			g_set_error(error, LT_ERROR, LT_ERR_OOM,
-				    "Unable to create an instance of lt_langt.");
+				    "Unable to create an instance of lt_lang_t.");
 			goto bail;
 		}
 		p = xmlGetProp(ent, (const xmlChar *)"name");
@@ -177,8 +179,9 @@ _lt_lang_db_parse_639(lt_lang_db_t          *lang,
 					 LT_LANG_CODE_1,
 					 (const gchar *)p);
 			xmlFree(p);
+			s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_1));
 			g_hash_table_replace(lang->lang_codes,
-					     (gchar *)lt_lang_get_code(le, LT_LANG_CODE_1),
+					     lt_strlower(s),
 					     lt_lang_ref(le));
 		}
 		if (options & LT_LANG_DB_READ_BIBLIOGRAPHIC) {
@@ -187,8 +190,9 @@ _lt_lang_db_parse_639(lt_lang_db_t          *lang,
 					 LT_LANG_CODE_2B,
 					 (const gchar *)p);
 			xmlFree(p);
+			s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_2B));
 			g_hash_table_replace(lang->lang_codes,
-					     (gchar *)lt_lang_get_code(le, LT_LANG_CODE_2B),
+					     lt_strlower(s),
 					     lt_lang_ref(le));
 		}
 		if (options & LT_LANG_DB_READ_TERMINOLOGY) {
@@ -197,8 +201,9 @@ _lt_lang_db_parse_639(lt_lang_db_t          *lang,
 					 LT_LANG_CODE_2T,
 					 (const gchar *)p);
 			xmlFree(p);
+			s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_2T));
 			g_hash_table_replace(lang->lang_codes,
-					     (gchar *)lt_lang_get_code(le, LT_LANG_CODE_2T),
+					     lt_strlower(s),
 					     lt_lang_ref(le));
 		}
 		lt_lang_unref(le);
@@ -244,6 +249,7 @@ _lt_lang_db_parse_639_3(lt_lang_db_t          *lang,
 		xmlChar *p, *type, *scope;
 		lt_lang_t *le;
 		lt_lang_db_options_t oscope, otype;
+		gchar *s;
 
 		if (!ent) {
 			g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
@@ -274,8 +280,9 @@ _lt_lang_db_parse_639_3(lt_lang_db_t          *lang,
 					 LT_LANG_CODE_ID,
 					 (const gchar *)p);
 			xmlFree(p);
+			s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_ID));
 			g_hash_table_replace(lang->lang_codes,
-					     (gchar *)lt_lang_get_code(le, LT_LANG_CODE_ID),
+					     lt_strlower(s),
 					     lt_lang_ref(le));
 			p = xmlGetProp(ent, (const xmlChar *)"part1_code");
 			if (p) {
@@ -283,8 +290,9 @@ _lt_lang_db_parse_639_3(lt_lang_db_t          *lang,
 						 LT_LANG_CODE_PART1,
 						 (const gchar *)p);
 				xmlFree(p);
+				s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_PART1));
 				g_hash_table_replace(lang->lang_codes,
-						     (gchar *)lt_lang_get_code(le, LT_LANG_CODE_PART1),
+						     lt_strlower(s),
 						     lt_lang_ref(le));
 			}
 			p = xmlGetProp(ent, (const xmlChar *)"part2_code");
@@ -293,8 +301,9 @@ _lt_lang_db_parse_639_3(lt_lang_db_t          *lang,
 						 LT_LANG_CODE_PART2,
 						 (const gchar *)p);
 				xmlFree(p);
+				s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_PART2));
 				g_hash_table_replace(lang->lang_codes,
-						     (gchar *)lt_lang_get_code(le, LT_LANG_CODE_PART2),
+						     lt_strlower(s),
 						     lt_lang_ref(le));
 			}
 			lt_lang_unref(le);
@@ -355,7 +364,7 @@ lt_lang_db_new(lt_lang_db_options_t options)
 			       (lt_destroy_func_t)g_hash_table_destroy);
 		retval->lang_codes = g_hash_table_new_full(g_str_hash,
 							   g_str_equal,
-							   NULL,
+							   g_free,
 							   (GDestroyNotify)lt_lang_unref);
 		lt_mem_add_ref(&retval->parent, retval->lang_codes,
 			       (lt_destroy_func_t)g_hash_table_destroy);
@@ -400,11 +409,14 @@ lt_lang_db_lookup_from_code(lt_lang_db_t *lang,
 			    const gchar  *code)
 {
 	lt_lang_t *retval;
+	gchar *s;
 
 	g_return_val_if_fail (lang != NULL, NULL);
 	g_return_val_if_fail (code != NULL, NULL);
 
-	retval = g_hash_table_lookup(lang->lang_codes, code);
+	s = g_strdup(code);
+	retval = g_hash_table_lookup(lang->lang_codes, lt_strlower(s));
+	g_free(s);
 	if (retval)
 		return lt_lang_ref(retval);
 

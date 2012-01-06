@@ -29,6 +29,7 @@
 #include "lt-division-private.h"
 #include "lt-error.h"
 #include "lt-mem.h"
+#include "lt-utils.h"
 #include "lt-region.h"
 #include "lt-region-private.h"
 #include "lt-region-db.h"
@@ -131,6 +132,7 @@ _lt_region_db_parse_3166(lt_region_db_t  *region,
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 		xmlChar *p;
 		lt_region_t *le;
+		gchar *s;
 
 		if (!ent) {
 			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
@@ -147,22 +149,25 @@ _lt_region_db_parse_3166(lt_region_db_t  *region,
 		lt_region_set_code(le, LT_REGION_CODE_ALPHA_2,
 				   (const gchar *)p);
 		xmlFree(p);
+		s = g_strdup(lt_region_get_code(le, LT_REGION_CODE_ALPHA_2));
 		g_hash_table_replace(region->region_codes,
-				     (gchar *)lt_region_get_code(le, LT_REGION_CODE_ALPHA_2),
+				     lt_strlower(s),
 				     lt_region_ref(le));
 		p = xmlGetProp(ent, (const xmlChar *)"alpha_3_code");
 		lt_region_set_code(le, LT_REGION_CODE_ALPHA_3,
 				   (const gchar *)p);
 		xmlFree(p);
+		s = g_strdup(lt_region_get_code(le, LT_REGION_CODE_ALPHA_3));
 		g_hash_table_replace(region->region_codes,
-				     (gchar *)lt_region_get_code(le, LT_REGION_CODE_ALPHA_3),
+				     lt_strlower(s),
 				     lt_region_ref(le));
 		p = xmlGetProp(ent, (const xmlChar *)"numeric_code");
 		lt_region_set_code(le, LT_REGION_CODE_NUMERIC,
 				   (const gchar *)p);
 		xmlFree(p);
+		s = g_strdup(lt_region_get_code(le, LT_REGION_CODE_NUMERIC));
 		g_hash_table_replace(region->region_codes,
-				     (gchar *)lt_region_get_code(le, LT_REGION_CODE_NUMERIC),
+				     lt_strlower(s),
 				     lt_region_ref(le));
 		p = xmlGetProp(ent, (const xmlChar *)"name");
 		lt_region_set_name(le, (const gchar *)p);
@@ -219,6 +224,7 @@ _lt_region_db_parse_3166_3(lt_region_db_t  *region,
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 		xmlChar *p;
 		lt_region_t *le;
+		gchar *s;
 
 		if (!ent) {
 			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
@@ -235,23 +241,26 @@ _lt_region_db_parse_3166_3(lt_region_db_t  *region,
 		lt_region_set_code(le, LT_REGION_CODE_ALPHA_4,
 				   (const gchar *)p);
 		xmlFree(p);
+		s = g_strdup(lt_region_get_code(le, LT_REGION_CODE_ALPHA_4));
 		g_hash_table_replace(region->region_codes,
-				     (gchar *)lt_region_get_code(le, LT_REGION_CODE_ALPHA_4),
+				     lt_strlower(s),
 				     lt_region_ref(le));
 		p = xmlGetProp(ent, (const xmlChar *)"alpha_3_code");
 		lt_region_set_code(le, LT_REGION_CODE_ALPHA_3,
 				   (const gchar *)p);
 		xmlFree(p);
+		s = g_strdup(lt_region_get_code(le, LT_REGION_CODE_ALPHA_3));
 		g_hash_table_replace(region->region_codes,
-				     (gchar *)lt_region_get_code(le, LT_REGION_CODE_ALPHA_3),
+				     lt_strlower(s),
 				     lt_region_ref(le));
 		p = xmlGetProp(ent, (const xmlChar *)"numeric_code");
 		if (p) {
 			lt_region_set_code(le, LT_REGION_CODE_NUMERIC,
 					   (const gchar *)p);
 			xmlFree(p);
+			s = g_strdup(lt_region_get_code(le, LT_REGION_CODE_NUMERIC));
 			g_hash_table_replace(region->region_codes,
-					     (gchar *)lt_region_get_code(le, LT_REGION_CODE_NUMERIC),
+					     lt_strlower(s),
 					     lt_region_ref(le));
 		}
 		p = xmlGetProp(ent, (const xmlChar *)"names");
@@ -460,7 +469,7 @@ lt_region_db_new(void)
 			       (lt_destroy_func_t)g_hash_table_destroy);
 		retval->region_codes = g_hash_table_new_full(g_str_hash,
 							     g_str_equal,
-							     NULL,
+							     g_free,
 							     (GDestroyNotify)lt_region_unref);
 		lt_mem_add_ref(&retval->parent, retval->region_codes,
 			       (lt_destroy_func_t)g_hash_table_destroy);
@@ -533,11 +542,14 @@ lt_region_db_lookup_region_from_code(lt_region_db_t *region,
 				     const gchar    *code)
 {
 	lt_region_t *retval;
+	gchar *s;
 
 	g_return_val_if_fail (region != NULL, NULL);
 	g_return_val_if_fail (code != NULL, NULL);
 
-	retval = g_hash_table_lookup(region->region_codes, code);
+	s = g_strdup(code);
+	retval = g_hash_table_lookup(region->region_codes, lt_strlower(s));
+	g_free(s);
 	if (retval)
 		return lt_region_ref(retval);
 

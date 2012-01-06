@@ -27,6 +27,7 @@
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-mem.h"
+#include "lt-utils.h"
 #include "lt-script-private.h"
 #include "lt-script-db.h"
 
@@ -85,6 +86,7 @@ lt_script_db_parse(lt_script_db_t  *script,
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 		xmlChar *p;
 		lt_script_t *le;
+		gchar *s;
 
 		if (!ent) {
 			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
@@ -106,8 +108,9 @@ lt_script_db_parse(lt_script_db_t  *script,
 			goto bail1;
 		}
 		xmlFree(p);
+		s = g_strdup(lt_script_get_name(le));
 		g_hash_table_replace(script->entries,
-				     (gchar *)lt_script_get_name(le),
+				     lt_strlower(s),
 				     lt_script_ref(le));
 		p = xmlGetProp(ent, (const xmlChar *)"alpha_4_code");
 		lt_script_set_code(le, (const gchar *)p);
@@ -119,8 +122,9 @@ lt_script_db_parse(lt_script_db_t  *script,
 			goto bail1;
 		}
 		xmlFree(p);
+		s = g_strdup(lt_script_get_alpha_code(le));
 		g_hash_table_replace(script->entries,
-				     (gchar *)lt_script_get_alpha_code(le),
+				     lt_strlower(s),
 				     lt_script_ref(le));
 		p = xmlGetProp(ent, (const xmlChar *)"numeric_code");
 		lt_script_set_code(le, (const gchar *)p);
@@ -133,7 +137,7 @@ lt_script_db_parse(lt_script_db_t  *script,
 		}
 		xmlFree(p);
 		g_hash_table_replace(script->entries,
-				     (gchar *)lt_script_get_numeric_code(le),
+				     g_strdup(lt_script_get_numeric_code(le)),
 				     lt_script_ref(le));
 	  bail1:
 		lt_script_unref(le);
@@ -174,7 +178,7 @@ lt_script_db_new(void)
 
 		retval->entries = g_hash_table_new_full(g_str_hash,
 							g_str_equal,
-							NULL,
+							g_free,
 							(GDestroyNotify)lt_script_unref);
 		lt_mem_add_ref(&retval->parent, retval->entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
@@ -230,12 +234,15 @@ lt_script_db_lookup(lt_script_db_t *script,
 		    const gchar    *script_name_or_alpha_code_or_num_code)
 {
 	lt_script_t *retval;
+	gchar *s;
 
 	g_return_val_if_fail (script != NULL, NULL);
 	g_return_val_if_fail (script_name_or_alpha_code_or_num_code != NULL, NULL);
 
+	s = g_strdup(script_name_or_alpha_code_or_num_code);
 	retval = g_hash_table_lookup(script->entries,
-				     script_name_or_alpha_code_or_num_code);
+				     lt_strlower(s));
+	g_free(s);
 	if (retval)
 		return lt_script_ref(retval);
 
