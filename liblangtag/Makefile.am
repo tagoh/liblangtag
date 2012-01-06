@@ -36,6 +36,7 @@ BUILT_FILES =					\
 ##
 # Local definitions
 liblangtag_public_headers =			\
+	lt-database.h				\
 	lt-division.h				\
 	lt-error.h				\
 	lt-extlang.h				\
@@ -69,6 +70,7 @@ liblangtag_built_sources =			\
 	$(NULL)
 liblangtag_sources =				\
 	$(liblangtag_built_sources)		\
+	lt-database.c				\
 	lt-division.c				\
 	lt-error.c				\
 	lt-extlang.c				\
