@@ -202,3 +202,11 @@ lt_region_get_code(const lt_region_t *region,
 
 	return retval;
 }
+
+const gchar *
+lt_region_get_shortest_code(const lt_region_t *region)
+{
+	if (lt_region_has_alpha_2_code(region))
+		return lt_region_get_code(region, LT_REGION_CODE_ALPHA_2);
+	return lt_region_get_code(region, LT_REGION_CODE_ALPHA_3);
+}
