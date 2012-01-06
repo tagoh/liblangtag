@@ -47,6 +47,8 @@ liblangtag_public_headers =			\
 	lt-script.h				\
 	lt-script-db.h				\
 	lt-tag.h				\
+	lt-variant.h				\
+	lt-variant-db.h				\
 	$(NULL)
 liblangtag_private_headers =			\
 	lt-extlang-private.h			\
@@ -56,6 +58,7 @@ liblangtag_private_headers =			\
 	lt-region-private.h			\
 	lt-script-private.h			\
 	lt-utils.h				\
+	lt-variant-private.h			\
 	$(NULL)
 liblangtag_built_public_headers =		\
 	$(NULL)
@@ -79,6 +82,8 @@ liblangtag_sources =				\
 	lt-script-db.c				\
 	lt-tag.c				\
 	lt-utils.c				\
+	lt-variant.c				\
+	lt-variant-db.c				\
 	$(NULL)
 #
 stamp_files =					\

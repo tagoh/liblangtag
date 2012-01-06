@@ -42,6 +42,7 @@ noinst_PROGRAMS =				\
 	test-region-db				\
 	test-script-db				\
 	test-tag				\
+	test-variant-db				\
 	$(NULL)
 #
 test_extlang_db_SOURCES =	\
@@ -62,4 +63,8 @@ test_script_db_SOURCES =	\
 #
 test_tag_SOURCES =	\
 	tag.c		\
+	$(NULL)
+#
+test_variant_db_SOURCES =	\
+	variant-db.c		\
 	$(NULL)
