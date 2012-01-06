@@ -59,6 +59,8 @@ lt_mem_ref(lt_mem_t *object)
 void
 lt_mem_unref(lt_mem_t *object)
 {
+	GList *l;
+
 	g_return_if_fail (object != NULL);
 
 	if (g_atomic_int_dec_and_test(&object->ref_count)) {
@@ -74,6 +76,12 @@ lt_mem_unref(lt_mem_t *object)
 			}
 			g_hash_table_destroy(object->refs);
 		}
+		for (l = object->weak_pointers; l != NULL; l = g_list_next(l)) {
+			gpointer *p = (gpointer *)l->data;
+			*p = NULL;
+		}
+		if (object->weak_pointers)
+			g_list_free(object->weak_pointers);
 		g_free(object);
 	}
 }
@@ -122,4 +130,25 @@ lt_mem_delete_ref(lt_mem_t *object,
 	if (object->refs) {
 		g_hash_table_remove(object->refs, p);
 	}
+}
+
+void
+lt_mem_add_weak_pointer(lt_mem_t *object,
+			gpointer *p)
+{
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (p != NULL);
+
+	if (!g_list_find(object->weak_pointers, p))
+		object->weak_pointers = g_list_append(object->weak_pointers, p);
+}
+
+void
+lt_mem_remove_weak_pointer(lt_mem_t *object,
+			   gpointer *p)
+{
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (p != NULL);
+
+	object->weak_pointers = g_list_remove(object->weak_pointers, p);
 }

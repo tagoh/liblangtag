@@ -34,18 +34,23 @@ struct _lt_mem_t {
 	gint        ref_count;
 	gsize       size;
 	GHashTable *refs;
+	GList      *weak_pointers;
 };
 
-gpointer lt_mem_alloc_object(gsize              size);
-gpointer lt_mem_ref         (lt_mem_t          *object);
-void     lt_mem_unref       (lt_mem_t          *object);
-void     lt_mem_add_ref     (lt_mem_t          *object,
-                             gpointer           p,
-                             lt_destroy_func_t  func);
-void     lt_mem_remove_ref  (lt_mem_t          *object,
-                             gpointer           p);
-void     lt_mem_delete_ref  (lt_mem_t          *object,
-			     gpointer           p);
+gpointer lt_mem_alloc_object       (gsize              size);
+gpointer lt_mem_ref                (lt_mem_t          *object);
+void     lt_mem_unref              (lt_mem_t          *object);
+void     lt_mem_add_ref            (lt_mem_t          *object,
+                                    gpointer           p,
+                                    lt_destroy_func_t  func);
+void     lt_mem_remove_ref         (lt_mem_t          *object,
+                                    gpointer           p);
+void     lt_mem_delete_ref         (lt_mem_t          *object,
+                                    gpointer           p);
+void     lt_mem_add_weak_pointer   (lt_mem_t          *object,
+                                    gpointer          *p);
+void     lt_mem_remove_weak_pointer(lt_mem_t          *object,
+                                    gpointer          *p);
 
 G_END_DECLS
 
