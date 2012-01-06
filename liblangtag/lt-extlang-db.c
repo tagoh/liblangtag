@@ -110,6 +110,9 @@ lt_extlang_db_parse(lt_extlang_db_t  *extlangdb,
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0) {
 				/* ignore it */
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
+				/* wonder if many descriptions helps something. or is it a bug? */
+				if (desc)
+					xmlFree(desc);
 				desc = xmlNodeGetContent(cnode);
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"macrolanguage") == 0) {
 				macrolang = xmlNodeGetContent(cnode);

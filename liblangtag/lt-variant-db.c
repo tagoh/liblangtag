@@ -97,6 +97,7 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 		xmlChar *subtag = NULL, *desc = NULL, *prefix = NULL;
 		lt_variant_t *le = NULL;
 		gchar *s;
+		GList *prefix_list = NULL, *l;
 
 		if (!ent) {
 			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
@@ -110,9 +111,13 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0) {
 				/* ignore it */
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
+				/* wonder if many descriptions helps something or is it a bug? */
+				if (desc)
+					xmlFree(desc);
 				desc = xmlNodeGetContent(cnode);
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"prefix") == 0) {
-				prefix = xmlNodeGetContent(cnode);
+				prefix_list = g_list_append(prefix_list,
+							    xmlNodeGetContent(cnode));
 			} else {
 				g_warning("Unknown node under /registry/variant: %s", cnode->name);
 			}
@@ -127,6 +132,32 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 			g_warning("No description node: subtag = '%s', prefix = '%s'",
 				  subtag, prefix);
 			goto bail1;
+		}
+		if (prefix_list) {
+			for (l = prefix_list; ; l = g_list_next(l)) {
+				if (!g_list_next(l)) {
+					prefix = xmlStrdup(l->data);
+					xmlFree(l->data);
+					break;
+				}
+				le = lt_variant_create();
+				if (!le) {
+					g_set_error(&err, LT_ERROR, LT_ERR_OOM,
+						    "Unable to create an instance of lt_variant_t.");
+					goto bail1;
+				}
+				lt_variant_set_tag(le, (const gchar *)subtag);
+				lt_variant_set_name(le, (const gchar *)desc);
+				lt_variant_set_prefix(le, l->data);
+
+				s = g_strdup(lt_variant_get_tag(le));
+				g_hash_table_replace(variantdb->variant_entries,
+						     lt_strlower(s),
+						     lt_variant_ref(le));
+				xmlFree(l->data);
+				lt_variant_unref(le);
+			}
+			g_list_free(prefix_list);
 		}
 		le = lt_variant_create();
 		if (!le) {
