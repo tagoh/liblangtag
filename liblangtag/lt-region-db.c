@@ -187,7 +187,7 @@ lt_region_db_new(void)
 
 		retval->region_entries = g_hash_table_new_full(g_str_hash,
 							       g_str_equal,
-							       NULL,
+							       g_free,
 							       (GDestroyNotify)lt_region_unref);
 		lt_mem_add_ref(&retval->parent, retval->region_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
