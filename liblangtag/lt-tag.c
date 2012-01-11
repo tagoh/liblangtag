@@ -58,17 +58,25 @@ typedef struct _lt_tag_scanner_t {
 } lt_tag_scanner_t;
 
 struct _lt_tag_t {
-	lt_mem_t      parent;
-	gchar        *tag_string;
-	lt_lang_t    *language;
-	lt_extlang_t *extlang;
-	lt_script_t  *script;
-	lt_region_t  *region;
-	lt_variant_t *variant;
-	gchar        *privateuse;
+	lt_mem_t            parent;
+	gchar              *tag_string;
+	lt_lang_t          *language;
+	lt_extlang_t       *extlang;
+	lt_script_t        *script;
+	lt_region_t        *region;
+	lt_variant_t       *variant;
+	GString            *extension;
+	GString            *privateuse;
+	lt_grandfathered_t *grandfathered;
 };
 
 /*< private >*/
+static void
+_lt_tag_gstring_free(GString *string)
+{
+	g_string_free(string, TRUE);
+}
+
 static lt_tag_scanner_t *
 lt_tag_scanner_new(const gchar *tag)
 {
@@ -281,9 +289,22 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    tag->extlang = lt_extlang_db_lookup(extlangdb, token);
 			    lt_extlang_db_unref(extlangdb);
 			    if (tag->extlang) {
-				    lt_mem_add_ref(&tag->parent, tag->extlang,
-						   (lt_destroy_func_t)lt_extlang_unref);
-				    *state = STATE_PRE_SCRIPT;
+				    const gchar *macrolang = lt_extlang_get_macro_language(tag->extlang);
+				    const gchar *subtag = lt_extlang_get_tag(tag->extlang);
+				    const gchar *lang = lt_lang_get_shortest_code(tag->language);
+
+				    if (macrolang &&
+					g_ascii_strcasecmp(macrolang, lang) != 0) {
+					    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
+							"extlang '%s' is supposed to be used with %s, but %s",
+							subtag, macrolang, lang);
+					    lt_extlang_unref(tag->extlang);
+					    tag->extlang = NULL;
+				    } else {
+					    lt_mem_add_ref(&tag->parent, tag->extlang,
+							   (lt_destroy_func_t)lt_extlang_unref);
+					    *state = STATE_PRE_SCRIPT;
+				    }
 				    break;
 			    }
 			    /* try to check something else */
@@ -316,9 +337,11 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			 g_ascii_isdigit(token[2]))) {
 			    lt_region_db_t *regiondb = lt_db_get_region();
 
-			    tag->region = lt_region_db_lookup_region_from_code(regiondb, token);
+			    g_print("'%s'\n", token);
+			    tag->region = lt_region_db_lookup(regiondb, token);
 			    lt_region_db_unref(regiondb);
 			    if (tag->region) {
+				    g_print("found\n");
 				    lt_mem_add_ref(&tag->parent, tag->region,
 						   (lt_destroy_func_t)lt_region_unref);
 				    *state = STATE_PRE_VARIANT;
@@ -330,30 +353,51 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    *state = STATE_VARIANT;
 		    }
 	    case STATE_VARIANT:
-		    if (length >=5 && length <= 8) {
+		    if ((length >=5 && length <= 8) ||
+			(length == 4 && g_ascii_isdigit(token[0]))) {
 			    lt_variant_db_t *variantdb = lt_db_get_variant();
 
 			    tag->variant = lt_variant_db_lookup(variantdb, token);
 			    lt_variant_db_unref(variantdb);
 			    if (tag->variant) {
-				    lt_mem_add_ref(&tag->parent, tag->variant,
-						   (lt_destroy_func_t)lt_variant_unref);
-				    *state = STATE_PRE_EXTENSION;
+				    const GList *prefixes = lt_variant_get_prefix(tag->variant), *l;
+				    const gchar *lang = lt_lang_get_shortest_code(tag->language);
+				    GString *str_prefixes = g_string_new(NULL);
+				    gboolean matched = FALSE;
+
+				    for (l = prefixes; l != NULL; l = g_list_next(l)) {
+					    if (str_prefixes->len > 0)
+						    g_string_append(str_prefixes, ",");
+					    g_string_append(str_prefixes, (const gchar *)l->data);
+
+					    if (g_ascii_strcasecmp((gchar *)l->data,
+								   lang) == 0) {
+						    matched = TRUE;
+						    break;
+					    }
+				    }
+				    if (!matched) {
+					    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
+							"variant '%s' is supposed to be used with %s, but %s",
+							token, str_prefixes->str, lang);
+					    lt_variant_unref(tag->variant);
+					    tag->variant = NULL;
+				    } else {
+					    lt_mem_add_ref(&tag->parent, tag->variant,
+							   (lt_destroy_func_t)lt_variant_unref);
+					    *state = STATE_PRE_EXTENSION;
+				    }
+				    g_string_free(str_prefixes, TRUE);
 				    break;
 			    }
 			    /* try to check something else */
-		    } else if (length == 4 && g_ascii_isdigit(token[0])) {
-			    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-					"XXX: DIGIT 3alphanum variant: %s",
-					token);
-			    break;
 		    } else {
 			    /* it may be an extension */
 			    *state = STATE_EXTENSION;
 		    }
 	    case STATE_EXTENSION:
 		    if (length == 1 && token[0] != 'x' && token[0] != 'X') {
-			    g_print("XXX: extension singleton: %s\n", token);
+			    g_string_append(tag->extension, token);
 			    *state = STATE_IN_EXTENSION;
 			    break;
 		    } else {
@@ -362,6 +406,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    }
 	    case STATE_PRIVATEUSE:
 		    if (length == 1 && (token[0] == 'x' || token[0] == 'X')) {
+			    g_string_append(tag->privateuse, token);
 			    *state = STATE_IN_PRIVATEUSE;
 		    } else {
 			    /* No state to try */
@@ -370,7 +415,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    break;
 	    case STATE_EXTENSIONTOKEN:
 		    if (length >= 2 && length <= 8) {
-			    g_print("XXX: extension: %s\n", token);
+			    g_string_append_printf(tag->extension, "-%s", token);
 			    *state = STATE_PRIVATEUSE;
 		    } else {
 			    /* No state to try */
@@ -379,7 +424,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    break;
 	    case STATE_PRIVATEUSETOKEN:
 		    if (length <= 8) {
-			    tag->privateuse = g_strdup_printf("X-%s\n", token);
+			    g_string_append_printf(tag->privateuse, "-%s", token);
 			    *state = STATE_NONE;
 		    } else {
 			    /* 'x'/'X' is reserved singleton for the private use subtag.
@@ -408,6 +453,15 @@ lt_tag_new(void)
 {
 	lt_tag_t *retval = lt_mem_alloc_object(sizeof (lt_tag_t));
 
+	if (retval) {
+		retval->extension = g_string_new(NULL);
+		lt_mem_add_ref(&retval->parent, retval->extension,
+			       (lt_destroy_func_t)_lt_tag_gstring_free);
+		retval->privateuse = g_string_new(NULL);
+		lt_mem_add_ref(&retval->parent, retval->privateuse,
+			       (lt_destroy_func_t)_lt_tag_gstring_free);
+	}
+
 	return retval;
 }
 
@@ -432,6 +486,7 @@ lt_tag_parse(lt_tag_t     *tag,
 	     GError      **error)
 {
 	lt_tag_scanner_t *scanner;
+	lt_grandfathered_db_t *grandfathereddb;
 	gchar *token = NULL;
 	gsize len = 0;
 	GError *err = NULL;
@@ -464,7 +519,29 @@ lt_tag_parse(lt_tag_t     *tag,
 		lt_mem_remove_ref(&tag->parent, tag->variant);
 		tag->variant = NULL;
 	}
+	if (tag->extension) {
+		g_string_truncate(tag->extension, 0);
+	}
+	if (tag->privateuse) {
+		g_string_truncate(tag->privateuse, 0);
+	}
+	if (tag->grandfathered) {
+		lt_mem_remove_ref(&tag->parent, tag->grandfathered);
+		tag->grandfathered = NULL;
+	}
 	tag->tag_string = g_strdup(langtag);
+
+	grandfathereddb = lt_db_get_grandfathered();
+	tag->grandfathered = lt_grandfathered_db_lookup(grandfathereddb, langtag);
+	lt_grandfathered_db_unref(grandfathereddb);
+	if (tag->grandfathered) {
+		/* no need to lookup anymore. */
+		lt_mem_add_ref(&tag->parent, tag->grandfathered,
+			       (lt_destroy_func_t)lt_grandfathered_unref);
+
+		return TRUE;
+	}
+
 	lt_mem_add_ref(&tag->parent, tag->tag_string,
 		       (lt_destroy_func_t)g_free);
 	scanner = lt_tag_scanner_new(langtag);
@@ -538,7 +615,7 @@ lt_tag_convert_to_locale(lt_tag_t  *tag,
 	g_string_append(string, lt_lang_get_shortest_code(tag->language));
 	if (tag->region)
 		g_string_append_printf(string, "_%s",
-				       lt_region_get_shortest_code(tag->region));
+				       lt_region_get_tag(tag->region));
 	if (tag->script) {
 		mod = lt_script_convert_to_modifier(tag->script);
 		if (mod)
@@ -567,6 +644,12 @@ lt_tag_dump(lt_tag_t *tag)
 {
 	g_return_if_fail (tag != NULL);
 
+	if (tag->grandfathered) {
+		g_print("Grandfathered: %s (%s)\n",
+			lt_grandfathered_get_tag(tag->grandfathered),
+			lt_grandfathered_get_name(tag->grandfathered));
+		return;
+	}
 	g_print("Language: %s (%s)\n",
 		lt_lang_get_shortest_code(tag->language),
 		lt_lang_get_name(tag->language));
@@ -580,12 +663,14 @@ lt_tag_dump(lt_tag_t *tag)
 			lt_script_get_name(tag->script));
 	if (tag->region)
 		g_print("Region: %s (%s)\n",
-			lt_region_get_shortest_code(tag->region),
+			lt_region_get_tag(tag->region),
 			lt_region_get_name(tag->region));
 	if (tag->variant)
 		g_print("Variant: %s (%s)\n",
 			lt_variant_get_tag(tag->variant),
 			lt_variant_get_name(tag->variant));
-	if (tag->privateuse)
-		g_print("Private Use: %s\n", tag->privateuse);
+	if (tag->extension->len > 0)
+		g_print("Extension: %s\n", tag->extension->str);
+	if (tag->privateuse->len > 0)
+		g_print("Private Use: %s\n", tag->privateuse->str);
 }
