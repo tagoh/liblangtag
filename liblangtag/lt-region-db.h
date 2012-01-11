@@ -23,7 +23,6 @@
 #define __LT_REGION_DB_H__
 
 #include <glib.h>
-#include <liblangtag/lt-division.h>
 #include <liblangtag/lt-region.h>
 
 G_BEGIN_DECLS
