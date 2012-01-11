@@ -37,7 +37,6 @@ BUILT_FILES =					\
 # Local definitions
 liblangtag_public_headers =			\
 	lt-database.h				\
-	lt-division.h				\
 	lt-error.h				\
 	lt-extlang.h				\
 	lt-extlang-db.h				\
@@ -54,7 +53,6 @@ liblangtag_public_headers =			\
 	lt-variant-db.h				\
 	$(NULL)
 liblangtag_private_headers =			\
-	lt-division-private.h			\
 	lt-extlang-private.h			\
 	lt-grandfathered-private.h		\
 	lt-lang-private.h			\
@@ -74,7 +72,6 @@ liblangtag_built_sources =			\
 liblangtag_sources =				\
 	$(liblangtag_built_sources)		\
 	lt-database.c				\
-	lt-division.c				\
 	lt-error.c				\
 	lt-extlang.c				\
 	lt-extlang-db.c				\
