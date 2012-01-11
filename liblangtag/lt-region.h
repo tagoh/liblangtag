@@ -26,25 +26,13 @@
 
 G_BEGIN_DECLS
 
-enum _lt_region_code_t {
-	LT_REGION_CODE_NUMERIC = 1,
-	LT_REGION_CODE_ALPHA_2,
-	LT_REGION_CODE_ALPHA_3,
-	LT_REGION_CODE_ALPHA_4,
-};
-
 typedef struct _lt_region_t	lt_region_t;
-typedef enum _lt_region_code_t	lt_region_code_t;
 
 
-lt_region_t *lt_region_ref              (lt_region_t       *region);
-void         lt_region_unref            (lt_region_t       *region);
-gboolean     lt_region_has_alpha_2_code (const lt_region_t *region);
-gboolean     lt_region_has_alpha_4_code (const lt_region_t *region);
-const gchar *lt_region_get_name         (const lt_region_t *region);
-const gchar *lt_region_get_code         (const lt_region_t *region,
-                                         lt_region_code_t   code_type);
-const gchar *lt_region_get_shortest_code(const lt_region_t *region);
+lt_region_t *lt_region_ref     (lt_region_t       *region);
+void         lt_region_unref   (lt_region_t       *region);
+const gchar *lt_region_get_name(const lt_region_t *region);
+const gchar *lt_region_get_tag (const lt_region_t *region);
 
 G_END_DECLS
 

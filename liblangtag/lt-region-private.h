@@ -27,22 +27,11 @@
 
 G_BEGIN_DECLS
 
-enum _lt_region_entry_type_t {
-	LT_REGION_ENTRY_3166,
-	LT_REGION_ENTRY_3166_3,
-	LT_REGION_ENTRY_END
-};
-
-typedef enum _lt_region_entry_type_t	lt_region_entry_type_t;
-
-
-lt_region_t            *lt_region_create  (lt_region_entry_type_t  type);
-void                    lt_region_set_name(lt_region_t            *region,
-                                           const gchar            *name);
-void                    lt_region_set_code(lt_region_t            *region,
-                                           lt_region_code_t        code_type,
-                                           const gchar            *code);
-lt_region_entry_type_t  lt_region_get_type(const lt_region_t      *region);
+lt_region_t *lt_region_create  (void);
+void         lt_region_set_name(lt_region_t *region,
+                                const gchar *description);
+void         lt_region_set_tag (lt_region_t *region,
+                                const gchar *subtag);
 
 G_END_DECLS
 

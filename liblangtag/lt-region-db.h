@@ -31,21 +31,11 @@ G_BEGIN_DECLS
 typedef struct _lt_region_db_t		lt_region_db_t;
 
 
-lt_region_db_t *lt_region_db_new                        (void);
-lt_region_db_t *lt_region_db_ref                        (lt_region_db_t *regiondb);
-void            lt_region_db_unref                      (lt_region_db_t *regiondb);
-GList          *lt_region_db_get_regions                (lt_region_db_t *regiondb);
-lt_region_t    *lt_region_db_lookup_region_from_language(lt_region_db_t *regiondb,
-                                                         const gchar    *language);
-lt_region_t    *lt_region_db_lookup_region_from_code    (lt_region_db_t *regiondb,
-                                                         const gchar    *code);
-GList          *lt_region_db_get_division_type          (lt_region_db_t *regiondb,
-                                                         const gchar    *country_code);
-GList          *lt_region_db_get_divisions              (lt_region_db_t *regiondb,
-                                                         const gchar    *country_code,
-                                                         const gchar    *division_type);
-lt_division_t  *lt_region_db_lookup_division            (lt_region_db_t *regiondb,
-                                                         const gchar    *name_or_code);
+lt_region_db_t *lt_region_db_new   (void);
+lt_region_db_t *lt_region_db_ref   (lt_region_db_t *regiondb);
+void            lt_region_db_unref (lt_region_db_t *regiondb);
+lt_region_t    *lt_region_db_lookup(lt_region_db_t *regiondb,
+                                    const gchar    *language_or_code);
 
 G_END_DECLS
 
