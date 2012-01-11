@@ -230,11 +230,15 @@ lt_region_db_lookup(lt_region_db_t *region,
 		    const gchar    *language_or_code)
 {
 	lt_region_t *retval;
+	gchar *s;
 
 	g_return_val_if_fail (region != NULL, NULL);
 	g_return_val_if_fail (language_or_code != NULL, NULL);
 
-	retval = g_hash_table_lookup(region->region_entries, language_or_code);
+	s = g_strdup(language_or_code);
+	retval = g_hash_table_lookup(region->region_entries,
+				     lt_strlower(s));
+	g_free(s);
 	if (retval)
 		return lt_region_ref(retval);
 

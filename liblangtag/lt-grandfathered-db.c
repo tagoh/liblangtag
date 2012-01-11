@@ -222,12 +222,15 @@ lt_grandfathered_db_lookup(lt_grandfathered_db_t *grandfathereddb,
 			   const gchar           *tag)
 {
 	lt_grandfathered_t *retval;
+	gchar *s;
 
 	g_return_val_if_fail (grandfathereddb != NULL, NULL);
 	g_return_val_if_fail (tag != NULL, NULL);
 
+	s = g_strdup(tag);
 	retval = g_hash_table_lookup(grandfathereddb->grandfathered_entries,
-				     tag);
+				     lt_strlower(s));
+	g_free(s);
 	if (retval)
 		return lt_grandfathered_ref(retval);
 

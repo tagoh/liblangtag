@@ -231,11 +231,15 @@ lt_variant_db_lookup(lt_variant_db_t *variantdb,
 		     const gchar     *subtag)
 {
 	lt_variant_t *retval;
+	gchar *s;
 
 	g_return_val_if_fail (variantdb != NULL, NULL);
 	g_return_val_if_fail (subtag != NULL, NULL);
 
-	retval = g_hash_table_lookup(variantdb->variant_entries, subtag);
+	s = g_strdup(subtag);
+	retval = g_hash_table_lookup(variantdb->variant_entries,
+				     lt_strlower(s));
+	g_free(s);
 	if (retval)
 		return lt_variant_ref(retval);
 

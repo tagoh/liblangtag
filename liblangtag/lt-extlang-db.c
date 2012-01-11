@@ -228,11 +228,15 @@ lt_extlang_db_lookup(lt_extlang_db_t *extlangdb,
 		     const gchar     *subtag)
 {
 	lt_extlang_t *retval;
+	gchar *s;
 
 	g_return_val_if_fail (extlangdb != NULL, NULL);
 	g_return_val_if_fail (subtag != NULL, NULL);
 
-	retval = g_hash_table_lookup(extlangdb->extlang_entries, subtag);
+	s = g_strdup(subtag);
+	retval = g_hash_table_lookup(extlangdb->extlang_entries,
+				     lt_strlower(s));
+	g_free(s);
 	if (retval)
 		return lt_extlang_ref(retval);
 
