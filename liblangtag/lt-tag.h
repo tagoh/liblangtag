@@ -19,6 +19,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#if !defined (__LANGTAG_H__INSIDE) && !defined (__LANGTAG_COMPILATION)
+#error "Only <liblangtag/langtag.h> can be included directly."
+#endif
+
 #ifndef __LT_TAG_H__
 #define __LT_TAG_H__
 

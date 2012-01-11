@@ -24,8 +24,7 @@
 #endif
 
 #include <locale.h>
-#include "lt-database.h"
-#include "lt-tag.h"
+#include "langtag.h"
 
 int
 main(int    argc,

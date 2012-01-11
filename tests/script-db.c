@@ -24,7 +24,7 @@
 #endif
 
 #include <locale.h>
-#include "lt-script-db.h"
+#include "langtag.h"
 
 int
 main(int    argc,

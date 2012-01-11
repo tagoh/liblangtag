@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-extlang.h
+ * langtag.h
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -19,26 +19,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#if !defined (__LANGTAG_H__INSIDE) && !defined (__LANGTAG_COMPILATION)
-#error "Only <liblangtag/langtag.h> can be included directly."
-#endif
+#ifndef __LANGTAG_H__
+#define __LANGTAG_H__
 
-#ifndef __LT_EXTLANG_H__
-#define __LT_EXTLANG_H__
+#define __LANGTAG_H__INSIDE
+#include <liblangtag/lt-database.h>
+#include <liblangtag/lt-tag.h>
+#undef __LANGTAG_H__INSIDE
 
-#include <glib.h>
-
-G_BEGIN_DECLS
-
-typedef struct _lt_extlang_t	lt_extlang_t;
-
-
-lt_extlang_t *lt_extlang_ref               (lt_extlang_t       *extlang);
-void          lt_extlang_unref             (lt_extlang_t       *extlang);
-const gchar  *lt_extlang_get_tag           (const lt_extlang_t *extlang);
-const gchar  *lt_extlang_get_name          (const lt_extlang_t *extlang);
-const gchar  *lt_extlang_get_macro_language(const lt_extlang_t *extlang);
-
-G_END_DECLS
-
-#endif /* __LT_EXTLANG_H__ */
+#endif /* __LANGTAG_H__ */
