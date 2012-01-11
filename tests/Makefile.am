@@ -38,6 +38,7 @@ noinst_HEADERS =				\
 	$(NULL)
 noinst_PROGRAMS =				\
 	test-extlang-db				\
+	test-grandfathered-db			\
 	test-lang-db				\
 	test-region-db				\
 	test-script-db				\
@@ -47,6 +48,10 @@ noinst_PROGRAMS =				\
 #
 test_extlang_db_SOURCES =	\
 	extlang-db.c		\
+	$(NULL)
+#
+test_grandfathered_db_SOURCES =	\
+	grandfathered-db.c	\
 	$(NULL)
 #
 test_lang_db_SOURCES =	\

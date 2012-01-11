@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-database.h
+ * lt-grandfathered-private.h
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -19,28 +19,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __LT_DATABASE_H__
-#define __LT_DATABASE_H__
+#ifndef __LT_GRANDFATHERED_PRIVATE_H__
+#define __LT_GRANDFATHERED_PRIVATE_H__
 
 #include <glib.h>
-#include <liblangtag/lt-extlang-db.h>
-#include <liblangtag/lt-grandfathered-db.h>
-#include <liblangtag/lt-lang-db.h>
-#include <liblangtag/lt-region-db.h>
-#include <liblangtag/lt-script-db.h>
-#include <liblangtag/lt-variant-db.h>
+#include "lt-grandfathered.h"
 
 G_BEGIN_DECLS
 
-void                   lt_db_initialize       (void);
-void                   lt_db_finalize         (void);
-lt_lang_db_t          *lt_db_get_lang         (void);
-lt_extlang_db_t       *lt_db_get_extlang      (void);
-lt_script_db_t        *lt_db_get_script       (void);
-lt_region_db_t        *lt_db_get_region       (void);
-lt_variant_db_t       *lt_db_get_variant      (void);
-lt_grandfathered_db_t *lt_db_get_grandfathered(void);
+lt_grandfathered_t *lt_grandfathered_create  (void);
+void                lt_grandfathered_set_tag (lt_grandfathered_t *grandfathered,
+                                              const gchar        *subtag);
+void                lt_grandfathered_set_name(lt_grandfathered_t *grandfathered,
+                                              const gchar        *description);
 
 G_END_DECLS
 
-#endif /* __LT_DATABASE_H__ */
+#endif /* __LT_GRANDFATHERED_PRIVATE_H__ */

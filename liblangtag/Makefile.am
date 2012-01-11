@@ -41,6 +41,8 @@ liblangtag_public_headers =			\
 	lt-error.h				\
 	lt-extlang.h				\
 	lt-extlang-db.h				\
+	lt-grandfathered.h			\
+	lt-grandfathered-db.h			\
 	lt-lang.h				\
 	lt-lang-db.h				\
 	lt-region.h				\
@@ -52,8 +54,9 @@ liblangtag_public_headers =			\
 	lt-variant-db.h				\
 	$(NULL)
 liblangtag_private_headers =			\
-	lt-extlang-private.h			\
 	lt-division-private.h			\
+	lt-extlang-private.h			\
+	lt-grandfathered-private.h		\
 	lt-lang-private.h			\
 	lt-mem.h				\
 	lt-region-private.h			\
@@ -75,6 +78,8 @@ liblangtag_sources =				\
 	lt-error.c				\
 	lt-extlang.c				\
 	lt-extlang-db.c				\
+	lt-grandfathered.c			\
+	lt-grandfathered-db.c			\
 	lt-lang.c				\
 	lt-lang-db.c				\
 	lt-mem.c				\

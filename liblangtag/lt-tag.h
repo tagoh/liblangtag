@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-database.h
+ * lt-tag.h
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -19,28 +19,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __LT_DATABASE_H__
-#define __LT_DATABASE_H__
+#ifndef __LT_TAG_H__
+#define __LT_TAG_H__
 
 #include <glib.h>
-#include <liblangtag/lt-extlang-db.h>
-#include <liblangtag/lt-grandfathered-db.h>
-#include <liblangtag/lt-lang-db.h>
-#include <liblangtag/lt-region-db.h>
-#include <liblangtag/lt-script-db.h>
-#include <liblangtag/lt-variant-db.h>
 
 G_BEGIN_DECLS
 
-void                   lt_db_initialize       (void);
-void                   lt_db_finalize         (void);
-lt_lang_db_t          *lt_db_get_lang         (void);
-lt_extlang_db_t       *lt_db_get_extlang      (void);
-lt_script_db_t        *lt_db_get_script       (void);
-lt_region_db_t        *lt_db_get_region       (void);
-lt_variant_db_t       *lt_db_get_variant      (void);
-lt_grandfathered_db_t *lt_db_get_grandfathered(void);
+typedef struct _lt_tag_t	lt_tag_t;
+
+
+lt_tag_t *lt_tag_new              (void);
+lt_tag_t *lt_tag_ref              (lt_tag_t     *tag);
+void      lt_tag_unref            (lt_tag_t     *tag);
+gboolean  lt_tag_parse            (lt_tag_t     *tag,
+                                   const gchar  *langtag,
+                                   GError      **error);
+gchar    *lt_tag_convert_to_locale(lt_tag_t     *tag,
+                                   GError      **error);
+void      lt_tag_dump             (lt_tag_t     *tag);
 
 G_END_DECLS
 
-#endif /* __LT_DATABASE_H__ */
+#endif /* __LT_TAG_H__ */

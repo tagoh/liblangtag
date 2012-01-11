@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-database.h
+ * tag.c
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -19,28 +19,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef __LT_DATABASE_H__
-#define __LT_DATABASE_H__
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <glib.h>
-#include <liblangtag/lt-extlang-db.h>
-#include <liblangtag/lt-grandfathered-db.h>
-#include <liblangtag/lt-lang-db.h>
-#include <liblangtag/lt-region-db.h>
-#include <liblangtag/lt-script-db.h>
-#include <liblangtag/lt-variant-db.h>
+#include <locale.h>
+#include "lt-database.h"
+#include "lt-tag.h"
 
-G_BEGIN_DECLS
+int
+main(int    argc,
+     char **argv)
+{
+	lt_tag_t *tag;
 
-void                   lt_db_initialize       (void);
-void                   lt_db_finalize         (void);
-lt_lang_db_t          *lt_db_get_lang         (void);
-lt_extlang_db_t       *lt_db_get_extlang      (void);
-lt_script_db_t        *lt_db_get_script       (void);
-lt_region_db_t        *lt_db_get_region       (void);
-lt_variant_db_t       *lt_db_get_variant      (void);
-lt_grandfathered_db_t *lt_db_get_grandfathered(void);
+	setlocale(LC_ALL, "");
 
-G_END_DECLS
+	lt_db_initialize();
+	tag = lt_tag_new();
+	if (g_strcmp0(argv[1], "locale") == 0) {
+		gchar *l;
 
-#endif /* __LT_DATABASE_H__ */
+		lt_tag_parse(tag, argv[2], NULL);
+		l = lt_tag_convert_to_locale(tag, NULL);
+		g_print("%s -> %s\n", argv[2], l);
+		g_free(l);
+	} else if (g_strcmp0(argv[1], "dump") == 0) {
+		lt_tag_parse(tag, argv[2], NULL);
+		lt_tag_dump(tag);
+	}
+	lt_tag_unref(tag);
+	lt_db_finalize();
+	lt_db_finalize();
+
+	return 0;
+}

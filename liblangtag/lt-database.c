@@ -26,11 +26,12 @@
 #include "lt-mem.h"
 #include "lt-database.h"
 
-static lt_lang_db_t    *__db_lang = NULL;
-static lt_extlang_db_t *__db_extlang = NULL;
-static lt_script_db_t  *__db_script = NULL;
-static lt_region_db_t  *__db_region = NULL;
-static lt_variant_db_t *__db_variant = NULL;
+static lt_lang_db_t          *__db_lang = NULL;
+static lt_extlang_db_t       *__db_extlang = NULL;
+static lt_script_db_t        *__db_script = NULL;
+static lt_region_db_t        *__db_region = NULL;
+static lt_variant_db_t       *__db_variant = NULL;
+static lt_grandfathered_db_t *__db_grandfathered = NULL;
 
 
 /*< private >*/
@@ -44,6 +45,7 @@ lt_db_initialize(void)
 	lt_db_get_script();
 	lt_db_get_region();
 	lt_db_get_variant();
+	lt_db_get_grandfathered();
 }
 
 void
@@ -54,6 +56,7 @@ lt_db_finalize(void)
 	lt_script_db_unref(__db_script);
 	lt_region_db_unref(__db_region);
 	lt_variant_db_unref(__db_variant);
+	lt_grandfathered_db_unref(__db_grandfathered);
 }
 
 lt_lang_db_t *
@@ -86,6 +89,7 @@ lt_db_get_lang(void)
 	}
 
 DEFUNC_GET_INSTANCE(extlang)
+DEFUNC_GET_INSTANCE(grandfathered)
 DEFUNC_GET_INSTANCE(script)
 DEFUNC_GET_INSTANCE(region)
 DEFUNC_GET_INSTANCE(variant)
