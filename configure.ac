@@ -40,7 +40,7 @@ dnl 5. If any interfaces have been removed since the last public release,
 dnl    then set AGE to 0.
 dnl
 
-dnl for libeasyfc.la
+dnl for liblangtag.la
 LT_CURRENT=0
 LT_REVISION=0
 LT_AGE=0
@@ -49,7 +49,7 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
-dnl for libeasyfc-gobject.la
+dnl for liblangtag-gobject.la
 LT_G_CURRENT=0
 LT_G_REVISION=0
 LT_G_AGE=0
@@ -118,11 +118,12 @@ dnl ======================================================================
 AC_CONFIG_FILES([
 	Makefile
 	data/Makefile
+	liblangtag/Makefile
+	liblangtag-gobject/Makefile
 	liblangtag.pc
 	liblangtag-uninstalled.pc
 	liblangtag-gobject.pc
 	liblangtag-gobject-uninstalled.pc
-	liblangtag/Makefile
 	tests/Makefile
 ])
 AC_OUTPUT
