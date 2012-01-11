@@ -94,7 +94,7 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 	for (i = 0; i < n; i++) {
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 		xmlNodePtr cnode;
-		xmlChar *subtag = NULL, *desc = NULL, *prefix = NULL;
+		xmlChar *subtag = NULL, *desc = NULL;
 		lt_variant_t *le = NULL;
 		gchar *s;
 		GList *prefix_list = NULL, *l;
@@ -125,39 +125,13 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 		}
 		if (!subtag) {
 			g_warning("No subtag node: description = '%s', prefix = '%s'",
-				  desc, prefix);
+				  desc, prefix_list ? (gchar *)prefix_list->data : "N/A");
 			goto bail1;
 		}
 		if (!desc) {
 			g_warning("No description node: subtag = '%s', prefix = '%s'",
-				  subtag, prefix);
+				  subtag, prefix_list ? (gchar *)prefix_list->data : "N/A");
 			goto bail1;
-		}
-		if (prefix_list) {
-			for (l = prefix_list; ; l = g_list_next(l)) {
-				if (!g_list_next(l)) {
-					prefix = xmlStrdup(l->data);
-					xmlFree(l->data);
-					break;
-				}
-				le = lt_variant_create();
-				if (!le) {
-					g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-						    "Unable to create an instance of lt_variant_t.");
-					goto bail1;
-				}
-				lt_variant_set_tag(le, (const gchar *)subtag);
-				lt_variant_set_name(le, (const gchar *)desc);
-				lt_variant_set_prefix(le, l->data);
-
-				s = g_strdup(lt_variant_get_tag(le));
-				g_hash_table_replace(variantdb->variant_entries,
-						     lt_strlower(s),
-						     lt_variant_ref(le));
-				xmlFree(l->data);
-				lt_variant_unref(le);
-			}
-			g_list_free(prefix_list);
 		}
 		le = lt_variant_create();
 		if (!le) {
@@ -167,8 +141,11 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 		}
 		lt_variant_set_tag(le, (const gchar *)subtag);
 		lt_variant_set_name(le, (const gchar *)desc);
-		if (prefix)
-			lt_variant_set_prefix(le, (const gchar *)prefix);
+		for (l = prefix_list; l != NULL; l = g_list_next(l)) {
+			lt_variant_add_prefix(le, l->data);
+			xmlFree(l->data);
+		}
+		g_list_free(prefix_list);
 
 		s = g_strdup(lt_variant_get_tag(le));
 		g_hash_table_replace(variantdb->variant_entries,
@@ -179,8 +156,6 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 			xmlFree(subtag);
 		if (desc)
 			xmlFree(desc);
-		if (prefix)
-			xmlFree(prefix);
 		lt_variant_unref(le);
 	}
   bail:

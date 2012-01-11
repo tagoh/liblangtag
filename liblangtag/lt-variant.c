@@ -32,10 +32,20 @@ struct _lt_variant_t {
 	lt_mem_t  parent;
 	gchar    *tag;
 	gchar    *description;
-	gchar    *prefix;
+	GList    *prefix;
 };
 
 /*< private >*/
+static void
+_lt_variant_prefix_free(GList *list)
+{
+	GList *l;
+
+	for (l = list; l != NULL; l = g_list_next(l)) {
+		g_free(l->data);
+	}
+	g_list_free(list);
+}
 
 /*< protected >*/
 lt_variant_t *
@@ -77,17 +87,19 @@ lt_variant_set_name(lt_variant_t *variant,
 }
 
 void
-lt_variant_set_prefix(lt_variant_t *variant,
+lt_variant_add_prefix(lt_variant_t *variant,
 		      const gchar  *prefix)
 {
 	g_return_if_fail (variant != NULL);
 	g_return_if_fail (prefix != NULL);
 
-	if (variant->prefix)
-		lt_mem_remove_ref(&variant->parent, variant->prefix);
-	variant->prefix = g_strdup(prefix);
-	lt_mem_add_ref(&variant->parent, variant->prefix,
-		       (lt_destroy_func_t)g_free);
+	if (!variant->prefix) {
+		variant->prefix = g_list_append(variant->prefix, g_strdup(prefix));
+		lt_mem_add_ref(&variant->parent, variant->prefix,
+			       (lt_destroy_func_t)_lt_variant_prefix_free);
+	} else {
+		variant->prefix = g_list_append(variant->prefix, g_strdup(prefix));
+	}
 }
 
 /*< public >*/
@@ -122,7 +134,7 @@ lt_variant_get_name(const lt_variant_t *variant)
 	return variant->description;
 }
 
-const gchar *
+const GList *
 lt_variant_get_prefix(const lt_variant_t *variant)
 {
 	g_return_val_if_fail (variant != NULL, NULL);

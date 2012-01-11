@@ -39,10 +39,14 @@ main(int    argc,
 	if (g_strcmp0(argv[1], "list") == 0) {
 	} else if (g_strcmp0(argv[1], "lookup") == 0) {
 		lt_variant_t *variant = lt_variant_db_lookup(variantdb, argv[2]);
+		const GList *prefix, *l;
 
 		if (variant) {
 			g_print("desc: %s\n", lt_variant_get_name(variant));
-			g_print("prefix: %s\n", lt_variant_get_prefix(variant));
+			prefix = lt_variant_get_prefix(variant);
+			for (l = prefix; l != NULL; l = g_list_next(l)) {
+				g_print("prefix: %s\n", (gchar *)l->data);
+			}
 			lt_variant_unref(variant);
 		} else {
 			g_print("no such variant: %s\n", argv[2]);
