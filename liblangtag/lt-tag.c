@@ -45,10 +45,14 @@ typedef enum _lt_tag_state_t {
 	STATE_EXTENSION,
 	STATE_IN_EXTENSION,
 	STATE_EXTENSIONTOKEN,
+	STATE_IN_EXTENSIONTOKEN,
+	STATE_EXTENSIONTOKEN2,
 	STATE_PRE_PRIVATEUSE,
 	STATE_PRIVATEUSE,
 	STATE_IN_PRIVATEUSE,
-	STATE_PRIVATEUSETOKEN
+	STATE_PRIVATEUSETOKEN,
+	STATE_IN_PRIVATEUSETOKEN,
+	STATE_PRIVATEUSETOKEN2,
 } lt_tag_state_t;
 typedef struct _lt_tag_scanner_t {
 	lt_mem_t  parent;
@@ -223,11 +227,17 @@ lt_tag_parse_prestate(lt_tag_t        *tag,
 		    case STATE_IN_EXTENSION:
 			    *state = STATE_EXTENSIONTOKEN;
 			    break;
+		    case STATE_IN_EXTENSIONTOKEN:
+			    *state = STATE_EXTENSIONTOKEN2;
+			    break;
 		    case STATE_PRE_PRIVATEUSE:
 			    *state = STATE_PRIVATEUSE;
 			    break;
 		    case STATE_IN_PRIVATEUSE:
 			    *state = STATE_PRIVATEUSETOKEN;
+			    break;
+		    case STATE_IN_PRIVATEUSETOKEN:
+			    *state = STATE_PRIVATEUSETOKEN2;
 			    break;
 		    default:
 			    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
@@ -252,6 +262,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 {
 	gboolean retval = TRUE;
 	const gchar *p;
+	GList *l;
 
 	switch (*state) {
 	    case STATE_LANG:
@@ -448,6 +459,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    *state = STATE_PRIVATEUSE;
 		    }
 	    case STATE_PRIVATEUSE:
+	    privateuse:
 		    if (length == 1 && (token[0] == 'x' || token[0] == 'X')) {
 			    g_string_append(tag->privateuse, token);
 			    *state = STATE_IN_PRIVATEUSE;
@@ -457,15 +469,24 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    }
 		    break;
 	    case STATE_EXTENSIONTOKEN:
+	    case STATE_EXTENSIONTOKEN2:
 		    if (length >= 2 && length <= 8) {
-			    GList *l = g_list_last(tag->extensions);
-			    GString *string = l->data;
+			    GString *string;
 
+			    l = g_list_last(tag->extensions);
+			    string = l->data;
 			    g_string_append_printf(string, "-%s", token);
-			    /* multiple extensions are allowed. */
-			    *state = STATE_PRE_EXTENSION;
+			    /* try to check more extension token first */
+			    *state = STATE_IN_EXTENSIONTOKEN;
 		    } else {
-			    GList *l = g_list_last(tag->extensions);
+			    if (*state == STATE_EXTENSIONTOKEN2) {
+				    /* No need to destroy the previous tokens.
+				     * but this may be a private use.
+				     */
+				    *state = STATE_PRIVATEUSE;
+				    goto privateuse;
+			    }
+			    l = g_list_last(tag->extensions);
 
 			    if (g_list_previous(l) == NULL) {
 				    lt_mem_remove_ref(&tag->parent, tag->extensions);
@@ -479,9 +500,10 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    }
 		    break;
 	    case STATE_PRIVATEUSETOKEN:
+	    case STATE_PRIVATEUSETOKEN2:
 		    if (length <= 8) {
 			    g_string_append_printf(tag->privateuse, "-%s", token);
-			    *state = STATE_NONE;
+			    *state = STATE_IN_PRIVATEUSETOKEN;
 		    } else {
 			    /* 'x'/'X' is reserved singleton for the private use subtag.
 			     * so nothing to fallback to anything else.
@@ -630,6 +652,8 @@ lt_tag_parse(lt_tag_t     *tag,
 	    state != STATE_PRE_VARIANT &&
 	    state != STATE_PRE_EXTENSION &&
 	    state != STATE_PRE_PRIVATEUSE &&
+	    state != STATE_IN_EXTENSIONTOKEN &&
+	    state != STATE_IN_PRIVATEUSETOKEN &&
 	    state != STATE_NONE) {
 		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 			    "Invalid tag: %s, last token = '%s', state = %d, parsed count = %d",
