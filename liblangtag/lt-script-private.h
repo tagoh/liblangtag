@@ -29,9 +29,9 @@ G_BEGIN_DECLS
 
 lt_script_t *lt_script_create  (void);
 void         lt_script_set_name(lt_script_t *script,
-                                const gchar *name);
-void         lt_script_set_code(lt_script_t *script,
-                                const gchar *code);
+                                const gchar *description);
+void         lt_script_set_tag (lt_script_t *script,
+                                const gchar *subtag);
 
 G_END_DECLS
 

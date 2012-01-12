@@ -59,20 +59,6 @@ lt_db_finalize(void)
 	lt_grandfathered_db_unref(__db_grandfathered);
 }
 
-lt_lang_db_t *
-lt_db_get_lang(void)
-{
-	if (!__db_lang) {
-		__db_lang = lt_lang_db_new(LT_LANG_DB_READ_MINIMAL);
-		lt_mem_add_weak_pointer((lt_mem_t *)__db_lang,
-					(gpointer *)&__db_lang);
-	} else {
-		lt_lang_db_ref(__db_lang);
-	}
-
-	return __db_lang;
-}
-
 #define DEFUNC_GET_INSTANCE(__type__)					\
 	lt_ ##__type__## _db_t *					\
 	lt_db_get_ ##__type__ (void)					\
@@ -88,6 +74,7 @@ lt_db_get_lang(void)
 		return __db_ ##__type__;				\
 	}
 
+DEFUNC_GET_INSTANCE(lang)
 DEFUNC_GET_INSTANCE(extlang)
 DEFUNC_GET_INSTANCE(grandfathered)
 DEFUNC_GET_INSTANCE(script)

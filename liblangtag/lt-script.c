@@ -31,9 +31,8 @@
 
 struct _lt_script_t {
 	lt_mem_t  parent;
-	gchar    *name;
-	gchar    *alpha_4_code;
-	gchar    *numeric_code;
+	gchar    *tag;
+	gchar    *description;
 };
 
 
@@ -50,48 +49,30 @@ lt_script_create(void)
 
 void
 lt_script_set_name(lt_script_t *script,
-		   const gchar *name)
+		   const gchar *description)
 {
 	g_return_if_fail (script != NULL);
-	g_return_if_fail (name != NULL);
+	g_return_if_fail (description != NULL);
 
-	if (script->name)
-		lt_mem_remove_ref(&script->parent, script->name);
-	script->name = g_strdup(name);
-	lt_mem_add_ref(&script->parent, script->name,
+	if (script->description)
+		lt_mem_remove_ref(&script->parent, script->description);
+	script->description = g_strdup(description);
+	lt_mem_add_ref(&script->parent, script->description,
 		       (lt_destroy_func_t)g_free);
 }
 
 void
-lt_script_set_code(lt_script_t *script,
-		   const gchar *code)
+lt_script_set_tag(lt_script_t *script,
+		  const gchar *subtag)
 {
-	gsize i, len;
-	gboolean is_numeric_code = TRUE;
-
 	g_return_if_fail (script != NULL);
-	g_return_if_fail (code != NULL);
+	g_return_if_fail (subtag != NULL);
 
-	len = strlen(code);
-	for (i = 0; i < len; i++) {
-		if (code[i] < '0' || code[i] > '9') {
-			is_numeric_code = FALSE;
-			break;
-		}
-	}
-	if (is_numeric_code) {
-		if (script->numeric_code)
-			lt_mem_remove_ref(&script->parent, script->numeric_code);
-		script->numeric_code = g_strdup(code);
-		lt_mem_add_ref(&script->parent, script->numeric_code,
-			       (lt_destroy_func_t)g_free);
-	} else {
-		if (script->alpha_4_code)
-			lt_mem_remove_ref(&script->parent, script->alpha_4_code);
-		script->alpha_4_code = g_strdup(code);
-		lt_mem_add_ref(&script->parent, script->alpha_4_code,
-			       (lt_destroy_func_t)g_free);
-	}
+	if (script->tag)
+		lt_mem_remove_ref(&script->parent, script->tag);
+	script->tag = g_strdup(subtag);
+	lt_mem_add_ref(&script->parent, script->tag,
+		       (lt_destroy_func_t)g_free);
 }
 
 /*< public >*/
@@ -115,23 +96,15 @@ lt_script_get_name(const lt_script_t *script)
 {
 	g_return_val_if_fail (script != NULL, NULL);
 
-	return script->name;
+	return script->description;
 }
 
 const gchar *
-lt_script_get_alpha_code(const lt_script_t *script)
+lt_script_get_tag(const lt_script_t *script)
 {
 	g_return_val_if_fail (script != NULL, NULL);
 
-	return script->alpha_4_code;
-}
-
-const gchar *
-lt_script_get_numeric_code(const lt_script_t *script)
-{
-	g_return_val_if_fail (script != NULL, NULL);
-
-	return script->numeric_code;
+	return script->tag;
 }
 
 const gchar *
@@ -158,7 +131,7 @@ lt_script_convert_to_modifier(const lt_script_t *script)
 
 	g_return_val_if_fail (script != NULL, NULL);
 
-	p = lt_script_get_alpha_code(script);
+	p = lt_script_get_tag(script);
 	for (i = 0; i < len; i++) {
 		if (modifiers[i].script &&
 		    g_ascii_strcasecmp(p, modifiers[i].script) == 0)

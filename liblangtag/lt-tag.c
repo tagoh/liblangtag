@@ -247,7 +247,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    lt_lang_db_t *langdb = lt_db_get_lang();
 
 			    /* shortest ISO 639 code */
-			    tag->language = lt_lang_db_lookup_from_code(langdb, token);
+			    tag->language = lt_lang_db_lookup(langdb, token);
 			    lt_lang_db_unref(langdb);
 			    if (!tag->language) {
 				    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
@@ -256,10 +256,10 @@ lt_tag_parse_state(lt_tag_t        *tag,
 				    break;
 			    }
 			    /* validate if it's really shortest one */
-			    p = lt_lang_get_shortest_code(tag->language);
+			    p = lt_lang_get_tag(tag->language);
 			    if (!p || g_ascii_strcasecmp(token, p) != 0) {
 				    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-						"Not shortest ISO 639 code: %s",
+						"No such language subtag: %s",
 						token);
 				    lt_lang_unref(tag->language);
 				    tag->language = NULL;
@@ -291,7 +291,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    if (tag->extlang) {
 				    const gchar *macrolang = lt_extlang_get_macro_language(tag->extlang);
 				    const gchar *subtag = lt_extlang_get_tag(tag->extlang);
-				    const gchar *lang = lt_lang_get_shortest_code(tag->language);
+				    const gchar *lang = lt_lang_get_better_tag(tag->language);
 
 				    if (macrolang &&
 					g_ascii_strcasecmp(macrolang, lang) != 0) {
@@ -361,7 +361,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    lt_variant_db_unref(variantdb);
 			    if (tag->variant) {
 				    const GList *prefixes = lt_variant_get_prefix(tag->variant), *l;
-				    const gchar *lang = lt_lang_get_shortest_code(tag->language);
+				    const gchar *lang = lt_lang_get_better_tag(tag->language);
 				    GString *str_prefixes = g_string_new(NULL);
 				    gboolean matched = FALSE;
 
@@ -612,7 +612,7 @@ lt_tag_convert_to_locale(lt_tag_t  *tag,
 		goto bail;
 	}
 	string = g_string_new(NULL);
-	g_string_append(string, lt_lang_get_shortest_code(tag->language));
+	g_string_append(string, lt_lang_get_better_tag(tag->language));
 	if (tag->region)
 		g_string_append_printf(string, "_%s",
 				       lt_region_get_tag(tag->region));
@@ -651,7 +651,7 @@ lt_tag_dump(lt_tag_t *tag)
 		return;
 	}
 	g_print("Language: %s (%s)\n",
-		lt_lang_get_shortest_code(tag->language),
+		lt_lang_get_better_tag(tag->language),
 		lt_lang_get_name(tag->language));
 	if (tag->extlang)
 		g_print("Extlang: %s (%s)\n",
@@ -659,7 +659,7 @@ lt_tag_dump(lt_tag_t *tag)
 			lt_extlang_get_name(tag->extlang));
 	if (tag->script)
 		g_print("Script: %s (%s)\n",
-			lt_script_get_alpha_code(tag->script),
+			lt_script_get_tag(tag->script),
 			lt_script_get_name(tag->script));
 	if (tag->region)
 		g_print("Region: %s (%s)\n",

@@ -35,31 +35,17 @@ main(int    argc,
 
 	setlocale(LC_ALL, "");
 
-	langdb = lt_lang_db_new(LT_LANG_DB_READ_MINIMAL);
+	langdb = lt_lang_db_new();
 
 	if (g_strcmp0(argv[1], "list") == 0) {
-		GList *l = lt_lang_db_get_languages(langdb), *ll;
-
-		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
-			g_print("%s\n", (gchar *)ll->data);
-		}
-		g_list_free(l);
-	} else if (g_strcmp0(argv[1], "code") == 0) {
-		lang = lt_lang_db_lookup_from_language(langdb, argv[2]);
+	} else if (g_strcmp0(argv[1], "lookup") == 0) {
+		lang = lt_lang_db_lookup(langdb, argv[2]);
 		if (!lang) {
 			g_print("No entry for %s\n", argv[2]);
 		} else {
-			g_print("%s\n", lt_lang_get_code(lang, LT_LANG_CODE_ID));
-			g_print("%s\n", lt_lang_get_code(lang, LT_LANG_CODE_PART1));
-			g_print("%s\n", lt_lang_get_code(lang, LT_LANG_CODE_PART2));
-		}
-		lt_lang_unref(lang);
-	} else if (g_strcmp0(argv[1], "lang") == 0) {
-		lang = lt_lang_db_lookup_from_code(langdb, argv[2]);
-		if (!lang) {
-			g_print("No entry for %s\n", argv[2]);
-		} else {
-			g_print("%s\n", lt_lang_get_name(lang));
+			g_print("%s (%s)\n",
+				lt_lang_get_tag(lang),
+				lt_lang_get_name(lang));
 		}
 		lt_lang_unref(lang);
 	}

@@ -30,26 +30,18 @@
 
 G_BEGIN_DECLS
 
-enum _lt_lang_code_t {
-	LT_LANG_CODE_1  = 1,
-	LT_LANG_CODE_2B = 2,
-	LT_LANG_CODE_2T = 3,
-	LT_LANG_CODE_ID = LT_LANG_CODE_2T,
-	LT_LANG_CODE_PART1 = LT_LANG_CODE_1,
-	LT_LANG_CODE_PART2 = LT_LANG_CODE_2B,
-	LT_LANG_CODE_END
-};
-
 typedef struct _lt_lang_t	lt_lang_t;
-typedef enum _lt_lang_code_t	lt_lang_code_t;
 
 
-lt_lang_t   *lt_lang_ref              (lt_lang_t       *lang);
-void         lt_lang_unref            (lt_lang_t       *lang);
-const gchar *lt_lang_get_name         (const lt_lang_t *lang);
-const gchar *lt_lang_get_code         (const lt_lang_t *lang,
-                                       lt_lang_code_t   code_type);
-const gchar *lt_lang_get_shortest_code(lt_lang_t       *lang);
+lt_lang_t   *lt_lang_ref                (lt_lang_t       *lang);
+void         lt_lang_unref              (lt_lang_t       *lang);
+const gchar *lt_lang_get_name           (const lt_lang_t *lang);
+const gchar *lt_lang_get_better_tag     (const lt_lang_t *lang);
+const gchar *lt_lang_get_tag            (const lt_lang_t *lang);
+const gchar *lt_lang_get_preferred_tag  (const lt_lang_t *lang);
+const gchar *lt_lang_get_suppress_script(const lt_lang_t *lang);
+const gchar *lt_lang_get_macro_language (const lt_lang_t *lang);
+const gchar *lt_lang_get_scope          (const lt_lang_t *lang);
 
 G_END_DECLS
 

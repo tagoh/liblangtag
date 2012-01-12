@@ -78,13 +78,10 @@ AM_GLIB_GNU_GETTEXT
 dnl ======================================================================
 dnl check pkg-config stuff
 dnl ======================================================================
-PKG_CHECK_MODULES(ISOCODES, iso-codes)
 PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= $LIBXML2_REQUIRED)
 PKG_CHECK_MODULES(GOBJECT, gobject-2.0 >= $GOBJECT_REQUIRED, has_gobject=yes, has_gobject=no)
 
 AM_CONDITIONAL(ENABLE_GOBJECT, test x$has_gobject != xno)
-iso_codes_prefix=`$PKG_CONFIG --variable=prefix iso-codes`
-AC_DEFINE_UNQUOTED([ISO_CODES_DOMAINS], ["`$PKG_CONFIG --variable=domains iso-codes`"], [ISO codes domains])
 
 dnl ======================================================================
 dnl check another libraries
@@ -101,16 +98,6 @@ GTK_DOC_CHECK(1.0)
 dnl ======================================================================
 dnl options
 dnl ======================================================================
-AC_ARG_WITH(iso-codes-dir,
-	AC_HELP_STRING([--with-iso-codes-dir], [Where the xml files from iso-codes installed])
-	,,
-	with_iso_codes_dir=$iso_codes_prefix/share/xml/iso-codes)
-
-dnl ======================================================================
-dnl options - iso-codes-dir
-dnl ======================================================================
-AC_DEFINE_UNQUOTED([ISO_PREFIX], ["$with_iso_codes_dir"], [ISO codes directory])
-
 
 dnl ======================================================================
 dnl output

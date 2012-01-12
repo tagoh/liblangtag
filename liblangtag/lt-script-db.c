@@ -34,37 +34,45 @@
 
 struct _lt_script_db_t {
 	lt_mem_t    parent;
-	GHashTable *entries;
+	GHashTable *script_entries;
 };
 
 /*< private >*/
 static gboolean
-lt_script_db_parse(lt_script_db_t  *script,
+lt_script_db_parse(lt_script_db_t  *scriptdb,
 		   GError         **error)
 {
-	gchar *iso15924;
-	xmlParserCtxtPtr xmlparser = xmlNewParserCtxt();
+	gboolean retval = TRUE;
+	gchar *regfile = NULL;
+	xmlParserCtxtPtr xmlparser;
 	xmlDocPtr doc = NULL;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
-	gboolean retval = TRUE;
 	GError *err = NULL;
 	int i, n;
 
-	g_return_val_if_fail (script != NULL, FALSE);
+	g_return_val_if_fail (scriptdb != NULL, FALSE);
 
-	iso15924 = g_build_filename(ISO_PREFIX, "iso_15924.xml", NULL);
-
+#ifdef GNOME_ENABLE_DEBUG
+	regfile = g_build_filename(BUILDDIR, "data", "language-subtag-registry.xml", NULL);
+	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
+		g_free(regfile);
+#endif
+	regfile = g_build_filename(REGDATADIR, "language-subtag-registry.xml", NULL);
+#ifdef GNOME_ENABLE_DEBUG
+	}
+#endif
+	xmlparser = xmlNewParserCtxt();
 	if (!xmlparser) {
 		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
 			    "Unable to create an instance of xmlParserCtxt.");
 		goto bail;
 	}
-	doc = xmlCtxtReadFile(xmlparser, iso15924, "UTF-8", 0);
+	doc = xmlCtxtReadFile(xmlparser, regfile, "UTF-8", 0);
 	if (!doc) {
 		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
 			    "Unable to read the xml file: %s",
-			    iso15924);
+			    regfile);
 		goto bail;
 	}
 	xctxt = xmlXPathNewContext(doc);
@@ -73,7 +81,7 @@ lt_script_db_parse(lt_script_db_t  *script,
 			    "Unable to create an instance of xmlXPathContextPtr.");
 		goto bail;
 	}
-	xobj = xmlXPathEvalExpression((const xmlChar *)"/iso_15924_entries/iso_15924_entry", xctxt);
+	xobj = xmlXPathEvalExpression((const xmlChar *)"/registry/script", xctxt);
 	if (!xobj) {
 		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
 			    "No valid elements for %s",
@@ -84,8 +92,9 @@ lt_script_db_parse(lt_script_db_t  *script,
 
 	for (i = 0; i < n; i++) {
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
-		xmlChar *p;
-		lt_script_t *le;
+		xmlNodePtr cnode;
+		xmlChar *subtag = NULL, *desc = NULL;
+		lt_script_t *le = NULL;
 		gchar *s;
 
 		if (!ent) {
@@ -93,56 +102,51 @@ lt_script_db_parse(lt_script_db_t  *script,
 				    "Unable to obtain the xml node via XPath.");
 			goto bail;
 		}
+		cnode = ent->children;
+		while (cnode != NULL) {
+			if (xmlStrcmp(cnode->name, (const xmlChar *)"subtag") == 0) {
+				subtag = xmlNodeGetContent(cnode);
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0) {
+				/* ignore it */
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
+				/* wonder if many descriptions helps something. or is it a bug? */
+				if (!desc)
+					desc = xmlNodeGetContent(cnode);
+			} else {
+				g_warning("Unknown node under /registry/script: %s", cnode->name);
+			}
+			cnode = cnode->next;
+		}
+		if (!subtag) {
+			g_warning("No subtag node: description = '%s'",
+				  desc);
+			goto bail1;
+		}
+		if (!desc) {
+			g_warning("No description node: subtag = '%s'",
+				  subtag);
+			goto bail1;
+		}
 		le = lt_script_create();
 		if (!le) {
 			g_set_error(&err, LT_ERROR, LT_ERR_OOM,
 				    "Unable to create an instance of lt_script_t.");
-			goto bail;
-		}
-		p = xmlGetProp(ent, (const xmlChar *)"name");
-		lt_script_set_name(le, (const gchar *)p);
-		if (g_strcmp0((const gchar *)p, lt_script_get_name(le)) != 0) {
-			g_warning("buggy 'name' entry in %s: %s",
-				  iso15924, p);
-			xmlFree(p);
 			goto bail1;
 		}
-		xmlFree(p);
-		s = g_strdup(lt_script_get_name(le));
-		g_hash_table_replace(script->entries,
+		lt_script_set_tag(le, (const gchar *)subtag);
+		lt_script_set_name(le, (const gchar *)desc);
+
+		s = g_strdup(lt_script_get_tag(le));
+		g_hash_table_replace(scriptdb->script_entries,
 				     lt_strlower(s),
-				     lt_script_ref(le));
-		p = xmlGetProp(ent, (const xmlChar *)"alpha_4_code");
-		lt_script_set_code(le, (const gchar *)p);
-		if (g_strcmp0((const gchar *)p, lt_script_get_alpha_code(le)) != 0) {
-			g_warning("buggy 'alpha_4_code' entry for %s in %s: %s",
-				  lt_script_get_name(le),
-				  iso15924, p);
-			xmlFree(p);
-			goto bail1;
-		}
-		xmlFree(p);
-		s = g_strdup(lt_script_get_alpha_code(le));
-		g_hash_table_replace(script->entries,
-				     lt_strlower(s),
-				     lt_script_ref(le));
-		p = xmlGetProp(ent, (const xmlChar *)"numeric_code");
-		lt_script_set_code(le, (const gchar *)p);
-		if (g_strcmp0((const gchar *)p, lt_script_get_numeric_code(le)) != 0) {
-			g_warning("buggy 'numeric_code' entry for %s in %s: %s",
-				  lt_script_get_name(le),
-				  iso15924, p);
-			xmlFree(p);
-			goto bail1;
-		}
-		xmlFree(p);
-		g_hash_table_replace(script->entries,
-				     g_strdup(lt_script_get_numeric_code(le)),
 				     lt_script_ref(le));
 	  bail1:
+		if (subtag)
+			xmlFree(subtag);
+		if (desc)
+			xmlFree(desc);
 		lt_script_unref(le);
 	}
-
   bail:
 	if (err) {
 		if (error)
@@ -152,6 +156,8 @@ lt_script_db_parse(lt_script_db_t  *script,
 		g_error_free(err);
 		retval = FALSE;
 	}
+	g_free(regfile);
+
 	if (xobj)
 		xmlXPathFreeObject(xobj);
 	if (xctxt)
@@ -160,7 +166,6 @@ lt_script_db_parse(lt_script_db_t  *script,
 		xmlFreeDoc(doc);
 	if (xmlparser)
 		xmlFreeParserCtxt(xmlparser);
-	g_free(iso15924);
 
 	xmlCleanupParser();
 
@@ -176,11 +181,11 @@ lt_script_db_new(void)
 	if (retval) {
 		GError *err = NULL;
 
-		retval->entries = g_hash_table_new_full(g_str_hash,
-							g_str_equal,
-							g_free,
-							(GDestroyNotify)lt_script_unref);
-		lt_mem_add_ref(&retval->parent, retval->entries,
+		retval->script_entries = g_hash_table_new_full(g_str_hash,
+							       g_str_equal,
+							       g_free,
+							       (GDestroyNotify)lt_script_unref);
+		lt_mem_add_ref(&retval->parent, retval->script_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
 
 		lt_script_db_parse(retval, &err);
@@ -210,37 +215,18 @@ lt_script_db_unref(lt_script_db_t *script)
 		lt_mem_unref(&script->parent);
 }
 
-GList *
-lt_script_db_get_scripts(lt_script_db_t *script)
-{
-	GHashTableIter iter;
-	gpointer key, val;
-	GList *retval = NULL;
-
-	g_return_val_if_fail (script != NULL, NULL);
-
-	g_hash_table_iter_init(&iter, script->entries);
-	while (g_hash_table_iter_next(&iter, &key, &val)) {
-		lt_script_t *le = val;
-
-		retval = g_list_append(retval, (gpointer)lt_script_get_name(le));
-	}
-
-	return retval;
-}
-
 lt_script_t *
 lt_script_db_lookup(lt_script_db_t *script,
-		    const gchar    *script_name_or_alpha_code_or_num_code)
+		    const gchar    *script_name)
 {
 	lt_script_t *retval;
 	gchar *s;
 
 	g_return_val_if_fail (script != NULL, NULL);
-	g_return_val_if_fail (script_name_or_alpha_code_or_num_code != NULL, NULL);
+	g_return_val_if_fail (script_name != NULL, NULL);
 
-	s = g_strdup(script_name_or_alpha_code_or_num_code);
-	retval = g_hash_table_lookup(script->entries,
+	s = g_strdup(script_name);
+	retval = g_hash_table_lookup(script->script_entries,
 				     lt_strlower(s));
 	g_free(s);
 	if (retval)

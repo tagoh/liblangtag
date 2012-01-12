@@ -34,76 +34,145 @@
 
 struct _lt_lang_db_t {
 	lt_mem_t    parent;
-	GHashTable *languages;
-	GHashTable *lang_codes;
+	GHashTable *lang_entries;
 };
 
-typedef gboolean (* lt_xpath_func_t) (lt_lang_db_t          *lang,
-				      xmlDocPtr              doc,
-				      lt_lang_db_options_t   options,
-				      GError               **error);
-
 /*< private >*/
-static lt_lang_db_options_t
-_lt_lang_db_options_get_scope_from_string(const xmlChar *str)
-{
-	static const gchar *scopes[] = {
-		"I", "M", "C", "D", "R", "S", NULL
-	};
-	int i;
-
-	for (i = 0; scopes[i] != NULL; i++) {
-		if (g_strcmp0(scopes[i], (const gchar *)str) == 0)
-			return i + LT_LANG_DB_SCOPE_BEGIN;
-	}
-
-	return 0;
-}
-
-static lt_lang_db_options_t
-_lt_lang_db_options_get_type_from_string(const xmlChar *str)
-{
-	static const gchar *types[] = {
-		"L", "E", "A", "H", "C", NULL
-	};
-	int i;
-
-	for (i = 0; types[i] != NULL; i++) {
-		if (g_strcmp0(types[i], (const gchar *)str) == 0)
-			return i + LT_LANG_DB_TYPE_BEGIN;
-	}
-
-	/* XXX: what is the type "S" ? */
-
-	return 0;
-}
-
 static gboolean
-_lt_lang_db_parse(lt_lang_db_t          *lang,
-		  const gchar           *filename,
-		  lt_lang_db_options_t   options,
-		  lt_xpath_func_t        func,
-		  GError               **error)
+lt_lang_db_parse(lt_lang_db_t  *langdb,
+		 GError       **error)
 {
-	xmlParserCtxtPtr xmlparser = xmlNewParserCtxt();
-	xmlDocPtr doc = NULL;
-	GError *err = NULL;
 	gboolean retval = TRUE;
+	gchar *regfile = NULL;
+	xmlParserCtxtPtr xmlparser;
+	xmlDocPtr doc = NULL;
+	xmlXPathContextPtr xctxt = NULL;
+	xmlXPathObjectPtr xobj = NULL;
+	GError *err = NULL;
+	int i, n;
 
+	g_return_val_if_fail (langdb != NULL, FALSE);
+
+#ifdef GNOME_ENABLE_DEBUG
+	regfile = g_build_filename(BUILDDIR, "data", "language-subtag-registry.xml", NULL);
+	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
+		g_free(regfile);
+#endif
+	regfile = g_build_filename(REGDATADIR, "language-subtag-registry.xml", NULL);
+#ifdef GNOME_ENABLE_DEBUG
+	}
+#endif
+	xmlparser = xmlNewParserCtxt();
 	if (!xmlparser) {
 		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
 			    "Unable to create an instance of xmlParserCtxt.");
 		goto bail;
 	}
-	doc = xmlCtxtReadFile(xmlparser, filename, "UTF-8", 0);
+	doc = xmlCtxtReadFile(xmlparser, regfile, "UTF-8", 0);
 	if (!doc) {
 		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
 			    "Unable to read the xml file: %s",
-			    filename);
+			    regfile);
 		goto bail;
 	}
-	retval = func(lang, doc, options, &err);
+	xctxt = xmlXPathNewContext(doc);
+	if (!xctxt) {
+		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
+			    "Unable to create an instance of xmlXPathContextPtr.");
+		goto bail;
+	}
+	xobj = xmlXPathEvalExpression((const xmlChar *)"/registry/language", xctxt);
+	if (!xobj) {
+		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
+			    "No valid elements for %s",
+			    doc->name);
+		goto bail;
+	}
+	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
 
+	for (i = 0; i < n; i++) {
+		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
+		xmlNodePtr cnode;
+		xmlChar *subtag = NULL, *desc = NULL, *scope = NULL, *macrolang = NULL;
+		xmlChar *preferred = NULL, *suppress = NULL;
+		lt_lang_t *le = NULL;
+		gchar *s;
+
+		if (!ent) {
+			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
+				    "Unable to obtain the xml node via XPath.");
+			goto bail;
+		}
+		cnode = ent->children;
+		while (cnode != NULL) {
+			if (xmlStrcmp(cnode->name, (const xmlChar *)"subtag") == 0) {
+				subtag = xmlNodeGetContent(cnode);
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"deprecated") == 0) {
+				/* ignore it */
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
+				/* wonder if many descriptions helps something. or is it a bug? */
+				if (!desc)
+					desc = xmlNodeGetContent(cnode);
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"scope") == 0) {
+				scope = xmlNodeGetContent(cnode);
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"macrolanguage") == 0) {
+				macrolang = xmlNodeGetContent(cnode);
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"preferred-value") == 0) {
+				preferred = xmlNodeGetContent(cnode);
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"suppress-script") == 0) {
+				suppress = xmlNodeGetContent(cnode);
+			} else {
+				g_warning("Unknown node under /registry/language: %s", cnode->name);
+			}
+			cnode = cnode->next;
+		}
+		if (!subtag) {
+			g_warning("No subtag node: description = '%s', scope = '%s', macrolanguage = '%s'",
+				  desc, scope, macrolang);
+			goto bail1;
+		}
+		if (!desc) {
+			g_warning("No description node: subtag = '%s', scope = '%s', macrolanguage = '%s'",
+				  subtag, scope, macrolang);
+			goto bail1;
+		}
+		le = lt_lang_create();
+		if (!le) {
+			g_set_error(&err, LT_ERROR, LT_ERR_OOM,
+				    "Unable to create an instance of lt_lang_t.");
+			goto bail1;
+		}
+		lt_lang_set_tag(le, (const gchar *)subtag);
+		lt_lang_set_name(le, (const gchar *)desc);
+		if (scope)
+			lt_lang_set_scope(le, (const gchar *)scope);
+		if (macrolang)
+			lt_lang_set_macro_language(le, (const gchar *)macrolang);
+		if (preferred)
+			lt_lang_set_preferred_tag(le, (const gchar *)preferred);
+		if (suppress)
+			lt_lang_set_suppress_script(le, (const gchar *)suppress);
+
+		s = g_strdup(lt_lang_get_tag(le));
+		g_hash_table_replace(langdb->lang_entries,
+				     lt_strlower(s),
+				     lt_lang_ref(le));
+	  bail1:
+		if (subtag)
+			xmlFree(subtag);
+		if (desc)
+			xmlFree(desc);
+		if (scope)
+			xmlFree(scope);
+		if (macrolang)
+			xmlFree(macrolang);
+		if (preferred)
+			xmlFree(preferred);
+		if (suppress)
+			xmlFree(suppress);
+		lt_lang_unref(le);
+	}
   bail:
 	if (err) {
 		if (error)
@@ -113,6 +182,12 @@ _lt_lang_db_parse(lt_lang_db_t          *lang,
 		g_error_free(err);
 		retval = FALSE;
 	}
+	g_free(regfile);
+
+	if (xobj)
+		xmlXPathFreeObject(xobj);
+	if (xctxt)
+		xmlXPathFreeContext(xctxt);
 	if (doc)
 		xmlFreeDoc(doc);
 	if (xmlparser)
@@ -123,253 +198,23 @@ _lt_lang_db_parse(lt_lang_db_t          *lang,
 	return retval;
 }
 
-static gboolean
-_lt_lang_db_parse_639(lt_lang_db_t          *lang,
-		      xmlDocPtr              doc,
-		      lt_lang_db_options_t   options,
-		      GError               **error)
-{
-	xmlXPathContextPtr xctxt = xmlXPathNewContext(doc);
-	xmlXPathObjectPtr xobj = NULL;
-	gboolean retval = TRUE;
-	int i, n;
-
-	if (!xctxt) {
-		g_set_error(error, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
-		retval = FALSE;
-		goto bail;
-	}
-	xobj = xmlXPathEvalExpression((const xmlChar *)"/iso_639_entries/iso_639_entry", xctxt);
-	if (!xobj) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s",
-			    doc->name);
-		retval = FALSE;
-		goto bail;
-	}
-	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
-
-	for (i = 0; i < n; i++) {
-		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
-		xmlChar *p;
-		lt_lang_t *le;
-		gchar *s;
-
-		if (!ent) {
-			g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
-			goto bail;
-		}
-		le = lt_lang_create(LT_LANG_639_2);
-		if (!le) {
-			g_set_error(error, LT_ERROR, LT_ERR_OOM,
-				    "Unable to create an instance of lt_lang_t.");
-			goto bail;
-		}
-		p = xmlGetProp(ent, (const xmlChar *)"name");
-		lt_lang_set_name(le, (const gchar *)p);
-		xmlFree(p);
-		g_hash_table_replace(lang->languages,
-				     (gchar *)lt_lang_get_name(le),
-				     lt_lang_ref(le));
-		p = xmlGetProp(ent, (const xmlChar *)"iso_639_1_code");
-		if (p) {
-			lt_lang_set_code(le,
-					 LT_LANG_CODE_1,
-					 (const gchar *)p);
-			xmlFree(p);
-			s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_1));
-			g_hash_table_replace(lang->lang_codes,
-					     lt_strlower(s),
-					     lt_lang_ref(le));
-		}
-		if (options & LT_LANG_DB_READ_BIBLIOGRAPHIC) {
-			p = xmlGetProp(ent, (const xmlChar *)"iso_639_2B_code");
-			lt_lang_set_code(le,
-					 LT_LANG_CODE_2B,
-					 (const gchar *)p);
-			xmlFree(p);
-			s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_2B));
-			g_hash_table_replace(lang->lang_codes,
-					     lt_strlower(s),
-					     lt_lang_ref(le));
-		}
-		if (options & LT_LANG_DB_READ_TERMINOLOGY) {
-			p = xmlGetProp(ent, (const xmlChar *)"iso_639_2T_code");
-			lt_lang_set_code(le,
-					 LT_LANG_CODE_2T,
-					 (const gchar *)p);
-			xmlFree(p);
-			s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_2T));
-			g_hash_table_replace(lang->lang_codes,
-					     lt_strlower(s),
-					     lt_lang_ref(le));
-		}
-		lt_lang_unref(le);
-	}
-  bail:
-	if (xobj)
-		xmlXPathFreeObject(xobj);
-	if (xctxt)
-		xmlXPathFreeContext(xctxt);
-
-	return retval;
-}
-
-static gboolean
-_lt_lang_db_parse_639_3(lt_lang_db_t          *lang,
-			xmlDocPtr              doc,
-			lt_lang_db_options_t   options,
-			GError               **error)
-{
-	xmlXPathContextPtr xctxt = xmlXPathNewContext(doc);
-	xmlXPathObjectPtr xobj = NULL;
-	gboolean retval = TRUE;
-	int i, n;
-
-	if (!xctxt) {
-		g_set_error(error, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
-		retval = FALSE;
-		goto bail;
-	}
-	xobj = xmlXPathEvalExpression((const xmlChar *)"/iso_639_3_entries/iso_639_3_entry", xctxt);
-	if (!xobj) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s",
-			    doc->name);
-		retval = FALSE;
-		goto bail;
-	}
-	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
-
-	for (i = 0; i < n; i++) {
-		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
-		xmlChar *p, *type, *scope;
-		lt_lang_t *le;
-		lt_lang_db_options_t oscope, otype;
-		gchar *s;
-
-		if (!ent) {
-			g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
-			goto bail;
-		}
-		scope = xmlGetProp(ent, (const xmlChar *)"scope");
-		type = xmlGetProp(ent, (const xmlChar *)"type");
-		oscope = _lt_lang_db_options_get_scope_from_string(scope);
-		otype = _lt_lang_db_options_get_type_from_string(type);
-		xmlFree(scope);
-		xmlFree(type);
-		if ((options & (oscope|otype))) {
-			le = lt_lang_create(LT_LANG_639_3);
-			if (!lang) {
-				g_set_error(error, LT_ERROR, LT_ERR_OOM,
-					    "Unable to create an instance of lt_lang_t.");
-				goto bail;
-			}
-			p = xmlGetProp(ent, (const xmlChar *)"name");
-			lt_lang_set_name(le, (const gchar *)p);
-			xmlFree(p);
-			g_hash_table_replace(lang->languages,
-					     (gchar *)lt_lang_get_name(le),
-					     lt_lang_ref(le));
-			p = xmlGetProp(ent, (const xmlChar *)"id");
-			lt_lang_set_code(le,
-					 LT_LANG_CODE_ID,
-					 (const gchar *)p);
-			xmlFree(p);
-			s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_ID));
-			g_hash_table_replace(lang->lang_codes,
-					     lt_strlower(s),
-					     lt_lang_ref(le));
-			p = xmlGetProp(ent, (const xmlChar *)"part1_code");
-			if (p) {
-				lt_lang_set_code(le,
-						 LT_LANG_CODE_PART1,
-						 (const gchar *)p);
-				xmlFree(p);
-				s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_PART1));
-				g_hash_table_replace(lang->lang_codes,
-						     lt_strlower(s),
-						     lt_lang_ref(le));
-			}
-			p = xmlGetProp(ent, (const xmlChar *)"part2_code");
-			if (p) {
-				lt_lang_set_code(le,
-						 LT_LANG_CODE_PART2,
-						 (const gchar *)p);
-				xmlFree(p);
-				s = g_strdup(lt_lang_get_code(le, LT_LANG_CODE_PART2));
-				g_hash_table_replace(lang->lang_codes,
-						     lt_strlower(s),
-						     lt_lang_ref(le));
-			}
-			lt_lang_unref(le);
-		}
-	}
-  bail:
-	if (xobj)
-		xmlXPathFreeObject(xobj);
-	if (xctxt)
-		xmlXPathFreeContext(xctxt);
-
-	return retval;
-}
-
-static gboolean
-lt_lang_db_parse(lt_lang_db_t          *lang,
-		 lt_lang_db_options_t   options,
-		 GError               **error)
-{
-	gchar *iso639, *iso639_3;
-	gboolean retval;
-
-	g_return_val_if_fail (lang != NULL, FALSE);
-
-	iso639 = g_build_filename(ISO_PREFIX, "iso_639.xml", NULL);
-	iso639_3 = g_build_filename(ISO_PREFIX, "iso_639_3.xml", NULL);
-
-	if (!(retval = _lt_lang_db_parse(lang, iso639, options,
-				      _lt_lang_db_parse_639,
-				      error)))
-		goto bail;
-	if (!(retval = _lt_lang_db_parse(lang, iso639_3, options,
-				      _lt_lang_db_parse_639_3,
-				      error)))
-		goto bail;
-
-  bail:
-	g_free(iso639);
-	g_free(iso639_3);
-
-	return retval;
-}
-
 /*< public >*/
 lt_lang_db_t *
-lt_lang_db_new(lt_lang_db_options_t options)
+lt_lang_db_new(void)
 {
 	lt_lang_db_t *retval = lt_mem_alloc_object(sizeof (lt_lang_db_t));
 
 	if (retval) {
 		GError *err = NULL;
 
-		retval->languages = g_hash_table_new_full(g_str_hash,
-							  g_str_equal,
-							  NULL,
-							  (GDestroyNotify)lt_lang_unref);
-		lt_mem_add_ref(&retval->parent, retval->languages,
-			       (lt_destroy_func_t)g_hash_table_destroy);
-		retval->lang_codes = g_hash_table_new_full(g_str_hash,
-							   g_str_equal,
-							   g_free,
-							   (GDestroyNotify)lt_lang_unref);
-		lt_mem_add_ref(&retval->parent, retval->lang_codes,
+		retval->lang_entries = g_hash_table_new_full(g_str_hash,
+							     g_str_equal,
+							     g_free,
+							     (GDestroyNotify)lt_lang_unref);
+		lt_mem_add_ref(&retval->parent, retval->lang_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
 
-		lt_lang_db_parse(retval, options, &err);
+		lt_lang_db_parse(retval, &err);
 		if (err) {
 			g_printerr(err->message);
 			lt_lang_db_unref(retval);
@@ -396,17 +241,9 @@ lt_lang_db_unref(lt_lang_db_t *lang)
 		lt_mem_unref(&lang->parent);
 }
 
-GList *
-lt_lang_db_get_languages(lt_lang_db_t *lang)
-{
-	g_return_val_if_fail (lang != NULL, NULL);
-
-	return g_hash_table_get_keys(lang->languages);
-}
-
 lt_lang_t *
-lt_lang_db_lookup_from_code(lt_lang_db_t *lang,
-			    const gchar  *code)
+lt_lang_db_lookup(lt_lang_db_t *lang,
+		  const gchar  *code)
 {
 	lt_lang_t *retval;
 	gchar *s;
@@ -415,24 +252,8 @@ lt_lang_db_lookup_from_code(lt_lang_db_t *lang,
 	g_return_val_if_fail (code != NULL, NULL);
 
 	s = g_strdup(code);
-	retval = g_hash_table_lookup(lang->lang_codes, lt_strlower(s));
+	retval = g_hash_table_lookup(lang->lang_entries, lt_strlower(s));
 	g_free(s);
-	if (retval)
-		return lt_lang_ref(retval);
-
-	return NULL;
-}
-
-lt_lang_t *
-lt_lang_db_lookup_from_language(lt_lang_db_t *lang,
-				const gchar  *language)
-{
-	lt_lang_t *retval;
-
-	g_return_val_if_fail (lang != NULL, NULL);
-	g_return_val_if_fail (language != NULL, NULL);
-
-	retval = g_hash_table_lookup(lang->languages, language);
 	if (retval)
 		return lt_lang_ref(retval);
 

@@ -31,43 +31,14 @@
 
 G_BEGIN_DECLS
 
-#define LT_LANG_DB_SCOPE_BEGIN	2
-#define LT_LANG_DB_TYPE_BEGIN	8
-
-enum _lt_lang_db_options_t {
-	LT_LANG_DB_READ_BIBLIOGRAPHIC     = 1 << 0,
-	LT_LANG_DB_READ_TERMINOLOGY       = 1 << 1,
-	LT_LANG_DB_READ_SCOPE_INDIVIDUAL  = 1 << (LT_LANG_DB_SCOPE_BEGIN + 0), /* 2 */
-	LT_LANG_DB_READ_SCOPE_MACRO       = 1 << (LT_LANG_DB_SCOPE_BEGIN + 1), /* 3 */
-	LT_LANG_DB_READ_SCOPE_COLLECTIONS = 1 << (LT_LANG_DB_SCOPE_BEGIN + 2), /* 4 */
-	LT_LANG_DB_READ_SCOPE_DIALECTS    = 1 << (LT_LANG_DB_SCOPE_BEGIN + 3), /* 5 */
-	LT_LANG_DB_READ_SCOPE_LOCAL_USE   = 1 << (LT_LANG_DB_SCOPE_BEGIN + 4), /* 6 */
-	LT_LANG_DB_READ_SCOPE_SPECIAL     = 1 << (LT_LANG_DB_SCOPE_BEGIN + 5), /* 7 */
-	LT_LANG_DB_READ_TYPE_LIVING       = 1 << (LT_LANG_DB_TYPE_BEGIN + 0), /* 8 */
-	LT_LANG_DB_READ_TYPE_EXTINCT      = 1 << (LT_LANG_DB_TYPE_BEGIN + 1), /* 9 */
-	LT_LANG_DB_READ_TYPE_ANCIENT      = 1 << (LT_LANG_DB_TYPE_BEGIN + 2), /* 10 */
-	LT_LANG_DB_READ_TYPE_HISTORIC     = 1 << (LT_LANG_DB_TYPE_BEGIN + 3), /* 11 */
-	LT_LANG_DB_READ_TYPE_CONSTRUCTED  = 1 << (LT_LANG_DB_TYPE_BEGIN + 4), /* 12 */
-	LT_LANG_DB_END                    = 1 << (LT_LANG_DB_TYPE_BEGIN + 5) /* 13 */
-};
-#define LT_LANG_DB_READ_ALL		((LT_LANG_DB_END - 1))
-#define LT_LANG_DB_READ_MINIMAL	((				\
-	LT_LANG_DB_READ_TERMINOLOGY|				\
-	LT_LANG_DB_READ_SCOPE_INDIVIDUAL|			\
-	LT_LANG_DB_READ_TYPE_LIVING))
-
 typedef struct _lt_lang_db_t		lt_lang_db_t;
-typedef enum _lt_lang_db_options_t	lt_lang_db_options_t;
 
 
-lt_lang_db_t *lt_lang_db_new                 (lt_lang_db_options_t  options);
-lt_lang_db_t *lt_lang_db_ref                 (lt_lang_db_t         *langdb);
-void          lt_lang_db_unref               (lt_lang_db_t         *langdb);
-GList        *lt_lang_db_get_languages       (lt_lang_db_t         *langdb);
-lt_lang_t    *lt_lang_db_lookup_from_code    (lt_lang_db_t         *langdb,
-                                              const gchar          *code);
-lt_lang_t    *lt_lang_db_lookup_from_language(lt_lang_db_t         *langdb,
-                                              const gchar          *language);
+lt_lang_db_t *lt_lang_db_new   (void);
+lt_lang_db_t *lt_lang_db_ref   (lt_lang_db_t *langdb);
+void          lt_lang_db_unref (lt_lang_db_t *langdb);
+lt_lang_t    *lt_lang_db_lookup(lt_lang_db_t *langdb,
+                                const gchar  *code);
 
 G_END_DECLS
 

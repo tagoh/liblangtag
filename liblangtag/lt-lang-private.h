@@ -27,21 +27,19 @@
 
 G_BEGIN_DECLS
 
-enum _lt_lang_entry_type_t {
-	LT_LANG_639_2,
-	LT_LANG_639_3,
-	LT_LANG_END
-};
-
-typedef enum _lt_lang_entry_type_t	lt_lang_entry_type_t;
-
-
-lt_lang_t *lt_lang_create  (lt_lang_entry_type_t  type);
-void       lt_lang_set_name(lt_lang_t            *lang,
-                            const gchar          *name);
-void       lt_lang_set_code(lt_lang_t            *lang,
-                            lt_lang_code_t        code_type,
-                            const gchar          *code);
+lt_lang_t *lt_lang_create             (void);
+void       lt_lang_set_name           (lt_lang_t   *lang,
+                                       const gchar *description);
+void       lt_lang_set_tag            (lt_lang_t   *lang,
+                                       const gchar *subtag);
+void       lt_lang_set_preferred_tag  (lt_lang_t   *lang,
+                                       const gchar *subtag);
+void       lt_lang_set_suppress_script(lt_lang_t   *lang,
+                                       const gchar *script);
+void       lt_lang_set_macro_language (lt_lang_t   *lang,
+                                       const gchar *macrolanguage);
+void       lt_lang_set_scope          (lt_lang_t   *lang,
+                                       const gchar *scope);
 
 G_END_DECLS
 

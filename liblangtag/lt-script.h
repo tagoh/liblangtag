@@ -36,8 +36,7 @@ typedef struct _lt_script_t	lt_script_t;
 lt_script_t *lt_script_ref                (lt_script_t       *script);
 void         lt_script_unref              (lt_script_t       *script);
 const gchar *lt_script_get_name           (const lt_script_t *script);
-const gchar *lt_script_get_alpha_code     (const lt_script_t *script);
-const gchar *lt_script_get_numeric_code   (const lt_script_t *script);
+const gchar *lt_script_get_tag            (const lt_script_t *script);
 const gchar *lt_script_convert_to_modifier(const lt_script_t *script);
 
 G_END_DECLS

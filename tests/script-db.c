@@ -37,22 +37,12 @@ main(int    argc,
 	scriptdb = lt_script_db_new();
 
 	if (g_strcmp0(argv[1], "list") == 0) {
-		GList *l = lt_script_db_get_scripts(scriptdb), *ll;
-
-		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
-			g_print("%s\n", (gchar *)ll->data);
-		}
-		g_list_free(l);
-	} else if (g_strcmp0(argv[1], "code") == 0) {
+	} else if (g_strcmp0(argv[1], "lookup") == 0) {
 		lt_script_t *script = lt_script_db_lookup(scriptdb, argv[2]);
 
-		g_print("%s\n", lt_script_get_alpha_code(script));
-		g_print("%s\n", lt_script_get_numeric_code(script));
-		lt_script_unref(script);
-	} else if (g_strcmp0(argv[1], "script") == 0) {
-		lt_script_t *script = lt_script_db_lookup(scriptdb, argv[2]);
-
-		g_print("%s\n", lt_script_get_name(script));
+		g_print("%s (%s)\n",
+			lt_script_get_tag(script),
+			lt_script_get_name(script));
 		lt_script_unref(script);
 	}
 

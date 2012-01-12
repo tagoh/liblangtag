@@ -29,101 +29,107 @@
 
 
 struct _lt_lang_t {
-	lt_mem_t              parent;
-	lt_lang_entry_type_t  type;
-	gchar                *name;
-	union {
-		struct {
-			gchar *_2B_code;
-			gchar *_2T_code;
-			gchar *_1_code;
-		} _639_2;
-		struct {
-			gchar *part2_code;
-			gchar *id;
-			gchar *part1_code;
-		} _639_3;
-	} iso;
+	lt_mem_t  parent;
+	gchar    *tag;
+	gchar    *description;
+	gchar    *suppress_script;
+	gchar    *scope;
+	gchar    *macrolanguage;
+	gchar    *preferred_tag;
 };
 
 /*< private >*/
 
 /*< protected >*/
 lt_lang_t *
-lt_lang_create(lt_lang_entry_type_t type)
+lt_lang_create(void)
 {
 	lt_lang_t *retval = lt_mem_alloc_object(sizeof (lt_lang_t));
-
-	if (retval) {
-		retval->type = type;
-	}
 
 	return retval;
 }
 
 void
 lt_lang_set_name(lt_lang_t   *lang,
-		 const gchar *name)
+		 const gchar *description)
 {
 	g_return_if_fail (lang != NULL);
-	g_return_if_fail (name != NULL);
+	g_return_if_fail (description != NULL);
 
-	if (lang->name)
-		lt_mem_remove_ref(&lang->parent, lang->name);
-	lang->name = g_strdup(name);
-	lt_mem_add_ref(&lang->parent, lang->name,
+	if (lang->description)
+		lt_mem_remove_ref(&lang->parent, lang->description);
+	lang->description = g_strdup(description);
+	lt_mem_add_ref(&lang->parent, lang->description,
 		       (lt_destroy_func_t)g_free);
 }
 
 void
-lt_lang_set_code(lt_lang_t      *lang,
-		 lt_lang_code_t  code_type,
-		 const gchar    *code)
+lt_lang_set_tag(lt_lang_t   *lang,
+		const gchar *subtag)
 {
-	gchar **p;
-
 	g_return_if_fail (lang != NULL);
-	g_return_if_fail (code != NULL);
+	g_return_if_fail (subtag != NULL);
 
-	switch (code_type) {
-	    case LT_LANG_CODE_1:
-		    if (lang->type == LT_LANG_639_2)
-			    p = &lang->iso._639_2._1_code;
-		    else if (lang->type == LT_LANG_639_3)
-			    p = &lang->iso._639_3.part1_code;
-		    else {
-			    g_warning("Unknown lang entry type: %d\n", lang->type);
-			    return;
-		    }
-		    break;
-	    case LT_LANG_CODE_2B:
-		    if (lang->type == LT_LANG_639_2)
-			    p = &lang->iso._639_2._2B_code;
-		    else if (lang->type == LT_LANG_639_3)
-			    p = &lang->iso._639_3.part2_code;
-		    else {
-			    g_warning("Unknown lang entry type: %d\n", lang->type);
-			    return;
-		    }
-		    break;
-	    case LT_LANG_CODE_2T:
-		    if (lang->type == LT_LANG_639_2)
-			    p = &lang->iso._639_2._2T_code;
-		    else if (lang->type == LT_LANG_639_3)
-			    p = &lang->iso._639_3.id;
-		    else {
-			    g_warning("Unknown lang entry type: %d\n", lang->type);
-			    return;
-		    }
-		    break;
-	    default:
-		    g_warning("Unkonwn lang code type: %d\n", code_type);
-		    return;
-	}
-	if (*p)
-		lt_mem_remove_ref(&lang->parent, *p);
-	*p = g_strdup(code);
-	lt_mem_add_ref(&lang->parent, *p,
+	if (lang->tag)
+		lt_mem_remove_ref(&lang->parent, lang->tag);
+	lang->tag = g_strdup(subtag);
+	lt_mem_add_ref(&lang->parent, lang->tag,
+		       (lt_destroy_func_t)g_free);
+}
+
+void
+lt_lang_set_preferred_tag(lt_lang_t   *lang,
+			  const gchar *subtag)
+{
+	g_return_if_fail (lang != NULL);
+	g_return_if_fail (subtag != NULL);
+
+	if (lang->preferred_tag)
+		lt_mem_remove_ref(&lang->parent, lang->preferred_tag);
+	lang->preferred_tag = g_strdup(subtag);
+	lt_mem_add_ref(&lang->parent, lang->preferred_tag,
+		       (lt_destroy_func_t)g_free);
+}
+
+void
+lt_lang_set_suppress_script(lt_lang_t   *lang,
+			    const gchar *script)
+{
+	g_return_if_fail (lang != NULL);
+	g_return_if_fail (script != NULL);
+
+	if (lang->suppress_script)
+		lt_mem_remove_ref(&lang->parent, lang->suppress_script);
+	lang->suppress_script = g_strdup(script);
+	lt_mem_add_ref(&lang->parent, lang->suppress_script,
+		       (lt_destroy_func_t)g_free);
+}
+
+void
+lt_lang_set_macro_language(lt_lang_t   *lang,
+			   const gchar *macrolanguage)
+{
+	g_return_if_fail (lang != NULL);
+	g_return_if_fail (macrolanguage != NULL);
+
+	if (lang->macrolanguage)
+		lt_mem_remove_ref(&lang->parent, lang->macrolanguage);
+	lang->macrolanguage = g_strdup(macrolanguage);
+	lt_mem_add_ref(&lang->parent, lang->macrolanguage,
+		       (lt_destroy_func_t)g_free);
+}
+
+void
+lt_lang_set_scope(lt_lang_t   *lang,
+		  const gchar *scope)
+{
+	g_return_if_fail (lang != NULL);
+	g_return_if_fail (scope != NULL);
+
+	if (lang->scope)
+		lt_mem_remove_ref(&lang->parent, lang->scope);
+	lang->scope = g_strdup(scope);
+	lt_mem_add_ref(&lang->parent, lang->scope,
 		       (lt_destroy_func_t)g_free);
 }
 
@@ -148,70 +154,58 @@ lt_lang_get_name(const lt_lang_t *lang)
 {
 	g_return_val_if_fail (lang != NULL, NULL);
 
-	return lang->name;
+	return lang->description;
 }
 
 const gchar *
-lt_lang_get_code(const lt_lang_t *lang,
-		 lt_lang_code_t   code_type)
+lt_lang_get_better_tag(const lt_lang_t *lang)
 {
-	const gchar *retval;
+	const gchar *retval = lt_lang_get_preferred_tag(lang);
 
-	g_return_val_if_fail (lang != NULL, NULL);
-
-	switch (code_type) {
-	    case LT_LANG_CODE_1:
-		    if (lang->type == LT_LANG_639_2)
-			    retval = lang->iso._639_2._1_code;
-		    else if (lang->type == LT_LANG_639_3)
-			    retval = lang->iso._639_3.part1_code;
-		    else {
-			    g_warning("Unknown lang entry type: %d\n", lang->type);
-			    retval = NULL;
-		    }
-		    break;
-	    case LT_LANG_CODE_2B:
-		    if (lang->type == LT_LANG_639_2)
-			    retval = lang->iso._639_2._2B_code;
-		    else if (lang->type == LT_LANG_639_3)
-			    retval = lang->iso._639_3.part2_code;
-		    else {
-			    g_warning("Unknown lang entry type: %d\n", lang->type);
-			    retval = NULL;
-		    }
-		    break;
-	    case LT_LANG_CODE_2T:
-		    if (lang->type == LT_LANG_639_2)
-			    retval = lang->iso._639_2._2T_code;
-		    else if (lang->type == LT_LANG_639_3)
-			    retval = lang->iso._639_3.id;
-		    else {
-			    g_warning("Unknown lang entry type: %d\n", lang->type);
-			    retval = NULL;
-		    }
-		    break;
-	    default:
-		    g_warning("Unknown lang code type: %d", code_type);
-		    retval = NULL;
-	}
+	if (!retval)
+		retval = lt_lang_get_macro_language(lang);
+	if (!retval)
+		retval = lt_lang_get_tag(lang);
 
 	return retval;
 }
 
 const gchar *
-lt_lang_get_shortest_code(lt_lang_t *lang)
+lt_lang_get_tag(const lt_lang_t *lang)
 {
-	const gchar *retval = NULL;
-
 	g_return_val_if_fail (lang != NULL, NULL);
 
-	retval = lt_lang_get_code(lang, LT_LANG_CODE_1);
-	if (!retval) {
-		retval = lt_lang_get_code(lang, LT_LANG_CODE_2T);
-		if (!retval) {
-			retval = lt_lang_get_code(lang, LT_LANG_CODE_2B);
-		}
-	}
+	return lang->tag;
+}
 
-	return retval;
+const gchar *
+lt_lang_get_preferred_tag(const lt_lang_t *lang)
+{
+	g_return_val_if_fail (lang != NULL, NULL);
+
+	return lang->preferred_tag;
+}
+
+const gchar *
+lt_lang_get_suppress_script(const lt_lang_t *lang)
+{
+	g_return_val_if_fail (lang != NULL, NULL);
+
+	return lang->suppress_script;
+}
+
+const gchar *
+lt_lang_get_macro_language(const lt_lang_t *lang)
+{
+	g_return_val_if_fail (lang != NULL, NULL);
+
+	return lang->macrolanguage;
+}
+
+const gchar *
+lt_lang_get_scope(const lt_lang_t *lang)
+{
+	g_return_val_if_fail (lang != NULL, NULL);
+
+	return lang->scope;
 }
