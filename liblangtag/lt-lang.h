@@ -42,6 +42,7 @@ const gchar *lt_lang_get_preferred_tag  (const lt_lang_t *lang);
 const gchar *lt_lang_get_suppress_script(const lt_lang_t *lang);
 const gchar *lt_lang_get_macro_language (const lt_lang_t *lang);
 const gchar *lt_lang_get_scope          (const lt_lang_t *lang);
+void         lt_lang_dump               (const lt_lang_t *lang);
 
 G_END_DECLS
 

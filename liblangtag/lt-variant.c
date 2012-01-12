@@ -141,3 +141,30 @@ lt_variant_get_prefix(const lt_variant_t *variant)
 
 	return variant->prefix;
 }
+
+void
+lt_variant_dump(const lt_variant_t *variant)
+{
+	GString *string = g_string_new(NULL);
+	const GList *list, *l;
+
+	list = lt_variant_get_prefix(variant);
+	for (l = list; l != NULL; l = g_list_next(l)) {
+		if (string->len == 0)
+			g_string_append(string, " (prefix = [");
+		else
+			g_string_append(string, ", ");
+		g_string_append(string, (const gchar *)l->data);
+	}
+	if (string->len > 0)
+		g_string_append(string, "]");
+	if (string->len > 0)
+		g_string_append(string, ")");
+
+	g_print("Variant: %s [%s]%s\n",
+		lt_variant_get_tag(variant),
+		lt_variant_get_name(variant),
+		string->str);
+
+	g_string_free(string, TRUE);
+}

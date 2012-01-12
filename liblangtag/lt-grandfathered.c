@@ -106,3 +106,11 @@ lt_grandfathered_get_name(const lt_grandfathered_t *grandfathered)
 
 	return grandfathered->description;
 }
+
+void
+lt_grandfathered_dump(const lt_grandfathered_t *grandfathered)
+{
+	g_print("Grandfathered: %s [%s]\n",
+		lt_grandfathered_get_tag(grandfathered),
+		lt_grandfathered_get_name(grandfathered));
+}

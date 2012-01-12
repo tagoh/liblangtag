@@ -37,6 +37,7 @@ lt_region_t *lt_region_ref     (lt_region_t       *region);
 void         lt_region_unref   (lt_region_t       *region);
 const gchar *lt_region_get_name(const lt_region_t *region);
 const gchar *lt_region_get_tag (const lt_region_t *region);
+void         lt_region_dump    (const lt_region_t *region);
 
 G_END_DECLS
 

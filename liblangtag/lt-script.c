@@ -107,6 +107,14 @@ lt_script_get_tag(const lt_script_t *script)
 	return script->tag;
 }
 
+void
+lt_script_dump(const lt_script_t *script)
+{
+	g_print("Script: %s [%s]\n",
+		lt_script_get_tag(script),
+		lt_script_get_name(script));
+}
+
 const gchar *
 lt_script_convert_to_modifier(const lt_script_t *script)
 {

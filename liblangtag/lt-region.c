@@ -105,3 +105,11 @@ lt_region_get_tag(const lt_region_t *region)
 
 	return region->tag;
 }
+
+void
+lt_region_dump(const lt_region_t *region)
+{
+	g_print("Region: %s [%s]\n",
+		lt_region_get_tag(region),
+		lt_region_get_name(region));
+}

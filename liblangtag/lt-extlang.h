@@ -38,6 +38,7 @@ void          lt_extlang_unref             (lt_extlang_t       *extlang);
 const gchar  *lt_extlang_get_tag           (const lt_extlang_t *extlang);
 const gchar  *lt_extlang_get_name          (const lt_extlang_t *extlang);
 const gchar  *lt_extlang_get_macro_language(const lt_extlang_t *extlang);
+void          lt_extlang_dump              (const lt_extlang_t *extlang);
 
 G_END_DECLS
 

@@ -38,6 +38,7 @@ void          lt_variant_unref     (lt_variant_t       *variant);
 const gchar  *lt_variant_get_tag   (const lt_variant_t *variant);
 const gchar  *lt_variant_get_name  (const lt_variant_t *variant);
 const GList  *lt_variant_get_prefix(const lt_variant_t *variant);
+void          lt_variant_dump      (const lt_variant_t *variant);
 
 G_END_DECLS
 

@@ -129,3 +129,24 @@ lt_extlang_get_macro_language(const lt_extlang_t *extlang)
 
 	return extlang->macrolanguage;
 }
+
+void
+lt_extlang_dump(const lt_extlang_t *extlang)
+{
+	const gchar *macrolang = lt_extlang_get_macro_language(extlang);
+	GString *string = g_string_new(NULL);
+
+	if (macrolang) {
+		if (string->len == 0)
+			g_string_append(string, " (");
+		g_string_append_printf(string, "macrolanguage: %s",
+				       macrolang);
+	}
+	if (string->len > 0)
+		g_string_append(string, ")");
+	g_print("Extlang: %s [%s]%s\n",
+		lt_extlang_get_tag(extlang),
+		lt_extlang_get_name(extlang),
+		string->str);
+	g_string_free(string, TRUE);
+}

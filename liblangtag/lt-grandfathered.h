@@ -37,6 +37,7 @@ lt_grandfathered_t *lt_grandfathered_ref     (lt_grandfathered_t       *grandfat
 void                lt_grandfathered_unref   (lt_grandfathered_t       *grandfathered);
 const gchar        *lt_grandfathered_get_tag (const lt_grandfathered_t *grandfathered);
 const gchar        *lt_grandfathered_get_name(const lt_grandfathered_t *grandfathered);
+void                lt_grandfathered_dump    (const lt_grandfathered_t *grandfathered);
 
 G_END_DECLS
 

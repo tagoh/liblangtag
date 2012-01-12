@@ -207,3 +207,52 @@ lt_lang_get_scope(const lt_lang_t *lang)
 
 	return lang->scope;
 }
+
+void
+lt_lang_dump(const lt_lang_t *lang)
+{
+	const gchar *preferred = lt_lang_get_preferred_tag(lang);
+	const gchar *suppress = lt_lang_get_suppress_script(lang);
+	const gchar *scope = lt_lang_get_scope(lang);
+	const gchar *macrolang = lt_lang_get_macro_language(lang);
+	GString *string = g_string_new(NULL);
+
+	if (preferred) {
+		if (string->len == 0)
+			g_string_append(string, " (");
+		g_string_append_printf(string, "preferred-value: %s",
+				       preferred);
+	}
+	if (suppress) {
+		if (string->len == 0)
+			g_string_append(string, " (");
+		else
+			g_string_append(string, ", ");
+		g_string_append_printf(string, "suppress-script: %s",
+				       suppress);
+	}
+	if (scope) {
+		if (string->len == 0)
+			g_string_append(string, " (");
+		else
+			g_string_append(string, ", ");
+		g_string_append_printf(string, "scope: %s",
+				       scope);
+	}
+	if (macrolang) {
+		if (string->len == 0)
+			g_string_append(string, " (");
+		else
+			g_string_append(string, ", ");
+		g_string_append_printf(string, "macrolanguage: %s",
+				       macrolang);
+	}
+	if (string->len > 0)
+		g_string_append(string, ")");
+
+	g_print("Language: %s [%s]%s\n",
+		lt_lang_get_tag(lang),
+		lt_lang_get_name(lang),
+		string->str);
+	g_string_free(string, TRUE);
+}

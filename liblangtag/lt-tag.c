@@ -64,8 +64,8 @@ struct _lt_tag_t {
 	lt_extlang_t       *extlang;
 	lt_script_t        *script;
 	lt_region_t        *region;
-	lt_variant_t       *variant;
-	GString            *extension;
+	GList              *variants;
+	GList              *extensions;
 	GString            *privateuse;
 	lt_grandfathered_t *grandfathered;
 };
@@ -75,6 +75,28 @@ static void
 _lt_tag_gstring_free(GString *string)
 {
 	g_string_free(string, TRUE);
+}
+
+static void
+_lt_tag_variants_list_free(GList *list)
+{
+	GList *l;
+
+	for (l = list; l != NULL; l = g_list_next(l)) {
+		lt_variant_unref(l->data);
+	}
+	g_list_free(list);
+}
+
+static void
+_lt_tag_extensions_list_free(GList *list)
+{
+	GList *l;
+
+	for (l = list; l != NULL; l = g_list_next(l)) {
+		g_string_free(l->data, TRUE);
+	}
+	g_list_free(list);
 }
 
 static lt_tag_scanner_t *
@@ -355,22 +377,30 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    if ((length >=5 && length <= 8) ||
 			(length == 4 && g_ascii_isdigit(token[0]))) {
 			    lt_variant_db_t *variantdb = lt_db_get_variant();
+			    lt_variant_t *variant;
 
-			    tag->variant = lt_variant_db_lookup(variantdb, token);
+			    variant = lt_variant_db_lookup(variantdb, token);
 			    lt_variant_db_unref(variantdb);
-			    if (tag->variant) {
-				    const GList *prefixes = lt_variant_get_prefix(tag->variant), *l;
-				    const gchar *lang = lt_lang_get_better_tag(tag->language);
+			    if (variant) {
+				    const GList *prefixes = lt_variant_get_prefix(variant), *l;
+				    gchar *langtag = lt_tag_canonicalize(tag, error);
 				    GString *str_prefixes = g_string_new(NULL);
 				    gboolean matched = FALSE;
 
+				    if (error && *error) {
+					    /* ignore it and fallback to the original tag string */
+					    g_error_free(*error);
+					    *error = NULL;
+					    langtag = g_strdup(tag->tag_string);
+				    }
 				    for (l = prefixes; l != NULL; l = g_list_next(l)) {
+					    const gchar *s = l->data;
+
 					    if (str_prefixes->len > 0)
 						    g_string_append(str_prefixes, ",");
-					    g_string_append(str_prefixes, (const gchar *)l->data);
+					    g_string_append(str_prefixes, s);
 
-					    if (g_ascii_strcasecmp((gchar *)l->data,
-								   lang) == 0) {
+					    if (g_ascii_strncasecmp(s, langtag, strlen(s)) == 0) {
 						    matched = TRUE;
 						    break;
 					    }
@@ -378,14 +408,22 @@ lt_tag_parse_state(lt_tag_t        *tag,
 				    if (prefixes && !matched) {
 					    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 							"variant '%s' is supposed to be used with %s, but %s",
-							token, str_prefixes->str, lang);
-					    lt_variant_unref(tag->variant);
-					    tag->variant = NULL;
+							token, str_prefixes->str, tag->tag_string);
+					    lt_variant_unref(variant);
 				    } else {
-					    lt_mem_add_ref(&tag->parent, tag->variant,
-							   (lt_destroy_func_t)lt_variant_unref);
-					    *state = STATE_PRE_EXTENSION;
+					    if (!tag->variants) {
+						    tag->variants = g_list_append(tag->variants,
+										  variant);
+						    lt_mem_add_ref(&tag->parent, tag->variants,
+								   (lt_destroy_func_t)_lt_tag_variants_list_free);
+					    } else {
+						    tag->variants = g_list_append(tag->variants,
+										  variant);
+					    }
+					    /* multiple variants are allowed. */
+					    *state = STATE_PRE_VARIANT;
 				    }
+				    g_free(langtag);
 				    g_string_free(str_prefixes, TRUE);
 				    break;
 			    }
@@ -396,7 +434,13 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    }
 	    case STATE_EXTENSION:
 		    if (length == 1 && token[0] != 'x' && token[0] != 'X') {
-			    g_string_append(tag->extension, token);
+			    GString *string = g_string_new(token);
+			    gboolean noref = tag->extensions == NULL;
+
+			    tag->extensions = g_list_append(tag->extensions, string);
+			    if (noref)
+				    lt_mem_add_ref(&tag->parent, tag->extensions,
+						   (lt_destroy_func_t)_lt_tag_extensions_list_free);
 			    *state = STATE_IN_EXTENSION;
 			    break;
 		    } else {
@@ -414,9 +458,22 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    break;
 	    case STATE_EXTENSIONTOKEN:
 		    if (length >= 2 && length <= 8) {
-			    g_string_append_printf(tag->extension, "-%s", token);
-			    *state = STATE_PRIVATEUSE;
+			    GList *l = g_list_last(tag->extensions);
+			    GString *string = l->data;
+
+			    g_string_append_printf(string, "-%s", token);
+			    /* multiple extensions are allowed. */
+			    *state = STATE_PRE_EXTENSION;
 		    } else {
+			    GList *l = g_list_last(tag->extensions);
+
+			    if (g_list_previous(l) == NULL) {
+				    lt_mem_remove_ref(&tag->parent, tag->extensions);
+				    tag->extensions = NULL;
+			    } else {
+				    g_string_free(l->data, TRUE);
+				    tag->extensions = g_list_delete_link(tag->extensions, l);
+			    }
 			    /* No state to try */
 			    retval = FALSE;
 		    }
@@ -453,9 +510,6 @@ lt_tag_new(void)
 	lt_tag_t *retval = lt_mem_alloc_object(sizeof (lt_tag_t));
 
 	if (retval) {
-		retval->extension = g_string_new(NULL);
-		lt_mem_add_ref(&retval->parent, retval->extension,
-			       (lt_destroy_func_t)_lt_tag_gstring_free);
 		retval->privateuse = g_string_new(NULL);
 		lt_mem_add_ref(&retval->parent, retval->privateuse,
 			       (lt_destroy_func_t)_lt_tag_gstring_free);
@@ -514,12 +568,13 @@ lt_tag_parse(lt_tag_t     *tag,
 		lt_mem_remove_ref(&tag->parent, tag->region);
 		tag->region = NULL;
 	}
-	if (tag->variant) {
-		lt_mem_remove_ref(&tag->parent, tag->variant);
-		tag->variant = NULL;
+	if (tag->variants) {
+		lt_mem_remove_ref(&tag->parent, tag->variants);
+		tag->variants = NULL;
 	}
-	if (tag->extension) {
-		g_string_truncate(tag->extension, 0);
+	if (tag->extensions) {
+		lt_mem_remove_ref(&tag->parent, tag->extensions);
+		tag->extensions = NULL;
 	}
 	if (tag->privateuse) {
 		g_string_truncate(tag->privateuse, 0);
@@ -601,6 +656,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 	gchar *retval = NULL;
 	GString *string = NULL;
 	GError *err = NULL;
+	GList *l;
 
 	g_return_val_if_fail (tag != NULL, NULL);
 
@@ -631,11 +687,19 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 		if (tag->region) {
 			g_string_append_printf(string, "-%s", lt_region_get_tag(tag->region));
 		}
-		if (tag->variant) {
-			g_string_append_printf(string, "-%s", lt_variant_get_tag(tag->variant));
+		l = tag->variants;
+		while (l != NULL) {
+			lt_variant_t *variant = l->data;
+
+			g_string_append_printf(string, "-%s", lt_variant_get_tag(variant));
+			l = g_list_next(l);
 		}
-		if (tag->extension && tag->extension->len > 0) {
-			g_string_append_printf(string, "-%s", tag->extension->str);
+		l = tag->extensions;
+		while (l != NULL) {
+			GString *str = l->data;
+
+			g_string_append_printf(string, "-%s", str->str);
+			l = g_list_next(l);
 		}
 	}
 	if (tag->privateuse && tag->privateuse->len > 0) {
@@ -707,35 +771,35 @@ lt_tag_convert_to_locale(lt_tag_t  *tag,
 void
 lt_tag_dump(lt_tag_t *tag)
 {
+	GList *l;
+
 	g_return_if_fail (tag != NULL);
 
 	if (tag->grandfathered) {
-		g_print("Grandfathered: %s (%s)\n",
-			lt_grandfathered_get_tag(tag->grandfathered),
-			lt_grandfathered_get_name(tag->grandfathered));
+		lt_grandfathered_dump(tag->grandfathered);
 		return;
 	}
-	g_print("Language: %s (%s)\n",
-		lt_lang_get_better_tag(tag->language),
-		lt_lang_get_name(tag->language));
+	lt_lang_dump(tag->language);
 	if (tag->extlang)
-		g_print("Extlang: %s (%s)\n",
-			lt_extlang_get_tag(tag->extlang),
-			lt_extlang_get_name(tag->extlang));
+		lt_extlang_dump(tag->extlang);
 	if (tag->script)
-		g_print("Script: %s (%s)\n",
-			lt_script_get_tag(tag->script),
-			lt_script_get_name(tag->script));
+		lt_script_dump(tag->script);
 	if (tag->region)
-		g_print("Region: %s (%s)\n",
-			lt_region_get_tag(tag->region),
-			lt_region_get_name(tag->region));
-	if (tag->variant)
-		g_print("Variant: %s (%s)\n",
-			lt_variant_get_tag(tag->variant),
-			lt_variant_get_name(tag->variant));
-	if (tag->extension->len > 0)
-		g_print("Extension: %s\n", tag->extension->str);
+		lt_region_dump(tag->region);
+	l = tag->variants;
+	while (l != NULL) {
+		lt_variant_t *variant = l->data;
+
+		lt_variant_dump(variant);
+		l = g_list_next(l);
+	}
+	l = tag->extensions;
+	while (l != NULL) {
+		GString *ext = l->data;
+
+		g_print("Extension: %s\n", ext->str);
+		l = g_list_next(l);
+	}
 	if (tag->privateuse->len > 0)
 		g_print("Private Use: %s\n", tag->privateuse->str);
 }
