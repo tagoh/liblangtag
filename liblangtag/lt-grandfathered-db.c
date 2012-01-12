@@ -111,9 +111,8 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 				/* ignore it */
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
 				/* wonder if many descriptions helps something. or is it a bug? */
-				if (desc)
-					xmlFree(desc);
-				desc = xmlNodeGetContent(cnode);
+				if (!desc)
+					desc = xmlNodeGetContent(cnode);
 			} else {
 				g_warning("Unknown node under /registry/grandfathered: %s", cnode->name);
 			}

@@ -112,9 +112,8 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 				/* ignore it */
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
 				/* wonder if many descriptions helps something or is it a bug? */
-				if (desc)
-					xmlFree(desc);
-				desc = xmlNodeGetContent(cnode);
+				if (!desc)
+					desc = xmlNodeGetContent(cnode);
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"prefix") == 0) {
 				prefix_list = g_list_append(prefix_list,
 							    xmlNodeGetContent(cnode));
