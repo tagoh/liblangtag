@@ -163,8 +163,6 @@ lt_lang_get_better_tag(const lt_lang_t *lang)
 	const gchar *retval = lt_lang_get_preferred_tag(lang);
 
 	if (!retval)
-		retval = lt_lang_get_macro_language(lang);
-	if (!retval)
 		retval = lt_lang_get_tag(lang);
 
 	return retval;

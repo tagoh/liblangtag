@@ -235,6 +235,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 	    case STATE_LANG:
 		    if (length == 1) {
 			    if (g_ascii_strcasecmp(token, "x") == 0) {
+				    g_string_append(tag->privateuse, token);
 				    *state = STATE_IN_PRIVATEUSE;
 				    break;
 			    } else {
@@ -337,11 +338,9 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			 g_ascii_isdigit(token[2]))) {
 			    lt_region_db_t *regiondb = lt_db_get_region();
 
-			    g_print("'%s'\n", token);
 			    tag->region = lt_region_db_lookup(regiondb, token);
 			    lt_region_db_unref(regiondb);
 			    if (tag->region) {
-				    g_print("found\n");
 				    lt_mem_add_ref(&tag->parent, tag->region,
 						   (lt_destroy_func_t)lt_region_unref);
 				    *state = STATE_PRE_VARIANT;
@@ -376,7 +375,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 						    break;
 					    }
 				    }
-				    if (!matched) {
+				    if (prefixes && !matched) {
 					    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 							"variant '%s' is supposed to be used with %s, but %s",
 							token, str_prefixes->str, lang);
@@ -591,6 +590,72 @@ lt_tag_parse(lt_tag_t     *tag,
 		retval = FALSE;
 	}
 	g_free(token);
+
+	return retval;
+}
+
+gchar *
+lt_tag_canonicalize(lt_tag_t  *tag,
+		    GError   **error)
+{
+	gchar *retval = NULL;
+	GString *string = NULL;
+	GError *err = NULL;
+
+	g_return_val_if_fail (tag != NULL, NULL);
+
+	if (!tag->tag_string) {
+		g_set_error(&err, LT_ERROR, LT_ERR_NO_TAG,
+			    "No tag to convert.");
+		goto bail;
+	}
+	string = g_string_new(NULL);
+	if (tag->grandfathered) {
+		g_string_append(string, lt_grandfathered_get_tag(tag->grandfathered));
+		goto bail1;
+	}
+
+	if (tag->language) {
+		g_string_append(string, lt_lang_get_better_tag(tag->language));
+		if (tag->extlang) {
+			g_string_append_printf(string, "-%s", lt_extlang_get_tag(tag->extlang));
+		}
+		if (tag->script) {
+			const gchar *script = lt_script_get_tag(tag->script);
+			const gchar *suppress = lt_lang_get_suppress_script(tag->language);
+
+			if (!suppress ||
+			    g_ascii_strcasecmp(suppress, script))
+				g_string_append_printf(string, "-%s", script);
+		}
+		if (tag->region) {
+			g_string_append_printf(string, "-%s", lt_region_get_tag(tag->region));
+		}
+		if (tag->variant) {
+			g_string_append_printf(string, "-%s", lt_variant_get_tag(tag->variant));
+		}
+		if (tag->extension && tag->extension->len > 0) {
+			g_string_append_printf(string, "-%s", tag->extension->str);
+		}
+	}
+	if (tag->privateuse && tag->privateuse->len > 0) {
+		g_string_append_printf(string, "%s%s",
+				       string->len > 0 ? "-" : "",
+				       tag->privateuse->str);
+	}
+  bail1:
+	retval = g_string_free(string, FALSE);
+  bail:
+	if (err) {
+		if (error)
+			*error = g_error_copy(err);
+		else
+			g_warning(err->message);
+		g_error_free(err);
+		if (retval)
+			g_free(retval);
+		retval = NULL;
+	}
 
 	return retval;
 }

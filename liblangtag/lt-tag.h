@@ -39,6 +39,8 @@ void      lt_tag_unref            (lt_tag_t     *tag);
 gboolean  lt_tag_parse            (lt_tag_t     *tag,
                                    const gchar  *langtag,
                                    GError      **error);
+gchar    *lt_tag_canonicalize     (lt_tag_t     *tag,
+                                   GError      **error);
 gchar    *lt_tag_convert_to_locale(lt_tag_t     *tag,
                                    GError      **error);
 void      lt_tag_dump             (lt_tag_t     *tag);
