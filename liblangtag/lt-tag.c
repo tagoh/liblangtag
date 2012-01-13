@@ -27,6 +27,7 @@
 #include "lt-database.h"
 #include "lt-error.h"
 #include "lt-mem.h"
+#include "lt-utils.h"
 #include "lt-tag.h"
 
 
@@ -79,6 +80,33 @@ static void
 _lt_tag_gstring_free(GString *string)
 {
 	g_string_free(string, TRUE);
+}
+
+static gboolean
+_lt_tag_gstring_compare(const GString *v1,
+			const GString *v2)
+{
+	gboolean retval = FALSE;
+	gchar *s1, *s2;
+
+	if (v1 == v2)
+		return TRUE;
+
+	s1 = v1 ? lt_strlower(g_strdup(v1->str)) : NULL;
+	s2 = v2 ? lt_strlower(g_strdup(v2->str)) : NULL;
+
+	if (g_strcmp0(s1, "*") == 0 ||
+	    g_strcmp0(s2, "*") == 0) {
+		retval = TRUE;
+		goto bail;
+	}
+
+	retval = g_strcmp0(s1, s2) == 0;
+  bail:
+	g_free(s1);
+	g_free(s2);
+
+	return retval;
 }
 
 static void
@@ -825,7 +853,7 @@ lt_tag_convert_to_locale(lt_tag_t  *tag,
 }
 
 void
-lt_tag_dump(lt_tag_t *tag)
+lt_tag_dump(const lt_tag_t *tag)
 {
 	GList *l;
 
@@ -858,4 +886,193 @@ lt_tag_dump(lt_tag_t *tag)
 	}
 	if (tag->privateuse->len > 0)
 		g_print("Private Use: %s\n", tag->privateuse->str);
+}
+
+gboolean
+lt_tag_compare(const lt_tag_t *v1,
+	       const lt_tag_t *v2)
+{
+	gboolean retval = TRUE;
+	const GList *l1, *l2;
+
+	g_return_val_if_fail (v1 != NULL, FALSE);
+	g_return_val_if_fail (v2 != NULL, FALSE);
+	g_return_val_if_fail (v1->grandfathered == NULL, FALSE);
+	g_return_val_if_fail (v2->grandfathered == NULL, FALSE);
+
+	retval &= lt_lang_compare(v1->language, v2->language);
+	if (v2->extlang)
+		retval &= lt_extlang_compare(v1->extlang, v2->extlang);
+	if (v2->script)
+		retval &= lt_script_compare(v1->script, v2->script);
+	if (v2->region)
+		retval &= lt_region_compare(v1->region, v2->region);
+	l1 = v1->variants;
+	l2 = v2->variants;
+	while (l2 != NULL) {
+		lt_variant_t *vv1, *vv2;
+
+		vv1 = l1 ? l1->data : NULL;
+		vv2 = l2->data;
+		retval &= lt_variant_compare(vv1, vv2);
+		l1 = l1 ? g_list_next(l1) : NULL;
+		l2 = g_list_next(l2);
+	}
+	l1 = v1->extensions;
+	l2 = v2->extensions;
+	while (l2 != NULL) {
+		GString *s1, *s2;
+
+		s1 = l1 ? l1->data : NULL;
+		s2 = l2->data;
+		retval &= _lt_tag_gstring_compare(s1, s2);
+		l1 = l1 ? g_list_next(l1) : NULL;
+		l2 = g_list_next(l2);
+	}
+	if (v2->privateuse && v2->privateuse->len > 0)
+		retval &= _lt_tag_gstring_compare(v1->privateuse, v2->privateuse);
+
+	return retval;
+}
+
+gboolean
+lt_tag_match(const lt_tag_t  *v1,
+	     const gchar     *v2,
+	     GError         **error)
+{
+	gchar **tokens;
+	GString *string = NULL;
+	gint i;
+	gboolean retval = FALSE;
+	lt_tag_t *t2 = NULL;
+	GError *err = NULL;
+	gboolean wildcard = FALSE;
+
+	g_return_val_if_fail (v1 != NULL, FALSE);
+	g_return_val_if_fail (v2 != NULL, FALSE);
+
+	tokens = g_strsplit(v2, "-", -1);
+	if (g_strcmp0(tokens[0], "*") == 0) {
+		/* matching everything */
+		retval = TRUE;
+		goto bail;
+	}
+	string = g_string_new(NULL);
+	for (i = 0; tokens[i] != NULL; i++) {
+		if (g_strcmp0(tokens[i], "*")) {
+			if (string->len == 0)
+				g_string_append(string, tokens[i]);
+			else
+				g_string_append_printf(string, "-%s", tokens[i]);
+		} else {
+			wildcard = TRUE;
+		}
+	}
+	t2 = lt_tag_new();
+	if (!lt_tag_parse(t2, string->str, &err))
+		goto bail;
+
+	if (!t2->extlang) {
+		lt_extlang_db_t *db = lt_db_get_extlang();
+
+		if (wildcard) {
+			t2->extlang = lt_extlang_db_lookup(db, "*");
+		} else if (v1->extlang) {
+			t2->extlang = lt_extlang_db_lookup(db, "");
+		}
+		if (t2->extlang) {
+			lt_mem_add_ref(&t2->parent, t2->extlang,
+				       (lt_destroy_func_t)lt_extlang_unref);
+		}
+		lt_extlang_db_unref(db);
+	} else {
+		goto compare;
+	}
+	if (!t2->script) {
+		lt_script_db_t *db = lt_db_get_script();
+
+		if (wildcard) {
+			t2->script = lt_script_db_lookup(db, "*");
+		} else if (v1->script) {
+			t2->script = lt_script_db_lookup(db, "");
+		}
+		if (t2->script) {
+			lt_mem_add_ref(&t2->parent, t2->script,
+				       (lt_destroy_func_t)lt_script_unref);
+		}
+		lt_script_db_unref(db);
+	} else {
+		goto compare;
+	}
+	if (!t2->region) {
+		lt_region_db_t *db = lt_db_get_region();
+
+		if (wildcard) {
+			t2->region = lt_region_db_lookup(db, "*");
+		} else if (v1->region) {
+			t2->region = lt_region_db_lookup(db, "");
+		}
+		if (t2->region) {
+			lt_mem_add_ref(&t2->parent, t2->region,
+				       (lt_destroy_func_t)lt_region_unref);
+		}
+		lt_region_db_unref(db);
+	} else {
+		goto compare;
+	}
+	if (!t2->variants) {
+		lt_variant_db_t *db = lt_db_get_variant();
+
+		if (wildcard) {
+			t2->variants = g_list_append(t2->variants, lt_variant_db_lookup(db, "*"));
+		} else if (v1->variants) {
+			t2->variants = g_list_append(t2->variants, lt_variant_db_lookup(db, ""));
+		}
+		if (t2->variants) {
+			lt_mem_add_ref(&t2->parent, t2->variants,
+				       (lt_destroy_func_t)_lt_tag_variants_list_free);
+		}
+		lt_variant_db_unref(db);
+	} else {
+		goto compare;
+	}
+	if (!t2->extensions) {
+		GString *str = NULL;
+
+		if (wildcard)
+			str = g_string_new("*");
+		else if (v1->extensions)
+			str = g_string_new("");
+
+		if (str) {
+			t2->extensions = g_list_append(t2->extensions, str);
+			lt_mem_add_ref(&t2->parent, t2->extensions,
+				       (lt_destroy_func_t)_lt_tag_extensions_list_free);
+		}
+	} else {
+		goto compare;
+	}
+	if (!t2->privateuse) {
+		g_warn_if_reached();
+	}
+  compare:
+	lt_tag_dump(v1);
+	lt_tag_dump(t2);
+	retval = lt_tag_compare(v1, t2);
+  bail:
+	if (err) {
+		if (error)
+			*error = g_error_copy(err);
+		else
+			g_warning(err->message);
+		g_error_free(err);
+		retval = FALSE;
+	}
+	g_strfreev(tokens);
+	if (string)
+		g_string_free(string, TRUE);
+	if (t2)
+		lt_tag_unref(t2);
+
+	return retval;
 }

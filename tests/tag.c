@@ -55,6 +55,13 @@ main(int    argc,
 	} else if (g_strcmp0(argv[1], "dump") == 0) {
 		if (lt_tag_parse(tag, argv[2], NULL))
 			lt_tag_dump(tag);
+	} else if (g_strcmp0(argv[1], "match") == 0) {
+		if (lt_tag_parse(tag, argv[2], NULL)) {
+			if (lt_tag_match(tag, argv[3], NULL))
+				g_print("%s matches with %s\n", argv[3], argv[2]);
+			else
+				g_print("%s doesn't match with %s\n", argv[3], argv[2]);
+		}
 	}
 	lt_tag_unref(tag);
 	lt_db_finalize();
