@@ -27,11 +27,13 @@
 
 G_BEGIN_DECLS
 
-lt_grandfathered_t *lt_grandfathered_create  (void);
-void                lt_grandfathered_set_tag (lt_grandfathered_t *grandfathered,
-                                              const gchar        *subtag);
-void                lt_grandfathered_set_name(lt_grandfathered_t *grandfathered,
-                                              const gchar        *description);
+lt_grandfathered_t *lt_grandfathered_create           (void);
+void                lt_grandfathered_set_tag          (lt_grandfathered_t *grandfathered,
+                                                       const gchar        *subtag);
+void                lt_grandfathered_set_name         (lt_grandfathered_t *grandfathered,
+                                                       const gchar        *description);
+void                lt_grandfathered_set_preferred_tag(lt_grandfathered_t *grandfathered,
+                                                       const gchar        *subtag);
 
 G_END_DECLS
 

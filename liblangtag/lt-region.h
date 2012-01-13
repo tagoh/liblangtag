@@ -33,11 +33,13 @@ G_BEGIN_DECLS
 typedef struct _lt_region_t	lt_region_t;
 
 
-lt_region_t *lt_region_ref     (lt_region_t       *region);
-void         lt_region_unref   (lt_region_t       *region);
-const gchar *lt_region_get_name(const lt_region_t *region);
-const gchar *lt_region_get_tag (const lt_region_t *region);
-void         lt_region_dump    (const lt_region_t *region);
+lt_region_t *lt_region_ref              (lt_region_t       *region);
+void         lt_region_unref            (lt_region_t       *region);
+const gchar *lt_region_get_name         (const lt_region_t *region);
+const gchar *lt_region_get_better_tag   (const lt_region_t *region);
+const gchar *lt_region_get_tag          (const lt_region_t *region);
+const gchar *lt_region_get_preferred_tag(const lt_region_t *region);
+void         lt_region_dump             (const lt_region_t *region);
 
 G_END_DECLS
 

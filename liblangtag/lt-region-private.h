@@ -27,11 +27,13 @@
 
 G_BEGIN_DECLS
 
-lt_region_t *lt_region_create  (void);
-void         lt_region_set_name(lt_region_t *region,
-                                const gchar *description);
-void         lt_region_set_tag (lt_region_t *region,
-                                const gchar *subtag);
+lt_region_t *lt_region_create           (void);
+void         lt_region_set_name         (lt_region_t *region,
+                                         const gchar *description);
+void         lt_region_set_tag          (lt_region_t *region,
+                                         const gchar *subtag);
+void         lt_region_set_preferred_tag(lt_region_t *region,
+                                         const gchar *subtag);
 
 G_END_DECLS
 

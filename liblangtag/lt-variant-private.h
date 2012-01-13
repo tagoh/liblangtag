@@ -27,13 +27,15 @@
 
 G_BEGIN_DECLS
 
-lt_variant_t *lt_variant_create    (void);
-void          lt_variant_set_tag   (lt_variant_t *variant,
-                                    const gchar  *subtag);
-void          lt_variant_set_name  (lt_variant_t *variant,
-                                    const gchar  *description);
-void          lt_variant_add_prefix(lt_variant_t *variant,
-                                    const gchar  *prefix);
+lt_variant_t *lt_variant_create           (void);
+void          lt_variant_set_tag          (lt_variant_t *variant,
+                                           const gchar  *subtag);
+void          lt_variant_set_preferred_tag(lt_variant_t *variant,
+                                           const gchar  *subtag);
+void          lt_variant_set_name         (lt_variant_t *variant,
+                                           const gchar  *description);
+void          lt_variant_add_prefix       (lt_variant_t *variant,
+                                           const gchar  *prefix);
 
 G_END_DECLS
 

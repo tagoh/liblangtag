@@ -32,6 +32,7 @@ struct _lt_variant_t {
 	lt_mem_t  parent;
 	gchar    *tag;
 	gchar    *description;
+	gchar    *preferred_tag;
 	GList    *prefix;
 };
 
@@ -69,6 +70,20 @@ lt_variant_set_tag(lt_variant_t *variant,
 		lt_mem_remove_ref(&variant->parent, variant->tag);
 	variant->tag = g_strdup(subtag);
 	lt_mem_add_ref(&variant->parent, variant->tag,
+		       (lt_destroy_func_t)g_free);
+}
+
+void
+lt_variant_set_preferred_tag(lt_variant_t *variant,
+			     const gchar  *subtag)
+{
+	g_return_if_fail (variant != NULL);
+	g_return_if_fail (subtag != NULL);
+
+	if (variant->preferred_tag)
+		lt_mem_remove_ref(&variant->parent, variant->preferred_tag);
+	variant->preferred_tag = g_strdup(subtag);
+	lt_mem_add_ref(&variant->parent, variant->preferred_tag,
 		       (lt_destroy_func_t)g_free);
 }
 
@@ -119,11 +134,30 @@ lt_variant_unref(lt_variant_t *variant)
 }
 
 const gchar *
+lt_variant_get_better_tag(const lt_variant_t *variant)
+{
+	const gchar *retval = lt_variant_get_preferred_tag(variant);
+
+	if (!retval)
+		retval = lt_variant_get_tag(variant);
+
+	return retval;
+}
+
+const gchar *
 lt_variant_get_tag(const lt_variant_t *variant)
 {
 	g_return_val_if_fail (variant != NULL, NULL);
 
 	return variant->tag;
+}
+
+const gchar *
+lt_variant_get_preferred_tag(const lt_variant_t *variant)
+{
+	g_return_val_if_fail (variant != NULL, NULL);
+
+	return variant->preferred_tag;
 }
 
 const gchar *
@@ -147,6 +181,7 @@ lt_variant_dump(const lt_variant_t *variant)
 {
 	GString *string = g_string_new(NULL);
 	const GList *list, *l;
+	const gchar *preferred = lt_variant_get_preferred_tag(variant);
 
 	list = lt_variant_get_prefix(variant);
 	for (l = list; l != NULL; l = g_list_next(l)) {
@@ -155,6 +190,14 @@ lt_variant_dump(const lt_variant_t *variant)
 		else
 			g_string_append(string, ", ");
 		g_string_append(string, (const gchar *)l->data);
+	}
+	if (preferred) {
+		if (string->len == 0)
+			g_string_append(string, " (");
+		else
+			g_string_append(string, ", ");
+		g_string_append_printf(string, "preferred-value: %s",
+				       preferred);
 	}
 	if (string->len > 0)
 		g_string_append(string, "]");

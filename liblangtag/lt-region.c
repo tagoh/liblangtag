@@ -32,6 +32,7 @@ struct _lt_region_t {
 	lt_mem_t  parent;
 	gchar    *tag;
 	gchar    *description;
+	gchar    *preferred_tag;
 };
 
 
@@ -74,6 +75,20 @@ lt_region_set_tag(lt_region_t *region,
 		       (lt_destroy_func_t)g_free);
 }
 
+void
+lt_region_set_preferred_tag(lt_region_t *region,
+			    const gchar *subtag)
+{
+	g_return_if_fail (region != NULL);
+	g_return_if_fail (subtag != NULL);
+
+	if (region->preferred_tag)
+		lt_mem_remove_ref(&region->parent, region->preferred_tag);
+	region->preferred_tag = g_strdup(subtag);
+	lt_mem_add_ref(&region->parent, region->preferred_tag,
+		       (lt_destroy_func_t)g_free);
+}
+
 /*< public >*/
 lt_region_t *
 lt_region_ref(lt_region_t *region)
@@ -99,6 +114,17 @@ lt_region_get_name(const lt_region_t *region)
 }
 
 const gchar *
+lt_region_get_better_tag(const lt_region_t *region)
+{
+	const gchar *retval = lt_region_get_preferred_tag(region);
+
+	if (!retval)
+		retval = lt_region_get_tag(region);
+
+	return retval;
+}
+
+const gchar *
 lt_region_get_tag(const lt_region_t *region)
 {
 	g_return_val_if_fail (region != NULL, NULL);
@@ -106,10 +132,31 @@ lt_region_get_tag(const lt_region_t *region)
 	return region->tag;
 }
 
+const gchar *
+lt_region_get_preferred_tag(const lt_region_t *region)
+{
+	g_return_val_if_fail (region != NULL, NULL);
+
+	return region->preferred_tag;
+}
+
 void
 lt_region_dump(const lt_region_t *region)
 {
-	g_print("Region: %s [%s]\n",
+	GString *string = g_string_new(NULL);
+	const gchar *preferred = lt_region_get_preferred_tag(region);
+
+	if (preferred) {
+		if (string->len == 0)
+			g_string_append(string, " (");
+		g_string_append_printf(string, "preferred-value: %s", preferred);
+	}
+	if (string->len > 0)
+		g_string_append(string, ")");
+
+	g_print("Region: %s [%s]%s\n",
 		lt_region_get_tag(region),
-		lt_region_get_name(region));
+		lt_region_get_name(region),
+		string->str);
+	g_string_free(string, TRUE);
 }

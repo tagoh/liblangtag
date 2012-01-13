@@ -94,7 +94,7 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 	for (i = 0; i < n; i++) {
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 		xmlNodePtr cnode;
-		xmlChar *tag = NULL, *desc = NULL;
+		xmlChar *tag = NULL, *desc = NULL, *preferred = NULL;
 		lt_grandfathered_t *le = NULL;
 		gchar *s;
 
@@ -106,26 +106,40 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"tag") == 0) {
-				tag = xmlNodeGetContent(cnode);
-			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0) {
+				if (tag) {
+					g_warning("Duplicate tag element in grandfathered: previous value was '%s'",
+						  tag);
+				} else {
+					tag = xmlNodeGetContent(cnode);
+				}
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"text") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"deprecated") == 0) {
 				/* ignore it */
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
 				/* wonder if many descriptions helps something. or is it a bug? */
 				if (!desc)
 					desc = xmlNodeGetContent(cnode);
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"preferred-value") == 0) {
+				if (preferred) {
+					g_warning("Duplicate preferred-value element in grandfathered: previous value was '%s'",
+						  preferred);
+				} else {
+					preferred = xmlNodeGetContent(cnode);
+				}
 			} else {
 				g_warning("Unknown node under /registry/grandfathered: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 		if (!tag) {
-			g_warning("No tag node: description = '%s'",
-				  desc);
+			g_warning("No tag node: description = '%s', preferred-value = '%s'",
+				  desc, preferred);
 			goto bail1;
 		}
 		if (!desc) {
-			g_warning("No description node: tag = '%s'",
-				  tag);
+			g_warning("No description node: tag = '%s', preferred-value = '%s'",
+				  tag, preferred);
 			goto bail1;
 		}
 		le = lt_grandfathered_create();
@@ -136,6 +150,8 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 		}
 		lt_grandfathered_set_tag(le, (const gchar *)tag);
 		lt_grandfathered_set_name(le, (const gchar *)desc);
+		if (preferred)
+			lt_grandfathered_set_preferred_tag(le, (const gchar *)preferred);
 
 		s = g_strdup(lt_grandfathered_get_tag(le));
 		g_hash_table_replace(grandfathereddb->grandfathered_entries,
@@ -146,6 +162,8 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 			xmlFree(tag);
 		if (desc)
 			xmlFree(desc);
+		if (preferred)
+			xmlFree(preferred);
 		lt_grandfathered_unref(le);
 	}
   bail:

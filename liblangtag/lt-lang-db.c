@@ -106,22 +106,49 @@ lt_lang_db_parse(lt_lang_db_t  *langdb,
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"subtag") == 0) {
-				subtag = xmlNodeGetContent(cnode);
+				if (subtag) {
+					g_warning("Duplicate subtag element in language: previous value was '%s'",
+						  subtag);
+				} else {
+					subtag = xmlNodeGetContent(cnode);
+				}
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0 ||
-				   xmlStrcmp(cnode->name, (const xmlChar *)"deprecated") == 0) {
+				   xmlStrcmp(cnode->name, (const xmlChar *)"deprecated") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"text") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"comments") == 0) {
 				/* ignore it */
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
 				/* wonder if many descriptions helps something. or is it a bug? */
 				if (!desc)
 					desc = xmlNodeGetContent(cnode);
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"scope") == 0) {
-				scope = xmlNodeGetContent(cnode);
+				if (scope) {
+					g_warning("Duplicate scope element in language: previous value was '%s'",
+						  scope);
+				} else {
+					scope = xmlNodeGetContent(cnode);
+				}
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"macrolanguage") == 0) {
-				macrolang = xmlNodeGetContent(cnode);
+				if (macrolang) {
+					g_warning("Duplicate macrolanguage element in language: previous value was '%s'",
+						  macrolang);
+				} else {
+					macrolang = xmlNodeGetContent(cnode);
+				}
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"preferred-value") == 0) {
-				preferred = xmlNodeGetContent(cnode);
+				if (preferred) {
+					g_warning("Duplicate preferred-value element in language: previous value was '%s'",
+						  preferred);
+				} else {
+					preferred = xmlNodeGetContent(cnode);
+				}
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"suppress-script") == 0) {
-				suppress = xmlNodeGetContent(cnode);
+				if (suppress) {
+					g_warning("Duplicate suppress-script element in language: previous value was '%s'",
+						  suppress);
+				} else {
+					suppress = xmlNodeGetContent(cnode);
+				}
 			} else {
 				g_warning("Unknown node under /registry/language: %s", cnode->name);
 			}

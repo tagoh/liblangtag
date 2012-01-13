@@ -94,7 +94,7 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 	for (i = 0; i < n; i++) {
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 		xmlNodePtr cnode;
-		xmlChar *subtag = NULL, *desc = NULL;
+		xmlChar *subtag = NULL, *desc = NULL, *preferred = NULL;
 		lt_variant_t *le = NULL;
 		gchar *s;
 		GList *prefix_list = NULL, *l;
@@ -107,8 +107,16 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"subtag") == 0) {
-				subtag = xmlNodeGetContent(cnode);
-			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0) {
+				if (subtag) {
+					g_warning("Duplicate subtag element in variant: previous value was '%s'",
+						  subtag);
+				} else {
+					subtag = xmlNodeGetContent(cnode);
+				}
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"text") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"comments") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"deprecated") == 0) {
 				/* ignore it */
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
 				/* wonder if many descriptions helps something or is it a bug? */
@@ -117,19 +125,26 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"prefix") == 0) {
 				prefix_list = g_list_append(prefix_list,
 							    xmlNodeGetContent(cnode));
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"preferred-value") == 0) {
+				if (preferred) {
+					g_warning("Duplicate preferred-value element in variant: previous value was '%s'",
+						  preferred);
+				} else {
+					preferred = xmlNodeGetContent(cnode);
+				}
 			} else {
 				g_warning("Unknown node under /registry/variant: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 		if (!subtag) {
-			g_warning("No subtag node: description = '%s', prefix = '%s'",
-				  desc, prefix_list ? (gchar *)prefix_list->data : "N/A");
+			g_warning("No subtag node: description = '%s', prefix = '%s', preferred-value = '%s'",
+				  desc, prefix_list ? (gchar *)prefix_list->data : "N/A", preferred);
 			goto bail1;
 		}
 		if (!desc) {
-			g_warning("No description node: subtag = '%s', prefix = '%s'",
-				  subtag, prefix_list ? (gchar *)prefix_list->data : "N/A");
+			g_warning("No description node: subtag = '%s', prefix = '%s', preferred-value = '%s'",
+				  subtag, prefix_list ? (gchar *)prefix_list->data : "N/A", preferred);
 			goto bail1;
 		}
 		le = lt_variant_create();
@@ -145,6 +160,8 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 			xmlFree(l->data);
 		}
 		g_list_free(prefix_list);
+		if (preferred)
+			lt_variant_set_preferred_tag(le, (const gchar *)preferred);
 
 		s = g_strdup(lt_variant_get_tag(le));
 		g_hash_table_replace(variantdb->variant_entries,
@@ -155,6 +172,8 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 			xmlFree(subtag);
 		if (desc)
 			xmlFree(desc);
+		if (preferred)
+			xmlFree(preferred);
 		lt_variant_unref(le);
 	}
   bail:

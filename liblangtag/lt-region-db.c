@@ -96,7 +96,7 @@ lt_region_db_parse(lt_region_db_t  *regiondb,
 	for (i = 0; i < n; i++) {
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 		xmlNodePtr cnode;
-		xmlChar *subtag = NULL, *desc = NULL;
+		xmlChar *subtag = NULL, *desc = NULL, *preferred = NULL;
 		lt_region_t *le = NULL;
 		gchar *s;
 
@@ -108,26 +108,41 @@ lt_region_db_parse(lt_region_db_t  *regiondb,
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"subtag") == 0) {
-				subtag = xmlNodeGetContent(cnode);
-			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0) {
+				if (subtag) {
+					g_warning("Duplicate subtag element in region: previous value was '%s'",
+						  subtag);
+				} else {
+					subtag = xmlNodeGetContent(cnode);
+				}
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"text") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"deprecated") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"comments") == 0) {
 				/* ignore it */
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
 				/* wonder if many descriptions helps something. or is it a bug? */
 				if (!desc)
 					desc = xmlNodeGetContent(cnode);
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"preferred-value") == 0) {
+				if (preferred) {
+					g_warning("Duplicate preferred-value element in region: previous value was '%s'",
+						  preferred);
+				} else {
+					preferred = xmlNodeGetContent(cnode);
+				}
 			} else {
 				g_warning("Unknown node under /registry/region: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 		if (!subtag) {
-			g_warning("No subtag node: description = '%s'",
-				  desc);
+			g_warning("No subtag node: description = '%s', preferred-value = '%s'",
+				  desc, preferred);
 			goto bail1;
 		}
 		if (!desc) {
-			g_warning("No description node: subtag = '%s'",
-				  subtag);
+			g_warning("No description node: subtag = '%s', preferred-value = '%s'",
+				  subtag, preferred);
 			goto bail1;
 		}
 		le = lt_region_create();
@@ -138,6 +153,8 @@ lt_region_db_parse(lt_region_db_t  *regiondb,
 		}
 		lt_region_set_tag(le, (const gchar *)subtag);
 		lt_region_set_name(le, (const gchar *)desc);
+		if (preferred)
+			lt_region_set_preferred_tag(le, (const gchar *)preferred);
 
 		s = g_strdup(lt_region_get_tag(le));
 		g_hash_table_replace(regiondb->region_entries,
@@ -148,6 +165,8 @@ lt_region_db_parse(lt_region_db_t  *regiondb,
 			xmlFree(subtag);
 		if (desc)
 			xmlFree(desc);
+		if (preferred)
+			xmlFree(preferred);
 		lt_region_unref(le);
 	}
   bail:

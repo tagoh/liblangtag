@@ -33,6 +33,8 @@ struct _lt_extlang_t {
 	gchar    *tag;
 	gchar    *description;
 	gchar    *macrolanguage;
+	gchar    *preferred_tag;
+	gchar    *prefix;
 };
 
 /*< private >*/
@@ -59,6 +61,20 @@ lt_extlang_set_tag(lt_extlang_t *extlang,
 		lt_mem_remove_ref(&extlang->parent, extlang->tag);
 	extlang->tag = g_strdup(subtag);
 	lt_mem_add_ref(&extlang->parent, extlang->tag,
+		       (lt_destroy_func_t)g_free);
+}
+
+void
+lt_extlang_set_preferred_tag(lt_extlang_t *extlang,
+			     const gchar  *subtag)
+{
+	g_return_if_fail (extlang != NULL);
+	g_return_if_fail (subtag != NULL);
+
+	if (extlang->preferred_tag)
+		lt_mem_remove_ref(&extlang->parent, extlang->preferred_tag);
+	extlang->preferred_tag = g_strdup(subtag);
+	lt_mem_add_ref(&extlang->parent, extlang->preferred_tag,
 		       (lt_destroy_func_t)g_free);
 }
 
@@ -90,6 +106,20 @@ lt_extlang_set_macro_language(lt_extlang_t *extlang,
 		       (lt_destroy_func_t)g_free);
 }
 
+void
+lt_extlang_add_prefix(lt_extlang_t *extlang,
+		      const gchar  *prefix)
+{
+	g_return_if_fail (extlang != NULL);
+	g_return_if_fail (prefix != NULL);
+
+	if (extlang->prefix)
+		lt_mem_remove_ref(&extlang->parent, extlang->prefix);
+	extlang->prefix = g_strdup(prefix);
+	lt_mem_add_ref(&extlang->parent, extlang->prefix,
+		       (lt_destroy_func_t)g_free);
+}
+
 /*< public >*/
 lt_extlang_t *
 lt_extlang_ref(lt_extlang_t *extlang)
@@ -115,6 +145,14 @@ lt_extlang_get_tag(const lt_extlang_t *extlang)
 }
 
 const gchar *
+lt_extlang_get_preferred_tag(const lt_extlang_t *extlang)
+{
+	g_return_val_if_fail (extlang != NULL, NULL);
+
+	return extlang->preferred_tag;
+}
+
+const gchar *
 lt_extlang_get_name(const lt_extlang_t *extlang)
 {
 	g_return_val_if_fail (extlang != NULL, NULL);
@@ -130,10 +168,20 @@ lt_extlang_get_macro_language(const lt_extlang_t *extlang)
 	return extlang->macrolanguage;
 }
 
+const gchar *
+lt_extlang_get_prefix(const lt_extlang_t *extlang)
+{
+	g_return_val_if_fail (extlang != NULL, NULL);
+
+	return extlang->prefix;
+}
+
 void
 lt_extlang_dump(const lt_extlang_t *extlang)
 {
 	const gchar *macrolang = lt_extlang_get_macro_language(extlang);
+	const gchar *preferred = lt_extlang_get_preferred_tag(extlang);
+	const gchar *prefix = lt_extlang_get_prefix(extlang);
 	GString *string = g_string_new(NULL);
 
 	if (macrolang) {
@@ -141,6 +189,22 @@ lt_extlang_dump(const lt_extlang_t *extlang)
 			g_string_append(string, " (");
 		g_string_append_printf(string, "macrolanguage: %s",
 				       macrolang);
+	}
+	if (preferred) {
+		if (string->len == 0)
+			g_string_append(string, " (");
+		else
+			g_string_append(string, ", ");
+		g_string_append_printf(string, "preferred-value: %s",
+				       preferred);
+	}
+	if (prefix) {
+		if (string->len == 0)
+			g_string_append(string, " (");
+		else
+			g_string_append(string, ", ");
+		g_string_append_printf(string, "prefix: %s",
+				       prefix);
 	}
 	if (string->len > 0)
 		g_string_append(string, ")");

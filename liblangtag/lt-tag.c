@@ -323,15 +323,15 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    tag->extlang = lt_extlang_db_lookup(extlangdb, token);
 			    lt_extlang_db_unref(extlangdb);
 			    if (tag->extlang) {
-				    const gchar *macrolang = lt_extlang_get_macro_language(tag->extlang);
+				    const gchar *prefix = lt_extlang_get_prefix(tag->extlang);
 				    const gchar *subtag = lt_extlang_get_tag(tag->extlang);
 				    const gchar *lang = lt_lang_get_better_tag(tag->language);
 
-				    if (macrolang &&
-					g_ascii_strcasecmp(macrolang, lang) != 0) {
+				    if (prefix &&
+					g_ascii_strcasecmp(prefix, lang) != 0) {
 					    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 							"extlang '%s' is supposed to be used with %s, but %s",
-							subtag, macrolang, lang);
+							subtag, prefix, lang);
 					    lt_extlang_unref(tag->extlang);
 					    tag->extlang = NULL;
 				    } else {
@@ -691,14 +691,24 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 	}
 	string = g_string_new(NULL);
 	if (tag->grandfathered) {
-		g_string_append(string, lt_grandfathered_get_tag(tag->grandfathered));
+		g_string_append(string, lt_grandfathered_get_better_tag(tag->grandfathered));
 		goto bail1;
 	}
 
 	if (tag->language) {
+		gsize len;
+
 		g_string_append(string, lt_lang_get_better_tag(tag->language));
 		if (tag->extlang) {
-			g_string_append_printf(string, "-%s", lt_extlang_get_tag(tag->extlang));
+			const gchar *preferred = lt_extlang_get_preferred_tag(tag->extlang);
+
+			if (preferred) {
+				g_string_truncate(string, 0);
+				g_string_append(string, preferred);
+			} else {
+				g_string_append_printf(string, "-%s",
+						       lt_extlang_get_tag(tag->extlang));
+			}
 		}
 		if (tag->script) {
 			const gchar *script = lt_script_get_tag(tag->script);
@@ -709,13 +719,20 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 				g_string_append_printf(string, "-%s", script);
 		}
 		if (tag->region) {
-			g_string_append_printf(string, "-%s", lt_region_get_tag(tag->region));
+			g_string_append_printf(string, "-%s", lt_region_get_better_tag(tag->region));
 		}
 		l = tag->variants;
+		len = string->len;
 		while (l != NULL) {
 			lt_variant_t *variant = l->data;
+			const gchar *better = lt_variant_get_better_tag(variant);
+			const gchar *s = lt_variant_get_tag(variant);
 
-			g_string_append_printf(string, "-%s", lt_variant_get_tag(variant));
+			if (better && g_ascii_strcasecmp(s, better) != 0) {
+				/* ignore all of variants prior to this one */
+				g_string_truncate(string, len);
+			}
+			g_string_append_printf(string, "-%s", better ? better : s);
 			l = g_list_next(l);
 		}
 		l = tag->extensions;

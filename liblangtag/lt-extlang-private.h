@@ -30,10 +30,14 @@ G_BEGIN_DECLS
 lt_extlang_t *lt_extlang_create            (void);
 void          lt_extlang_set_tag           (lt_extlang_t *extlang,
                                             const gchar  *subtag);
+void          lt_extlang_set_preferred_tag (lt_extlang_t *extlang,
+                                            const gchar  *subtag);
 void          lt_extlang_set_name          (lt_extlang_t *extlang,
                                             const gchar  *description);
 void          lt_extlang_set_macro_language(lt_extlang_t *extlang,
                                             const gchar  *macrolanguage);
+void          lt_extlang_add_prefix        (lt_extlang_t *extlang,
+                                            const gchar  *prefix);
 
 G_END_DECLS
 

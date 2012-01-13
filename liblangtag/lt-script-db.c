@@ -105,8 +105,15 @@ lt_script_db_parse(lt_script_db_t  *scriptdb,
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"subtag") == 0) {
-				subtag = xmlNodeGetContent(cnode);
-			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0) {
+				if (subtag) {
+					g_warning("Duplicate subtag element in script: previous value was '%s'",
+						  subtag);
+				} else {
+					subtag = xmlNodeGetContent(cnode);
+				}
+			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"added") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"text") == 0 ||
+				   xmlStrcmp(cnode->name, (const xmlChar *)"comments") == 0) {
 				/* ignore it */
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"description") == 0) {
 				/* wonder if many descriptions helps something. or is it a bug? */
