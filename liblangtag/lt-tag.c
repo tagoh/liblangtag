@@ -198,6 +198,13 @@ lt_tag_scanner_is_eof(lt_tag_scanner_t *scanner)
 		scanner->position >= scanner->length;
 }
 
+static gint
+_lt_tag_variant_compare(gconstpointer a,
+			gconstpointer b)
+{
+	return (gulong)a - (gulong)b;
+}
+
 static gboolean
 lt_tag_parse_prestate(lt_tag_t        *tag,
 		      const gchar     *token,
@@ -274,7 +281,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    } else {
 			      invalid_tag:
 				    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-						"Invalid tag: %s", tag->tag_string);
+						"Invalid language subtag: %s", tag->tag_string);
 				    break;
 			    }
 		    } else if (length >= 2 && length <= 3) {
@@ -428,8 +435,15 @@ lt_tag_parse_state(lt_tag_t        *tag,
 						    lt_mem_add_ref(&tag->parent, tag->variants,
 								   (lt_destroy_func_t)_lt_tag_variants_list_free);
 					    } else {
-						    tag->variants = g_list_append(tag->variants,
-										  variant);
+						    if (g_list_find_custom(tag->variants, variant, _lt_tag_variant_compare)) {
+							    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
+									"Duplicate variants: %s",
+									lt_variant_get_tag(variant));
+							    lt_variant_unref(variant);
+						    } else {
+							    tag->variants = g_list_append(tag->variants,
+											  variant);
+						    }
 					    }
 					    /* multiple variants are allowed. */
 					    *state = STATE_PRE_VARIANT;
@@ -646,7 +660,8 @@ lt_tag_parse(lt_tag_t     *tag,
 				break;
 		}
 	}
-	if (state != STATE_PRE_EXTLANG &&
+	if (!err &&
+	    state != STATE_PRE_EXTLANG &&
 	    state != STATE_PRE_SCRIPT &&
 	    state != STATE_PRE_REGION &&
 	    state != STATE_PRE_VARIANT &&
