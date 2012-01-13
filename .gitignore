@@ -31,7 +31,9 @@ data/*\.in
 !data/*\.in\.in
 data/*\.sh
 data/*\.conf
+data/language-subtag-registry
 data/language-subtag-registry.xml
+data/reg2xml
 depcomp
 docs/html
 docs/tmpl
