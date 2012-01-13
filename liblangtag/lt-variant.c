@@ -211,3 +211,16 @@ lt_variant_dump(const lt_variant_t *variant)
 
 	g_string_free(string, TRUE);
 }
+
+gboolean
+lt_variant_compare(const lt_variant_t *v1,
+		   const lt_variant_t *v2)
+{
+	g_return_val_if_fail (v1 != NULL, FALSE);
+	g_return_val_if_fail (v2 != NULL, FALSE);
+
+	if (v1 == v2)
+		return TRUE;
+
+	return g_strcmp0(lt_variant_get_tag(v1), lt_variant_get_tag(v2)) == 0;
+}

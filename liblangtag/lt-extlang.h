@@ -41,6 +41,8 @@ const gchar  *lt_extlang_get_name          (const lt_extlang_t *extlang);
 const gchar  *lt_extlang_get_macro_language(const lt_extlang_t *extlang);
 const gchar  *lt_extlang_get_prefix        (const lt_extlang_t *extlang);
 void          lt_extlang_dump              (const lt_extlang_t *extlang);
+gboolean      lt_extlang_compare           (const lt_extlang_t *v1,
+					    const lt_extlang_t *v2);
 
 G_END_DECLS
 

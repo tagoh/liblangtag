@@ -214,3 +214,16 @@ lt_extlang_dump(const lt_extlang_t *extlang)
 		string->str);
 	g_string_free(string, TRUE);
 }
+
+gboolean
+lt_extlang_compare(const lt_extlang_t *v1,
+		   const lt_extlang_t *v2)
+{
+	g_return_val_if_fail (v1 != NULL, FALSE);
+	g_return_val_if_fail (v2 != NULL, FALSE);
+
+	if (v1 == v2)
+		return TRUE;
+
+	return g_strcmp0(lt_extlang_get_tag(v1), lt_extlang_get_tag(v2)) == 0;
+}

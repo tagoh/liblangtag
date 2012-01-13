@@ -39,6 +39,8 @@ const gchar *lt_script_get_name           (const lt_script_t *script);
 const gchar *lt_script_get_tag            (const lt_script_t *script);
 void         lt_script_dump               (const lt_script_t *script);
 const gchar *lt_script_convert_to_modifier(const lt_script_t *script);
+gboolean     lt_script_compare            (const lt_script_t *v1,
+					   const lt_script_t *v2);
 
 G_END_DECLS
 

@@ -160,3 +160,16 @@ lt_region_dump(const lt_region_t *region)
 		string->str);
 	g_string_free(string, TRUE);
 }
+
+gboolean
+lt_region_compare(const lt_region_t *v1,
+		  const lt_region_t *v2)
+{
+	g_return_val_if_fail (v1 != NULL, FALSE);
+	g_return_val_if_fail (v2 != NULL, FALSE);
+
+	if (v1 == v2)
+		return TRUE;
+
+	return g_strcmp0(lt_region_get_tag(v1), lt_region_get_tag(v2)) == 0;
+}

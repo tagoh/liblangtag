@@ -162,3 +162,16 @@ lt_grandfathered_dump(const lt_grandfathered_t *grandfathered)
 		string->str);
 	g_string_free(string, TRUE);
 }
+
+gboolean
+lt_grandfathered_compare(const lt_grandfathered_t *v1,
+			 const lt_grandfathered_t *v2)
+{
+	g_return_val_if_fail (v1 != NULL, FALSE);
+	g_return_val_if_fail (v2 != NULL, FALSE);
+
+	if (v1 == v2)
+		return TRUE;
+
+	return g_strcmp0(lt_grandfathered_get_tag(v1), lt_grandfathered_get_tag(v2)) == 0;
+}

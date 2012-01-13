@@ -40,6 +40,8 @@ const gchar *lt_region_get_better_tag   (const lt_region_t *region);
 const gchar *lt_region_get_tag          (const lt_region_t *region);
 const gchar *lt_region_get_preferred_tag(const lt_region_t *region);
 void         lt_region_dump             (const lt_region_t *region);
+gboolean     lt_region_compare          (const lt_region_t *v1,
+					 const lt_region_t *v2);
 
 G_END_DECLS
 

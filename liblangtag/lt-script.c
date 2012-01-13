@@ -148,3 +148,16 @@ lt_script_convert_to_modifier(const lt_script_t *script)
 
 	return NULL;
 }
+
+gboolean
+lt_script_compare(const lt_script_t *v1,
+		  const lt_script_t *v2)
+{
+	g_return_val_if_fail (v1 != NULL, FALSE);
+	g_return_val_if_fail (v2 != NULL, FALSE);
+
+	if (v1 == v2)
+		return TRUE;
+
+	return g_strcmp0(lt_script_get_tag(v1), lt_script_get_tag(v2)) == 0;
+}

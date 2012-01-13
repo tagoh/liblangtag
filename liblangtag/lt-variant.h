@@ -41,6 +41,8 @@ const gchar  *lt_variant_get_preferred_tag(const lt_variant_t *variant);
 const gchar  *lt_variant_get_name         (const lt_variant_t *variant);
 const GList  *lt_variant_get_prefix       (const lt_variant_t *variant);
 void          lt_variant_dump             (const lt_variant_t *variant);
+gboolean      lt_variant_compare          (const lt_variant_t *v1,
+					   const lt_variant_t *v2);
 
 G_END_DECLS
 

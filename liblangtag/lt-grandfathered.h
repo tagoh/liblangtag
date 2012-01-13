@@ -40,6 +40,8 @@ const gchar        *lt_grandfathered_get_tag          (const lt_grandfathered_t 
 const gchar        *lt_grandfathered_get_preferred_tag(const lt_grandfathered_t *grandfathered);
 const gchar        *lt_grandfathered_get_name         (const lt_grandfathered_t *grandfathered);
 void                lt_grandfathered_dump             (const lt_grandfathered_t *grandfathered);
+gboolean            lt_grandfathered_compare          (const lt_grandfathered_t *v1,
+						       const lt_grandfathered_t *v2);
 
 G_END_DECLS
 
