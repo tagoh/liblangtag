@@ -39,23 +39,24 @@ main(int    argc,
 	if (g_strcmp0(argv[1], "locale") == 0) {
 		gchar *l;
 
-		lt_tag_parse(tag, argv[2], NULL);
-		l = lt_tag_convert_to_locale(tag, NULL);
-		g_print("%s -> %s\n", argv[2], l);
-		g_free(l);
+		if (lt_tag_parse(tag, argv[2], NULL)) {
+			l = lt_tag_convert_to_locale(tag, NULL);
+			g_print("%s -> %s\n", argv[2], l);
+			g_free(l);
+		}
 	} else if (g_strcmp0(argv[1], "canonicalize") == 0) {
 		gchar *s;
 
-		lt_tag_parse(tag, argv[2], NULL);
-		s = lt_tag_canonicalize(tag, NULL);
-		g_print("%s -> %s\n", argv[2], s);
-		g_free(s);
+		if (lt_tag_parse(tag, argv[2], NULL)) {
+			s = lt_tag_canonicalize(tag, NULL);
+			g_print("%s -> %s\n", argv[2], s);
+			g_free(s);
+		}
 	} else if (g_strcmp0(argv[1], "dump") == 0) {
-		lt_tag_parse(tag, argv[2], NULL);
-		lt_tag_dump(tag);
+		if (lt_tag_parse(tag, argv[2], NULL))
+			lt_tag_dump(tag);
 	}
 	lt_tag_unref(tag);
-	lt_db_finalize();
 	lt_db_finalize();
 
 	return 0;
