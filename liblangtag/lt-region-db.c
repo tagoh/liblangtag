@@ -36,7 +36,6 @@
 struct _lt_region_db_t {
 	lt_mem_t    parent;
 	GHashTable *region_entries;
-	GHashTable *region_codes;
 };
 
 
@@ -202,6 +201,7 @@ lt_region_db_new(void)
 
 	if (retval) {
 		GError *err = NULL;
+		lt_region_t *le;
 
 		retval->region_entries = g_hash_table_new_full(g_str_hash,
 							       g_str_equal,
@@ -209,12 +209,19 @@ lt_region_db_new(void)
 							       (GDestroyNotify)lt_region_unref);
 		lt_mem_add_ref(&retval->parent, retval->region_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
-		retval->region_codes = g_hash_table_new_full(g_str_hash,
-							     g_str_equal,
-							     g_free,
-							     (GDestroyNotify)lt_region_unref);
-		lt_mem_add_ref(&retval->parent, retval->region_codes,
-			       (lt_destroy_func_t)g_hash_table_destroy);
+
+		le = lt_region_create();
+		lt_region_set_tag(le, "*");
+		lt_region_set_name(le, "Wildcard entry");
+		g_hash_table_replace(retval->region_entries,
+				     g_strdup(lt_region_get_tag(le)),
+				     le);
+		le = lt_region_create();
+		lt_region_set_tag(le, "");
+		lt_region_set_name(le, "Empty entry");
+		g_hash_table_replace(retval->region_entries,
+				     g_strdup(lt_region_get_tag(le)),
+				     le);
 
 		lt_region_db_parse(retval, &err);
 		if (err) {

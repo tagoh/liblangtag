@@ -187,6 +187,7 @@ lt_script_db_new(void)
 
 	if (retval) {
 		GError *err = NULL;
+		lt_script_t *le;
 
 		retval->script_entries = g_hash_table_new_full(g_str_hash,
 							       g_str_equal,
@@ -194,6 +195,19 @@ lt_script_db_new(void)
 							       (GDestroyNotify)lt_script_unref);
 		lt_mem_add_ref(&retval->parent, retval->script_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
+
+		le = lt_script_create();
+		lt_script_set_tag(le, "*");
+		lt_script_set_name(le, "Wildcard entry");
+		g_hash_table_replace(retval->script_entries,
+				     g_strdup(lt_script_get_tag(le)),
+				     le);
+		le = lt_script_create();
+		lt_script_set_tag(le, "");
+		lt_script_set_name(le, "Empty entry");
+		g_hash_table_replace(retval->script_entries,
+				     g_strdup(lt_script_get_tag(le)),
+				     le);
 
 		lt_script_db_parse(retval, &err);
 		if (err) {

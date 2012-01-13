@@ -209,6 +209,7 @@ lt_variant_db_new(void)
 
 	if (retval) {
 		GError *err = NULL;
+		lt_variant_t *le;
 
 		retval->variant_entries = g_hash_table_new_full(g_str_hash,
 								g_str_equal,
@@ -216,6 +217,19 @@ lt_variant_db_new(void)
 								(GDestroyNotify)lt_variant_unref);
 		lt_mem_add_ref(&retval->parent, retval->variant_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
+
+		le = lt_variant_create();
+		lt_variant_set_tag(le, "*");
+		lt_variant_set_name(le, "Wildcard entry");
+		g_hash_table_replace(retval->variant_entries,
+				     g_strdup(lt_variant_get_tag(le)),
+				     le);
+		le = lt_variant_create();
+		lt_variant_set_tag(le, "");
+		lt_variant_set_name(le, "Empty entry");
+		g_hash_table_replace(retval->variant_entries,
+				     g_strdup(lt_variant_get_tag(le)),
+				     le);
 
 		lt_variant_db_parse(retval, &err);
 		if (err) {
