@@ -233,6 +233,7 @@ lt_lang_db_new(void)
 
 	if (retval) {
 		GError *err = NULL;
+		lt_lang_t *le;
 
 		retval->lang_entries = g_hash_table_new_full(g_str_hash,
 							     g_str_equal,
@@ -240,6 +241,13 @@ lt_lang_db_new(void)
 							     (GDestroyNotify)lt_lang_unref);
 		lt_mem_add_ref(&retval->parent, retval->lang_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
+
+		le = lt_lang_create();
+		lt_lang_set_tag(le, "*");
+		lt_lang_set_name(le, "Wildcard entry");
+		g_hash_table_replace(retval->lang_entries,
+				     g_strdup(lt_lang_get_tag(le)),
+				     le);
 
 		lt_lang_db_parse(retval, &err);
 		if (err) {
