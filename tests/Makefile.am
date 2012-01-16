@@ -6,6 +6,7 @@ INCLUDES =					\
 	-I$(top_srcdir)/liblangtag		\
 	-I$(top_srcdir)				\
 	$(GLIB_CFLAGS)				\
+	$(CHECK_CFLAGS)				\
 	$(NULL)
 DEPS =							\
 	$(top_builddir)/liblangtag/liblangtag.la	\
@@ -13,6 +14,7 @@ DEPS =							\
 LIBS =							\
 	@LDFLAGS@					\
 	$(top_builddir)/liblangtag/liblangtag.la	\
+	$(CHECK_LIBS)					\
 	$(NULL)
 EXTRA_DIST =					\
 	$(NULL)
@@ -23,8 +25,10 @@ TESTS =						\
 ##
 # Local definitions
 common_private_headers =			\
+	main.h					\
 	$(NULL)
 common_sources =				\
+	main.c					\
 	$(NULL)
 
 ##
@@ -45,6 +49,23 @@ noinst_PROGRAMS =				\
 	test-tag				\
 	test-variant-db				\
 	$(NULL)
+if ENABLE_UNIT_TEST
+testcases =					\
+	check-extlang				\
+	check-grandfathered			\
+	check-lang				\
+	check-region				\
+	check-script				\
+	check-tag				\
+	check-variant				\
+	$(NULL)
+noinst_PROGRAMS +=		\
+	$(testcases)		\
+	$(NULL)
+TESTS +=			\
+	$(testcases)		\
+	$(NULL)
+endif
 #
 test_extlang_db_SOURCES =	\
 	extlang-db.c		\
@@ -73,3 +94,34 @@ test_tag_SOURCES =	\
 test_variant_db_SOURCES =	\
 	variant-db.c		\
 	$(NULL)
+#
+if ENABLE_UNIT_TEST
+check_extlang_SOURCES =		\
+	check-extlang.c		\
+	$(common_sources)	\
+	$(NULL)
+check_grandfathered_SOURCES =	\
+	check-grandfathered.c	\
+	$(common_sources)	\
+	$(NULL)
+check_lang_SOURCES =		\
+	check-lang.c		\
+	$(common_sources)	\
+	$(NULL)
+check_region_SOURCES =		\
+	check-region.c		\
+	$(common_sources)	\
+	$(NULL)
+check_script_SOURCES =		\
+	check-script.c		\
+	$(common_sources)	\
+	$(NULL)
+check_tag_SOURCES =		\
+	check-tag.c		\
+	$(common_sources)	\
+	$(NULL)
+check_variant_SOURCES =		\
+	check-variant.c		\
+	$(common_sources)	\
+	$(NULL)
+endif

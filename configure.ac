@@ -80,8 +80,12 @@ dnl check pkg-config stuff
 dnl ======================================================================
 PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= $LIBXML2_REQUIRED)
 PKG_CHECK_MODULES(GOBJECT, gobject-2.0 >= $GOBJECT_REQUIRED, has_gobject=yes, has_gobject=no)
+PKG_CHECK_MODULES(CHECK, check >= $CHECK_REQUIRED,
+			 [use_check="yes"],
+			 [use_check="no"])
 
 AM_CONDITIONAL(ENABLE_GOBJECT, test x$has_gobject != xno)
+AM_CONDITIONAL(ENABLE_UNIT_TEST, test x$use_check != xno)
 
 dnl ======================================================================
 dnl check another libraries

@@ -62,4 +62,6 @@ po/\.intltool*
 po/Makefile*
 po/POTFILES
 stamp*
+tests/check-*
+!tests/check-*\.c
 tests/test-*
