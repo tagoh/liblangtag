@@ -59,6 +59,7 @@ liblangtag_private_headers =			\
 	lt-mem.h				\
 	lt-region-private.h			\
 	lt-script-private.h			\
+	lt-tag-private.h			\
 	lt-utils.h				\
 	lt-variant-private.h			\
 	$(NULL)
