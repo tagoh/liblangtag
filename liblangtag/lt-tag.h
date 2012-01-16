@@ -33,22 +33,27 @@ G_BEGIN_DECLS
 typedef struct _lt_tag_t	lt_tag_t;
 
 
-lt_tag_t *lt_tag_new              (void);
-lt_tag_t *lt_tag_ref              (lt_tag_t        *tag);
-void      lt_tag_unref            (lt_tag_t        *tag);
-gboolean  lt_tag_parse            (lt_tag_t        *tag,
-                                   const gchar     *langtag,
-                                   GError         **error);
-gchar    *lt_tag_canonicalize     (lt_tag_t        *tag,
-                                   GError         **error);
-gchar    *lt_tag_convert_to_locale(lt_tag_t        *tag,
-                                   GError         **error);
-void      lt_tag_dump             (const lt_tag_t  *tag);
-gboolean  lt_tag_compare          (const lt_tag_t  *v1,
-				   const lt_tag_t  *v2);
-gboolean  lt_tag_match            (const lt_tag_t  *v1,
-                                   const gchar     *v2,
-				   GError         **error);
+lt_tag_t    *lt_tag_new              (void);
+lt_tag_t    *lt_tag_ref              (lt_tag_t        *tag);
+void         lt_tag_unref            (lt_tag_t        *tag);
+gboolean     lt_tag_parse            (lt_tag_t        *tag,
+                                      const gchar     *langtag,
+                                      GError         **error);
+void         lt_tag_clear            (lt_tag_t        *tag);
+gboolean     lt_tag_lookup           (lt_tag_t        *tag,
+                                      const gchar     *tag_string,
+                                      GError         **error);
+const gchar *lt_tag_get_string       (lt_tag_t        *tag);
+gchar       *lt_tag_canonicalize     (lt_tag_t        *tag,
+                                      GError         **error);
+gchar       *lt_tag_convert_to_locale(lt_tag_t        *tag,
+                                      GError         **error);
+void         lt_tag_dump             (const lt_tag_t  *tag);
+gboolean     lt_tag_compare          (const lt_tag_t  *v1,
+                                      const lt_tag_t  *v2);
+gboolean     lt_tag_match            (const lt_tag_t  *v1,
+                                      const gchar     *v2,
+                                      GError         **error);
 
 G_END_DECLS
 
