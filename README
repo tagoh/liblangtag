@@ -1,2 +1,19 @@
+liblangtag
+=============
+
 An interface library to access tags for identifying languages
+
+
+Requirements
+===============
+
+- libxml2
+- GLib 2.0
+- GObject Introspection (if you like)
+
+References
+=============
+
+- RFC4647 - Matching of Language Tags
+- RFC5646 - Tags for Identifying Languages
 
