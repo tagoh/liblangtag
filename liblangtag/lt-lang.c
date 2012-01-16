@@ -261,11 +261,17 @@ gboolean
 lt_lang_compare(const lt_lang_t *v1,
 		const lt_lang_t *v2)
 {
-	g_return_val_if_fail (v1 != NULL, FALSE);
-	g_return_val_if_fail (v2 != NULL, FALSE);
+	const gchar *s1, *s2;
 
 	if (v1 == v2)
 		return TRUE;
 
-	return g_strcmp0(lt_lang_get_tag(v1), lt_lang_get_tag(v2)) == 0;
+	s1 = v1 ? lt_lang_get_tag(v1) : NULL;
+	s2 = v2 ? lt_lang_get_tag(v2) : NULL;
+
+	if (g_strcmp0(s1, "*") == 0 ||
+	    g_strcmp0(s2, "*") == 0)
+		return TRUE;
+
+	return g_strcmp0(s1, s2) == 0;
 }
