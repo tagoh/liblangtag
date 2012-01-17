@@ -35,7 +35,7 @@
 
 /**
  * SECTION:lt-extlang-db
- * @Short_Description: An interface to access Extlang Database.
+ * @Short_Description: An interface to access Extlang Database
  * @Title: Database - Extlang
  *
  * This class provides an interface to access Extlang database. which has been
