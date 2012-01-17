@@ -33,6 +33,14 @@
 #include "lt-grandfathered-db.h"
 
 
+/**
+ * SECTION: lt-grandfathered-db
+ * @Short_Description: An interface to access Grandfathered Database
+ * @Title: Database - Grandfathered
+ *
+ * This class provides an interface to access Grandfathered database.
+ * which has been registered under RFC 3066 and mostly deprecated.
+ */
 struct _lt_grandfathered_db_t {
 	lt_mem_t    parent;
 	GHashTable *grandfathered_entries;
@@ -192,6 +200,13 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 }
 
 /*< public >*/
+/**
+ * lt_grandfathered_db_new:
+ *
+ * Create a new instance of a #lt_grandfathered_db_t.
+ *
+ * Returns: (transfer full): a new instance of #lt_grandfathered_db_t.
+ */
 lt_grandfathered_db_t *
 lt_grandfathered_db_new(void)
 {
@@ -219,6 +234,14 @@ lt_grandfathered_db_new(void)
 	return retval;
 }
 
+/**
+ * lt_grandfathered_db_ref:
+ * @grandfathereddb: a #lt_grandfathered_db_t.
+ *
+ * Increases the reference count of @grandfathereddb.
+ *
+ * Returns: (transfer none): the same @grandfathereddb object.
+ */
 lt_grandfathered_db_t *
 lt_grandfathered_db_ref(lt_grandfathered_db_t *grandfathereddb)
 {
@@ -227,6 +250,13 @@ lt_grandfathered_db_ref(lt_grandfathered_db_t *grandfathereddb)
 	return lt_mem_ref(&grandfathereddb->parent);
 }
 
+/**
+ * lt_grandfathered_db_unref:
+ * @grandfathereddb: a #lt_grandfathered_db_t.
+ *
+ * Decreases the reference count of @grandfathereddb. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_grandfathered_db_unref(lt_grandfathered_db_t *grandfathereddb)
 {
@@ -234,6 +264,15 @@ lt_grandfathered_db_unref(lt_grandfathered_db_t *grandfathereddb)
 		lt_mem_unref(&grandfathereddb->parent);
 }
 
+/**
+ * lt_grandfathered_db_lookup:
+ * @grandfathereddb: a #lt_grandfathered_db_t.
+ * @tag: a tag name to lookup.
+ *
+ * Lookup @lt_grandfathered_t if @tag is valid and registered into the database.
+ *
+ * Returns: (transfer full): a #lt_grandfathered_t that meets with @tag.
+ */
 lt_grandfathered_t *
 lt_grandfathered_db_lookup(lt_grandfathered_db_t *grandfathereddb,
 			   const gchar           *tag)
