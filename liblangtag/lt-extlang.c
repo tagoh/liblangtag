@@ -215,7 +215,7 @@ lt_extlang_get_name(const lt_extlang_t *extlang)
  * This is available only when the subtag is registered as the macrolanguage
  * in ISO 639-3.
  *
- * Returns: a macrolanguage name or %NULL.
+ * Returns: a macrolanguage string or %NULL.
  */
 const gchar *
 lt_extlang_get_macro_language(const lt_extlang_t *extlang)
