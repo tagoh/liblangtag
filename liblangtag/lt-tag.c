@@ -243,6 +243,7 @@ lt_tag_fill_wildcard(lt_tag_t       *tag,
 		     lt_tag_state_t  end)
 {
 	lt_tag_state_t i;
+	lt_lang_db_t *langdb;
 	lt_extlang_db_t *extlangdb;
 	lt_script_db_t *scriptdb;
 	lt_region_db_t *regiondb;
@@ -250,6 +251,13 @@ lt_tag_fill_wildcard(lt_tag_t       *tag,
 
 	for (i = begin; i < end; i++) {
 		switch (i) {
+		    case STATE_LANG:
+			    langdb = lt_db_get_lang();
+			    tag->language = lt_lang_db_lookup(langdb, "*");
+			    lt_mem_add_ref(&tag->parent, tag->language,
+					   (lt_destroy_func_t)lt_lang_unref);
+			    lt_lang_db_unref(langdb);
+			    break;
 		    case STATE_EXTLANG:
 			    extlangdb = lt_db_get_extlang();
 			    tag->extlang = lt_extlang_db_lookup(extlangdb, "*");
@@ -372,7 +380,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    } else {
 			      invalid_tag:
 				    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-						"Invalid language subtag: %s", tag->tag_string);
+						"Invalid language subtag: %s", token);
 				    break;
 			    }
 		    } else if (length >= 2 && length <= 3) {
@@ -704,7 +712,10 @@ _lt_tag_parse(lt_tag_t        *tag,
 				break;
 			if (allow_wildcard && g_strcmp0(token, "*") == 0) {
 				wildcard = *state;
-				*state -= 1;
+				if (*state == STATE_LANG)
+					*state += 1;
+				else
+					*state -= 1;
 			} else {
 				if (!lt_tag_parse_state(tag, token, len, state, &err))
 					break;
@@ -716,7 +727,7 @@ _lt_tag_parse(lt_tag_t        *tag,
 		}
 	}
 	if (wildcard != STATE_NONE) {
-		lt_tag_fill_wildcard(tag, wildcard, *state - 1);
+		lt_tag_fill_wildcard(tag, wildcard, STATE_END);
 	}
 	if (!err &&
 	    *state != STATE_PRE_EXTLANG &&
@@ -1141,15 +1152,7 @@ lt_tag_match(const lt_tag_t  *v1,
 	g_return_val_if_fail (v2 != NULL, FALSE);
 
 	t2 = lt_tag_new();
-	if (v2[0] == '*') {
-		lt_lang_db_t *db = lt_db_get_lang();
-
-		t2->language = lt_lang_db_lookup(db, "*");
-		lt_mem_add_ref(&t2->parent, t2->language,
-			       (lt_destroy_func_t)lt_lang_unref);
-	} else {
-		state = lt_tag_parse_wildcard(t2, v2, &err);
-	}
+	state = lt_tag_parse_wildcard(t2, v2, &err);
 	if (err)
 		goto bail;
 	if (state > STATE_EXTLANG && !t2->extlang && v1->extlang) {

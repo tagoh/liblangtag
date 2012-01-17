@@ -52,6 +52,7 @@ enum _lt_tag_state_t {
 	STATE_PRIVATEUSETOKEN,
 	STATE_IN_PRIVATEUSETOKEN,
 	STATE_PRIVATEUSETOKEN2,
+	STATE_END
 };
 
 typedef enum _lt_tag_state_t	lt_tag_state_t;
