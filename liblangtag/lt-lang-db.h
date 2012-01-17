@@ -38,7 +38,7 @@ lt_lang_db_t *lt_lang_db_new   (void);
 lt_lang_db_t *lt_lang_db_ref   (lt_lang_db_t *langdb);
 void          lt_lang_db_unref (lt_lang_db_t *langdb);
 lt_lang_t    *lt_lang_db_lookup(lt_lang_db_t *langdb,
-                                const gchar  *code);
+                                const gchar  *subtag);
 
 G_END_DECLS
 

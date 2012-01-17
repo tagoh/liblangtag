@@ -32,6 +32,14 @@
 #include "lt-lang-db.h"
 
 
+/**
+ * SECTION: lt-lang-db
+ * @Short_Description: An interface to access Language Database
+ * @Title: Database - Language
+ *
+ * This class provides an interface to access Language database. which has been
+ * registered as ISO 639 code.
+ */
 struct _lt_lang_db_t {
 	lt_mem_t    parent;
 	GHashTable *lang_entries;
@@ -226,6 +234,13 @@ lt_lang_db_parse(lt_lang_db_t  *langdb,
 }
 
 /*< public >*/
+/**
+ * lt_lang_db_new:
+ *
+ * Create a new instance of a #lt_lang_db_t.
+ *
+ * Returns: (transfer full): a new instance of #lt_lang_db_t.
+ */
 lt_lang_db_t *
 lt_lang_db_new(void)
 {
@@ -261,33 +276,57 @@ lt_lang_db_new(void)
 	return retval;
 }
 
+/**
+ * lt_lang_db_ref:
+ * @langdb: a #lt_lang_db_t.
+ *
+ * Increases the reference count of @langdb.
+ *
+ * Returns: (transfer none): the same @langdb object.
+ */
 lt_lang_db_t *
-lt_lang_db_ref(lt_lang_db_t *lang)
+lt_lang_db_ref(lt_lang_db_t *langdb)
 {
-	g_return_val_if_fail (lang != NULL, NULL);
+	g_return_val_if_fail (langdb != NULL, NULL);
 
-	return lt_mem_ref(&lang->parent);
+	return lt_mem_ref(&langdb->parent);
 }
 
+/**
+ * lt_lang_db_unref:
+ * @langdb: a #lt_lang_db_t.
+ *
+ * Decreases the reference count of @langdb. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
-lt_lang_db_unref(lt_lang_db_t *lang)
+lt_lang_db_unref(lt_lang_db_t *langdb)
 {
-	if (lang)
-		lt_mem_unref(&lang->parent);
+	if (langdb)
+		lt_mem_unref(&langdb->parent);
 }
 
+/**
+ * lt_lang_db_lookup:
+ * @langdb: a #lt_lang_db_t.
+ * @subtag: a subtag name to lookup.
+ *
+ * Lookup @lt_lang_t if @subtag is valid and registered into the database.
+ *
+ * Returns: (transfer full): a #lt_lang_t that meets with @subtag.
+ */
 lt_lang_t *
-lt_lang_db_lookup(lt_lang_db_t *lang,
-		  const gchar  *code)
+lt_lang_db_lookup(lt_lang_db_t *langdb,
+		  const gchar  *subtag)
 {
 	lt_lang_t *retval;
 	gchar *s;
 
-	g_return_val_if_fail (lang != NULL, NULL);
-	g_return_val_if_fail (code != NULL, NULL);
+	g_return_val_if_fail (langdb != NULL, NULL);
+	g_return_val_if_fail (subtag != NULL, NULL);
 
-	s = g_strdup(code);
-	retval = g_hash_table_lookup(lang->lang_entries, lt_strlower(s));
+	s = g_strdup(subtag);
+	retval = g_hash_table_lookup(langdb->lang_entries, lt_strlower(s));
 	g_free(s);
 	if (retval)
 		return lt_lang_ref(retval);
