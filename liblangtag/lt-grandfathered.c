@@ -28,6 +28,13 @@
 #include "lt-grandfathered-private.h"
 
 
+/**
+ * SECTION: lt-grandfathered
+ * @Short_Description: A container class for Grandfathered
+ * @Title: Container - Grandfathered
+ *
+ * This container class provides a data access to Grandfathered entry.
+ */
 struct _lt_grandfathered_t {
 	lt_mem_t  parent;
 	gchar    *tag;
@@ -91,6 +98,14 @@ lt_grandfathered_set_preferred_tag(lt_grandfathered_t *grandfathered,
 }
 
 /*< public >*/
+/**
+ * lt_grandfathered_ref:
+ * @grandfathered: a #lt_grandfathered_t.
+ *
+ * Increases the reference count of @grandfathered.
+ *
+ * Returns: (transfer none): the same @grandfathered object.
+ */
 lt_grandfathered_t *
 lt_grandfathered_ref(lt_grandfathered_t *grandfathered)
 {
@@ -99,6 +114,13 @@ lt_grandfathered_ref(lt_grandfathered_t *grandfathered)
 	return lt_mem_ref(&grandfathered->parent);
 }
 
+/**
+ * lt_grandfathered_unref:
+ * @grandfathered: a #lt_grandfathered_t.
+ *
+ * Decreases the reference count of @grandfathered. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_grandfathered_unref(lt_grandfathered_t *grandfathered)
 {
@@ -106,6 +128,15 @@ lt_grandfathered_unref(lt_grandfathered_t *grandfathered)
 		lt_mem_unref(&grandfathered->parent);
 }
 
+/**
+ * lt_grandfathered_get_better_tag:
+ * @grandfathered: a #lt_grandfathered_t.
+ *
+ * Obtains the better tag for use. this is a convenient function to get
+ * the preferred-value if available.
+ *
+ * Returns: a tag name.
+ */
 const gchar *
 lt_grandfathered_get_better_tag(const lt_grandfathered_t *grandfathered)
 {
@@ -117,6 +148,14 @@ lt_grandfathered_get_better_tag(const lt_grandfathered_t *grandfathered)
 	return retval;
 }
 
+/**
+ * lt_grandfathered_get_tag:
+ * @grandfathered: a #lt_grandfathered_t.
+ *
+ * Obtains the tag name.
+ *
+ * Returns: a tag string.
+ */
 const gchar *
 lt_grandfathered_get_tag(const lt_grandfathered_t *grandfathered)
 {
@@ -125,6 +164,14 @@ lt_grandfathered_get_tag(const lt_grandfathered_t *grandfathered)
 	return grandfathered->tag;
 }
 
+/**
+ * lt_grandfathered_get_name:
+ * @grandfathered: a #lt_grandfathered_t.
+ *
+ * Obtains the description of the tag.
+ *
+ * Returns: a description string.
+ */
 const gchar *
 lt_grandfathered_get_name(const lt_grandfathered_t *grandfathered)
 {
@@ -133,6 +180,15 @@ lt_grandfathered_get_name(const lt_grandfathered_t *grandfathered)
 	return grandfathered->description;
 }
 
+/**
+ * lt_grandfathered_get_preferred_tag:
+ * @grandfathered: a #lt_grandfathered_t.
+ *
+ * Obtains the preferred-value. this is available only when the tag is
+ * marked as deprecated.
+ *
+ * Returns: a preferred-value for the tag or %NULL.
+ */
 const gchar *
 lt_grandfathered_get_preferred_tag(const lt_grandfathered_t *grandfathered)
 {
@@ -141,6 +197,12 @@ lt_grandfathered_get_preferred_tag(const lt_grandfathered_t *grandfathered)
 	return grandfathered->preferred_tag;
 }
 
+/**
+ * lt_grandfathered_dump:
+ * @grandfathered: a #lt_grandfathered_t.
+ *
+ * Dumps the container information to the standard output.
+ */
 void
 lt_grandfathered_dump(const lt_grandfathered_t *grandfathered)
 {
@@ -163,6 +225,15 @@ lt_grandfathered_dump(const lt_grandfathered_t *grandfathered)
 	g_string_free(string, TRUE);
 }
 
+/**
+ * lt_grandfathered_compare:
+ * @v1: a #lt_grandfathered_t.
+ * @v2: a #lt_grandfathered_t.
+ *
+ * Compare if @v1 and @v2 is the same object or not.
+ *
+ * Returns: %TRUE if it's the same. otherwise %FALSE.
+ */
 gboolean
 lt_grandfathered_compare(const lt_grandfathered_t *v1,
 			 const lt_grandfathered_t *v2)
