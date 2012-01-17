@@ -97,60 +97,60 @@ lt_db_finalize(void)
 /**
  * lt_db_get_lang:
  *
- * Obtains the instance of @lt_lang_db_t. This still allows to use without
+ * Obtains the instance of #lt_lang_db_t. This still allows to use without
  * lt_db_initialize(). but it will takes some time to load the database on
  * the memory every time.
  *
- * Returns: The instance of @lt_lang_db_t.
+ * Returns: The instance of #lt_lang_db_t.
  */
 DEFUNC_GET_INSTANCE(lang)
 /**
  * lt_db_get_extlang:
  *
- * Obtains the instance of @lt_extlang_db_t. This still allows to use without
+ * Obtains the instance of #lt_extlang_db_t. This still allows to use without
  * lt_db_initialize(). but it will takes some time to load the database on
  * the memory every time.
  *
- * Returns: The instance of @lt_extlang_db_t.
+ * Returns: The instance of #lt_extlang_db_t.
  */
 DEFUNC_GET_INSTANCE(extlang)
 /**
  * lt_db_get_grandfathered:
  *
- * Obtains the instance of @lt_grandfathered_db_t. This still allows to use
+ * Obtains the instance of #lt_grandfathered_db_t. This still allows to use
  * without lt_db_initialize(). but it will takes some time to load the database
  * on the memory every time.
  *
- * Returns: The instance of @lt_grandfathered_db_t.
+ * Returns: The instance of #lt_grandfathered_db_t.
  */
 DEFUNC_GET_INSTANCE(grandfathered)
 /**
  * lt_db_get_script:
  *
- * Obtains the instance of @lt_script_db_t. This still allows to use without
+ * Obtains the instance of #lt_script_db_t. This still allows to use without
  * lt_db_initialize(). but it will takes some time to load the database on
  * the memory every time.
  *
- * Returns: The instance of @lt_script_db_t.
+ * Returns: The instance of #lt_script_db_t.
  */
 DEFUNC_GET_INSTANCE(script)
 /**
  * lt_db_get_region:
  *
- * Obtains the instance of @lt_region_db_t. This still allows to use without
+ * Obtains the instance of #lt_region_db_t. This still allows to use without
  * lt_db_initialize(). but it will takes some time to load the database on
  * the memory every time.
  *
- * Returns: The instance of @lt_region_db_t.
+ * Returns: The instance of #lt_region_db_t.
  */
 DEFUNC_GET_INSTANCE(region)
 /**
  * lt_db_get_variant:
  *
- * Obtains the instance of @lt_variant_db_t. This still allows to use without
+ * Obtains the instance of #lt_variant_db_t. This still allows to use without
  * lt_db_initialize(). but it will takes some time to load the database on
  * the memory every time.
  *
- * Returns: The instance of @lt_variant_db_t.
+ * Returns: The instance of #lt_variant_db_t.
  */
 DEFUNC_GET_INSTANCE(variant)
