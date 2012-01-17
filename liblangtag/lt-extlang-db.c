@@ -33,6 +33,14 @@
 #include "lt-extlang-db.h"
 
 
+/**
+ * SECTION:lt-extlang-db
+ * @Short_Description: An interface to access Extlang Database.
+ * @Title: Database - Extlang
+ *
+ * This class provides an interface to access Extlang database. which has been
+ * registered as ISO 639 code.
+ */
 struct _lt_extlang_db_t {
 	lt_mem_t    parent;
 	GHashTable *extlang_entries;
@@ -213,6 +221,13 @@ lt_extlang_db_parse(lt_extlang_db_t  *extlangdb,
 }
 
 /*< public >*/
+/**
+ * lt_extlang_db_new:
+ *
+ * Create a new instance of a #lt_extlang_db_t.
+ *
+ * Returns: (transfer full): a new instance of #lt_extlang_db_t.
+ */
 lt_extlang_db_t *
 lt_extlang_db_new(void)
 {
@@ -254,6 +269,14 @@ lt_extlang_db_new(void)
 	return retval;
 }
 
+/**
+ * lt_extlang_db_ref:
+ * @extlangdb: a #lt_extlang_db_t.
+ *
+ * Increases the reference count of @extlangdb.
+ *
+ * Returns: (transfer none): the same @extlangdb object.
+ */
 lt_extlang_db_t *
 lt_extlang_db_ref(lt_extlang_db_t *extlangdb)
 {
@@ -262,6 +285,13 @@ lt_extlang_db_ref(lt_extlang_db_t *extlangdb)
 	return lt_mem_ref(&extlangdb->parent);
 }
 
+/**
+ * lt_extlang_db_unref:
+ * @extlangdb: a #lt_extlang_db_t.
+ *
+ * Decreases the reference count of @extlangdb. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_extlang_db_unref(lt_extlang_db_t *extlangdb)
 {
@@ -269,6 +299,15 @@ lt_extlang_db_unref(lt_extlang_db_t *extlangdb)
 		lt_mem_unref(&extlangdb->parent);
 }
 
+/**
+ * lt_extlang_db_lookup:
+ * @extlangdb: a #lt_extlang_db_t.
+ * @subtag: a subtag name to lookup.
+ *
+ * Lookup @lt_extlang_t if @subtag is valid and registered into the database.
+ *
+ * Returns: (transfer full): a #lt_extlang_t that meets with @subtag.
+ */
 lt_extlang_t *
 lt_extlang_db_lookup(lt_extlang_db_t *extlangdb,
 		     const gchar     *subtag)
