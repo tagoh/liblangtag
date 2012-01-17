@@ -26,8 +26,23 @@
 
 G_BEGIN_DECLS
 
+/**
+ * LT_ERROR:
+ *
+ * A #GQuark value being used in this library.
+ */
 #define LT_ERROR	(lt_error_get_quark())
 
+/**
+ * lt_error_t:
+ * @LT_ERR_UNKNOWN: unknown error happened.
+ * @LT_ERR_SUCCESS: an operation is succeeded.
+ * @LT_ERR_OOM: Out of memory occurred.
+ * @LT_ERR_FAIL_ON_XML: an error happened in libxml2.
+ * @LT_ERR_EOT: No tokens to scan.
+ * @LT_ERR_FAIL_ON_SCANNER: an error happened in the scanner.
+ * @LT_ERR_NO_TAG: No tags to process.
+*/
 enum _lt_error_t {
 	LT_ERR_UNKNOWN = -1,
 	LT_ERR_SUCCESS = 0,

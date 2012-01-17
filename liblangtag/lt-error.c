@@ -25,9 +25,24 @@
 
 #include "lt-error.h"
 
+
+/**
+ * SECTION:lt-error
+ * @Short_Description: Error handling
+ * @Title: Error
+ *
+ * This section describes the error handling in this library.
+ */
 /*< private >*/
 
 /*< public >*/
+/**
+ * lt_error_get_quark:
+ *
+ * Obtains #GQuark for #GError.
+ *
+ * Returns: a #GQuark.
+ */
 GQuark
 lt_error_get_quark(void)
 {
