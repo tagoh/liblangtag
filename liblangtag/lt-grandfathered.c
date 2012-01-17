@@ -135,7 +135,7 @@ lt_grandfathered_unref(lt_grandfathered_t *grandfathered)
  * Obtains the better tag for use. this is a convenient function to get
  * the preferred-value if available.
  *
- * Returns: a tag name.
+ * Returns: a tag string.
  */
 const gchar *
 lt_grandfathered_get_better_tag(const lt_grandfathered_t *grandfathered)
