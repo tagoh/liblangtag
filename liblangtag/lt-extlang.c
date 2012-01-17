@@ -293,7 +293,7 @@ lt_extlang_dump(const lt_extlang_t *extlang)
  * @v1: a #lt_extlang_t.
  * @v2: a #lt_extlang_t.
  *
- * Compares @v1 and @v2 is the same object or not.
+ * Compares if @v1 and @v2 is the same object or not.
  *
  * Returns: %TRUE if it's the same, otherwise %FALSE.
  */
