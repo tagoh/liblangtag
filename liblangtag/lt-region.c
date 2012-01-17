@@ -28,6 +28,13 @@
 #include "lt-region-private.h"
 
 
+/**
+ * SECTION:lt-region
+ * @Short_Description: A container class for Region subtag
+ * @Title: Container - Region
+ *
+ * This container class provides a data access to Region subtag entry.
+ */
 struct _lt_region_t {
 	lt_mem_t  parent;
 	gchar    *tag;
@@ -90,6 +97,14 @@ lt_region_set_preferred_tag(lt_region_t *region,
 }
 
 /*< public >*/
+/**
+ * lt_region_ref:
+ * @region: a #lt_region_t.
+ *
+ * Increases the reference count of @region.
+ *
+ * Returns: (transfer none): the same @region object.
+ */
 lt_region_t *
 lt_region_ref(lt_region_t *region)
 {
@@ -98,6 +113,13 @@ lt_region_ref(lt_region_t *region)
 	return lt_mem_ref(&region->parent);
 }
 
+/**
+ * lt_region_unref:
+ * @region: a #lt_region_t.
+ *
+ * Decreases the reference count of @region. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_region_unref(lt_region_t *region)
 {
@@ -105,6 +127,14 @@ lt_region_unref(lt_region_t *region)
 		lt_mem_unref(&region->parent);
 }
 
+/**
+ * lt_region_get_name:
+ * @region: a #lt_region_t.
+ *
+ * Obtains the description of the subtag.
+ *
+ * Returns: a description string.
+ */
 const gchar *
 lt_region_get_name(const lt_region_t *region)
 {
@@ -113,6 +143,15 @@ lt_region_get_name(const lt_region_t *region)
 	return region->description;
 }
 
+/**
+ * lt_region_get_better_tag:
+ * @region: a #lt_region_t.
+ *
+ * Obtains the better tag for use. this is a convenient function to get
+ * the preferred-value if available.
+ *
+ * Returns: a tag string.
+ */
 const gchar *
 lt_region_get_better_tag(const lt_region_t *region)
 {
@@ -124,6 +163,14 @@ lt_region_get_better_tag(const lt_region_t *region)
 	return retval;
 }
 
+/**
+ * lt_region_get_tag:
+ * @region: a #lt_region_t.
+ *
+ * Obtains the tag name.
+ *
+ * Returns: a tag string.
+ */
 const gchar *
 lt_region_get_tag(const lt_region_t *region)
 {
@@ -132,6 +179,15 @@ lt_region_get_tag(const lt_region_t *region)
 	return region->tag;
 }
 
+/**
+ * lt_region_get_preferred_tag:
+ * @region: a #lt_region_t.
+ *
+ * Obtains the preferred-value. this is available only when the tag is
+ * marked as deprecated.
+ *
+ * Returns: a preferred-value for the tag or %NULL.
+ */
 const gchar *
 lt_region_get_preferred_tag(const lt_region_t *region)
 {
@@ -140,6 +196,12 @@ lt_region_get_preferred_tag(const lt_region_t *region)
 	return region->preferred_tag;
 }
 
+/**
+ * lt_region_dump:
+ * @region: a #lt_region_t.
+ *
+ * Dumps the container information to the standard output.
+ */
 void
 lt_region_dump(const lt_region_t *region)
 {
@@ -161,6 +223,15 @@ lt_region_dump(const lt_region_t *region)
 	g_string_free(string, TRUE);
 }
 
+/**
+ * lt_region_compare:
+ * @v1: a #lt_region_t.
+ * @v2: a #lt_region_t.
+ *
+ * Compare if @v1 and @v2 is the same object or not.
+ *
+ * Returns: %TRUE if it's the same, otherwise %FALSE.
+ */
 gboolean
 lt_region_compare(const lt_region_t *v1,
 		  const lt_region_t *v2)
