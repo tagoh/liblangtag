@@ -28,6 +28,13 @@
 #include "lt-extlang-private.h"
 
 
+/**
+ * SECTION:lt-extlang
+ * @Short_Description: A container class for Extlang
+ * @Title: Container - Extlang
+ *
+ * This container class provides a data access to Extlang entry.
+ */
 struct _lt_extlang_t {
 	lt_mem_t  parent;
 	gchar    *tag;
@@ -121,6 +128,14 @@ lt_extlang_add_prefix(lt_extlang_t *extlang,
 }
 
 /*< public >*/
+/**
+ * lt_extlang_ref:
+ * @extlang: a #lt_extlang_t.
+ *
+ * Increases the reference count of @extlang.
+ *
+ * Returns: (transfer none): the same @extlang object.
+ */
 lt_extlang_t *
 lt_extlang_ref(lt_extlang_t *extlang)
 {
@@ -129,6 +144,13 @@ lt_extlang_ref(lt_extlang_t *extlang)
 	return lt_mem_ref(&extlang->parent);
 }
 
+/**
+ * lt_extlang_unref:
+ * @extlang: a #lt_extlang_t.
+ *
+ * Decreases the reference count of @extlang. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_extlang_unref(lt_extlang_t *extlang)
 {
@@ -136,6 +158,14 @@ lt_extlang_unref(lt_extlang_t *extlang)
 		lt_mem_unref(&extlang->parent);
 }
 
+/**
+ * lt_extlang_get_tag:
+ * @extlang: a #lt_extlang_t.
+ *
+ * Obtains the subtag that is registered as ISO 639 code.
+ *
+ * Returns: a subtag name.
+ */
 const gchar *
 lt_extlang_get_tag(const lt_extlang_t *extlang)
 {
@@ -144,6 +174,15 @@ lt_extlang_get_tag(const lt_extlang_t *extlang)
 	return extlang->tag;
 }
 
+/**
+ * lt_extlang_get_preferred_tag:
+ * @extlang: a #lt_extlang_t.
+ *
+ * Obtains the preferred-value. this is available only when the subtag is
+ * marked as deprecated.
+ *
+ * Returns: a preferred-value for the subtag or %NULL.
+ */
 const gchar *
 lt_extlang_get_preferred_tag(const lt_extlang_t *extlang)
 {
@@ -152,6 +191,14 @@ lt_extlang_get_preferred_tag(const lt_extlang_t *extlang)
 	return extlang->preferred_tag;
 }
 
+/**
+ * lt_extlang_get_name:
+ * @extlang: a #lt_extlang_t.
+ *
+ * Obtains the description of the subtag.
+ *
+ * Returns: a description string.
+ */
 const gchar *
 lt_extlang_get_name(const lt_extlang_t *extlang)
 {
@@ -160,6 +207,16 @@ lt_extlang_get_name(const lt_extlang_t *extlang)
 	return extlang->description;
 }
 
+/**
+ * lt_extlang_get_macro_language:
+ * @extlang: a #lt_extlang_t.
+ *
+ * Obtains the macrolanguage being assigned for the subtag.
+ * This is available only when the subtag is registered as the macrolanguage
+ * in ISO 639-3.
+ *
+ * Returns: a macrolanguage name or %NULL.
+ */
 const gchar *
 lt_extlang_get_macro_language(const lt_extlang_t *extlang)
 {
@@ -168,6 +225,16 @@ lt_extlang_get_macro_language(const lt_extlang_t *extlang)
 	return extlang->macrolanguage;
 }
 
+/**
+ * lt_extlang_get_prefix:
+ * @extlang: a #lt_extlang_t.
+ *
+ * Obtains the prefix being assigned to the subtag.
+ * This is available only when the subtag has a particular seqnence of
+ * subgtags that form a meaningful tag with the subtag.
+ *
+ * Returns: a prefix string or %NULL.
+ */
 const gchar *
 lt_extlang_get_prefix(const lt_extlang_t *extlang)
 {
@@ -176,6 +243,12 @@ lt_extlang_get_prefix(const lt_extlang_t *extlang)
 	return extlang->prefix;
 }
 
+/**
+ * lt_extlang_dump:
+ * @extlang: a #lt_extlang_t.
+ *
+ * Dumps the container information to the standard output.
+ */
 void
 lt_extlang_dump(const lt_extlang_t *extlang)
 {
@@ -215,6 +288,15 @@ lt_extlang_dump(const lt_extlang_t *extlang)
 	g_string_free(string, TRUE);
 }
 
+/**
+ * lt_extlang_compare:
+ * @v1: a #lt_extlang_t.
+ * @v2: a #lt_extlang_t.
+ *
+ * Compares @v1 and @v2 is the same object or not.
+ *
+ * Returns: %TRUE if it's the same, otherwise %FALSE.
+ */
 gboolean
 lt_extlang_compare(const lt_extlang_t *v1,
 		   const lt_extlang_t *v2)
