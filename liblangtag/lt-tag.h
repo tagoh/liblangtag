@@ -40,9 +40,6 @@ gboolean     lt_tag_parse            (lt_tag_t        *tag,
                                       const gchar     *langtag,
                                       GError         **error);
 void         lt_tag_clear            (lt_tag_t        *tag);
-gboolean     lt_tag_lookup           (lt_tag_t        *tag,
-                                      const gchar     *tag_string,
-                                      GError         **error);
 const gchar *lt_tag_get_string       (lt_tag_t        *tag);
 gchar       *lt_tag_canonicalize     (lt_tag_t        *tag,
                                       GError         **error);
@@ -54,6 +51,9 @@ gboolean     lt_tag_compare          (const lt_tag_t  *v1,
 gboolean     lt_tag_match            (const lt_tag_t  *v1,
                                       const gchar     *v2,
                                       GError         **error);
+gchar       *lt_tag_lookup           (const lt_tag_t  *tag,
+				      const gchar     *pattern,
+				      GError         **error);
 
 G_END_DECLS
 

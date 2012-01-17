@@ -62,6 +62,15 @@ main(int    argc,
 			else
 				g_print("%s doesn't match with %s\n", argv[3], argv[2]);
 		}
+	} else if (g_strcmp0(argv[1], "lookup") == 0) {
+		if (lt_tag_parse(tag, argv[2], NULL)) {
+			gchar *result = lt_tag_lookup(tag, argv[3], NULL);
+			if (result)
+				g_print("%s\n", result);
+			else
+				g_print("%s doesn't match with %s\n", argv[3], argv[2]);
+			g_free(result);
+		}
 	}
 	lt_tag_unref(tag);
 	lt_db_finalize();
