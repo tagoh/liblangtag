@@ -28,6 +28,13 @@
 #include "lt-lang-private.h"
 
 
+/**
+ * SECTION: lt-lang
+ * @Short_Description: A container class for Language
+ * @Title: Container - Language
+ *
+ * This container class provides a data access to Language entry.
+ */
 struct _lt_lang_t {
 	lt_mem_t  parent;
 	gchar    *tag;
@@ -134,6 +141,14 @@ lt_lang_set_scope(lt_lang_t   *lang,
 }
 
 /*< public >*/
+/**
+ * lt_lang_ref:
+ * @lang: a #lt_lang_t.
+ *
+ * Increases the reference count of @lang.
+ *
+ * Returns: (transfer none): the same @lang object.
+ */
 lt_lang_t *
 lt_lang_ref(lt_lang_t *lang)
 {
@@ -142,6 +157,13 @@ lt_lang_ref(lt_lang_t *lang)
 	return lt_mem_ref(&lang->parent);
 }
 
+/**
+ * lt_lang_unref:
+ * @lang: a #lt_lang_t.
+ *
+ * Decreases the reference count of @lang. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_lang_unref(lt_lang_t *lang)
 {
@@ -149,6 +171,14 @@ lt_lang_unref(lt_lang_t *lang)
 		lt_mem_unref(&lang->parent);
 }
 
+/**
+ * lt_lang_get_name:
+ * @lang: a #lt_lang_t.
+ *
+ * Obtains the description of the subtag.
+ *
+ * Returns: a description string.
+ */
 const gchar *
 lt_lang_get_name(const lt_lang_t *lang)
 {
@@ -157,6 +187,15 @@ lt_lang_get_name(const lt_lang_t *lang)
 	return lang->description;
 }
 
+/**
+ * lt_lang_get_better_tag:
+ * @lang: a #lt_lang_t.
+ *
+ * Obtains the better tag for use. this is a convenient function to get
+ * the preferred-value if available.
+ *
+ * Returns a tag string.
+ */
 const gchar *
 lt_lang_get_better_tag(const lt_lang_t *lang)
 {
@@ -168,6 +207,14 @@ lt_lang_get_better_tag(const lt_lang_t *lang)
 	return retval;
 }
 
+/**
+ * lt_lang_get_tag:
+ * @lang: a #lt_lang_t.
+ *
+ * Obtains the tag name.
+ *
+ * Returns: a tag string.
+ */
 const gchar *
 lt_lang_get_tag(const lt_lang_t *lang)
 {
@@ -176,6 +223,15 @@ lt_lang_get_tag(const lt_lang_t *lang)
 	return lang->tag;
 }
 
+/**
+ * lt_lang_get_preferred_tag:
+ * @lang: a #lt_lang_t.
+ *
+ * Obtains the preferred-value. this is available only when the tag is
+ * marked as deprecated.
+ *
+ * Returns: a preferred-value for the tag or %NULL.
+ */
 const gchar *
 lt_lang_get_preferred_tag(const lt_lang_t *lang)
 {
@@ -184,6 +240,15 @@ lt_lang_get_preferred_tag(const lt_lang_t *lang)
 	return lang->preferred_tag;
 }
 
+/**
+ * lt_lang_get_suppress_script:
+ * @lang: a #lt_lang_t.
+ *
+ * Obtains the suppress-script value. which shouldn't be used to form
+ * language tags with the associated primary or extended language subtag.
+ *
+ * Returns: a suppress-script string or %NULL.
+ */
 const gchar *
 lt_lang_get_suppress_script(const lt_lang_t *lang)
 {
@@ -192,6 +257,16 @@ lt_lang_get_suppress_script(const lt_lang_t *lang)
 	return lang->suppress_script;
 }
 
+/**
+ * lt_lang_get_macro_language:
+ * @lang: a #lt_lang_t.
+ *
+ * Obtains the macrolanguage being assigned for the subtag.
+ * This is available only when the subtag is registered as the macrolanguage
+ * in ISO 639-3.
+ *
+ * Returns: a macrolanguage string or %NULL.
+ */
 const gchar *
 lt_lang_get_macro_language(const lt_lang_t *lang)
 {
@@ -200,6 +275,15 @@ lt_lang_get_macro_language(const lt_lang_t *lang)
 	return lang->macrolanguage;
 }
 
+/**
+ * lt_lang_get_scope:
+ * @lang: a #lt_lang_t.
+ *
+ * Obtains the scope value indicating the type of language code according
+ * to ISO 639.
+ *
+ * Returns: a scope string or %NULL.
+ */
 const gchar *
 lt_lang_get_scope(const lt_lang_t *lang)
 {
@@ -208,6 +292,12 @@ lt_lang_get_scope(const lt_lang_t *lang)
 	return lang->scope;
 }
 
+/**
+ * lt_lang_dump:
+ * @lang: a #lt_lang_t.
+ *
+ * Dumps the container information to the standard output.
+ */
 void
 lt_lang_dump(const lt_lang_t *lang)
 {
@@ -257,6 +347,15 @@ lt_lang_dump(const lt_lang_t *lang)
 	g_string_free(string, TRUE);
 }
 
+/**
+ * lt_lang_compare:
+ * @v1: a #lt_lang_t.
+ * @v2: a #lt_lang_t.
+ *
+ * Compare if @v1 and @v2 is the same object or not.
+ *
+ * Returns: %TRUE if it's the same, otherwise %FALSE.
+ */
 gboolean
 lt_lang_compare(const lt_lang_t *v1,
 		const lt_lang_t *v2)
