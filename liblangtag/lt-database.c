@@ -29,7 +29,7 @@
 
 /**
  * SECTION:lt-database
- * @Short_Description: convenient function sets to deal with the language tags database.
+ * @Short_Description: convenient function sets to deal with the language tags database
  * @Title: Database
  *
  * This section describes convenient functions to obtain the database instance.
