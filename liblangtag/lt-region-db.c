@@ -33,6 +33,14 @@
 #include "lt-region-db.h"
 
 
+/**
+ * SECTION:lt-region-db
+ * @Short_Description: An interface to access Region Database
+ * @Title: Database - Region
+ *
+ * This class provides an interface to access Region database. which has been
+ * registered as ISO 3166-1 and UN M.49 code.
+ */
 struct _lt_region_db_t {
 	lt_mem_t    parent;
 	GHashTable *region_entries;
@@ -194,6 +202,13 @@ lt_region_db_parse(lt_region_db_t  *regiondb,
 }
 
 /*< public >*/
+/**
+ * lt_region_db_new:
+ *
+ * Create a new instance of a #lt_region_db_t.
+ *
+ * Returns: (transfer full): a new instance of #lt_region_db_t.
+ */
 lt_region_db_t *
 lt_region_db_new(void)
 {
@@ -235,33 +250,58 @@ lt_region_db_new(void)
 	return retval;
 }
 
+/**
+ * lt_region_db_ref:
+ * @regiondb: a #lt_region_db_t.
+ *
+ * Increases the reference count of @regiondb.
+ *
+ * Returns: (transfer none): the same @regiondb object.
+ */
 lt_region_db_t *
-lt_region_db_ref(lt_region_db_t *region)
+lt_region_db_ref(lt_region_db_t *regiondb)
 {
-	g_return_val_if_fail (region != NULL, NULL);
+	g_return_val_if_fail (regiondb != NULL, NULL);
 
-	return lt_mem_ref(&region->parent);
+	return lt_mem_ref(&regiondb->parent);
 }
 
+/**
+ * lt_region_db_unref:
+ * @regiondb: a #lt_region_db_t.
+ *
+ * Decreases the reference count of @regiondb. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
-lt_region_db_unref(lt_region_db_t *region)
+lt_region_db_unref(lt_region_db_t *regiondb)
 {
-	if (region)
-		lt_mem_unref(&region->parent);
+	if (regiondb)
+		lt_mem_unref(&regiondb->parent);
 }
 
+/**
+ * lt_region_db_lookup:
+ * @regiondb: a #lt_region_db_t.
+ * @language_or_code: a region code to lookup.
+ *
+ * Lookup @lt_region_t if @language_or_code is valid and registered into
+ * the database.
+ *
+ * Returns: (transfer full): a #lt_region_t that meets with @language_or_code.
+ */
 lt_region_t *
-lt_region_db_lookup(lt_region_db_t *region,
+lt_region_db_lookup(lt_region_db_t *regiondb,
 		    const gchar    *language_or_code)
 {
 	lt_region_t *retval;
 	gchar *s;
 
-	g_return_val_if_fail (region != NULL, NULL);
+	g_return_val_if_fail (regiondb != NULL, NULL);
 	g_return_val_if_fail (language_or_code != NULL, NULL);
 
 	s = g_strdup(language_or_code);
-	retval = g_hash_table_lookup(region->region_entries,
+	retval = g_hash_table_lookup(regiondb->region_entries,
 				     lt_strlower(s));
 	g_free(s);
 	if (retval)
