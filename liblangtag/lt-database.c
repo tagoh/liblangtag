@@ -26,6 +26,15 @@
 #include "lt-mem.h"
 #include "lt-database.h"
 
+
+/**
+ * SECTION:lt-database
+ * @Short_Description: convenient function sets to deal with the language tags database.
+ * @Title: Database
+ *
+ * This section describes convenient functions to obtain the database instance.
+ */
+
 static lt_lang_db_t          *__db_lang = NULL;
 static lt_extlang_db_t       *__db_extlang = NULL;
 static lt_script_db_t        *__db_script = NULL;
@@ -37,6 +46,11 @@ static lt_grandfathered_db_t *__db_grandfathered = NULL;
 /*< private >*/
 
 /*< public >*/
+/**
+ * lt_db_initialize:
+ *
+ * Initialize all of the language tags database instance.
+ */
 void
 lt_db_initialize(void)
 {
@@ -48,6 +62,12 @@ lt_db_initialize(void)
 	lt_db_get_grandfathered();
 }
 
+/**
+ * lt_db_finalize:
+ *
+ * Decreases the reference count of the language tags database, which was
+ * increased with lt_db_initialize().
+ */
 void
 lt_db_finalize(void)
 {
@@ -74,9 +94,63 @@ lt_db_finalize(void)
 		return __db_ ##__type__;				\
 	}
 
+/**
+ * lt_db_get_lang:
+ *
+ * Obtains the instance of @lt_lang_db_t. This still allows to use without
+ * lt_db_initialize(). but it will takes some time to load the database on
+ * the memory every time.
+ *
+ * Returns: The instance of @lt_lang_db_t.
+ */
 DEFUNC_GET_INSTANCE(lang)
+/**
+ * lt_db_get_extlang:
+ *
+ * Obtains the instance of @lt_extlang_db_t. This still allows to use without
+ * lt_db_initialize(). but it will takes some time to load the database on
+ * the memory every time.
+ *
+ * Returns: The instance of @lt_extlang_db_t.
+ */
 DEFUNC_GET_INSTANCE(extlang)
+/**
+ * lt_db_get_grandfathered:
+ *
+ * Obtains the instance of @lt_grandfathered_db_t. This still allows to use
+ * without lt_db_initialize(). but it will takes some time to load the database
+ * on the memory every time.
+ *
+ * Returns: The instance of @lt_grandfathered_db_t.
+ */
 DEFUNC_GET_INSTANCE(grandfathered)
+/**
+ * lt_db_get_script:
+ *
+ * Obtains the instance of @lt_script_db_t. This still allows to use without
+ * lt_db_initialize(). but it will takes some time to load the database on
+ * the memory every time.
+ *
+ * Returns: The instance of @lt_script_db_t.
+ */
 DEFUNC_GET_INSTANCE(script)
+/**
+ * lt_db_get_region:
+ *
+ * Obtains the instance of @lt_region_db_t. This still allows to use without
+ * lt_db_initialize(). but it will takes some time to load the database on
+ * the memory every time.
+ *
+ * Returns: The instance of @lt_region_db_t.
+ */
 DEFUNC_GET_INSTANCE(region)
+/**
+ * lt_db_get_variant:
+ *
+ * Obtains the instance of @lt_variant_db_t. This still allows to use without
+ * lt_db_initialize(). but it will takes some time to load the database on
+ * the memory every time.
+ *
+ * Returns: The instance of @lt_variant_db_t.
+ */
 DEFUNC_GET_INSTANCE(variant)
