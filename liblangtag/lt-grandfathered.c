@@ -30,10 +30,10 @@
 
 /**
  * SECTION: lt-grandfathered
- * @Short_Description: A container class for Grandfathered
+ * @Short_Description: A container class for Grandfathered subtag
  * @Title: Container - Grandfathered
  *
- * This container class provides a data access to Grandfathered entry.
+ * This container class provides a data access to Grandfathered subtag entry.
  */
 struct _lt_grandfathered_t {
 	lt_mem_t  parent;

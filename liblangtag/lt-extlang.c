@@ -30,10 +30,10 @@
 
 /**
  * SECTION:lt-extlang
- * @Short_Description: A container class for Extlang
+ * @Short_Description: A container class for Extlang subtag
  * @Title: Container - Extlang
  *
- * This container class provides a data access to Extlang entry.
+ * This container class provides a data access to Extlang subtag entry.
  */
 struct _lt_extlang_t {
 	lt_mem_t  parent;

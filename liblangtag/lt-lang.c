@@ -30,10 +30,10 @@
 
 /**
  * SECTION: lt-lang
- * @Short_Description: A container class for Language
+ * @Short_Description: A container class for Language subtag
  * @Title: Container - Language
  *
- * This container class provides a data access to Language entry.
+ * This container class provides a data access to Language subtag entry.
  */
 struct _lt_lang_t {
 	lt_mem_t  parent;
