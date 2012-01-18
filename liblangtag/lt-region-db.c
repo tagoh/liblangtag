@@ -289,6 +289,7 @@ lt_region_db_unref(lt_region_db_t *regiondb)
  * the database.
  *
  * Returns: (transfer full): a #lt_region_t that meets with @language_or_code.
+ *                           otherwise %NULL.
  */
 lt_region_t *
 lt_region_db_lookup(lt_region_db_t *regiondb,

@@ -274,6 +274,7 @@ lt_script_db_unref(lt_script_db_t *scriptdb)
  * Lookup @lt_script_t if @subtag is valid and registered into the database.
  *
  * Returns: (transfer full): a #lt_script_t that meets with @subtag.
+ *                           otherwise %NULL.
  */
 lt_script_t *
 lt_script_db_lookup(lt_script_db_t *scriptdb,

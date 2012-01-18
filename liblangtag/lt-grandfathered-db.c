@@ -272,6 +272,7 @@ lt_grandfathered_db_unref(lt_grandfathered_db_t *grandfathereddb)
  * Lookup @lt_grandfathered_t if @tag is valid and registered into the database.
  *
  * Returns: (transfer full): a #lt_grandfathered_t that meets with @tag.
+ *                           otherwise %NULL.
  */
 lt_grandfathered_t *
 lt_grandfathered_db_lookup(lt_grandfathered_db_t *grandfathereddb,

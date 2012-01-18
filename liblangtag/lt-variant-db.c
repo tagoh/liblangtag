@@ -33,6 +33,14 @@
 #include "lt-variant-db.h"
 
 
+/**
+ * SECTION: lt-variant-db
+ * @Short_Description: An interface to access Variant Database
+ * @Title: Database - Variant
+ *
+ * This class provides an interface to access Variant database. which has been
+ * registered with IANA.
+ */
 struct _lt_variant_db_t {
 	lt_mem_t    parent;
 	GHashTable *variant_entries;
@@ -202,6 +210,13 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 }
 
 /*< public >*/
+/**
+ * lt_variant_db_new:
+ *
+ * Create a new instance of a #lt_variant_db_t.
+ *
+ * Returns: (transfer full): a new instance of #lt_variant_db_t.
+ */
 lt_variant_db_t *
 lt_variant_db_new(void)
 {
@@ -243,6 +258,14 @@ lt_variant_db_new(void)
 	return retval;
 }
 
+/**
+ * lt_variant_db_ref:
+ * @variantdb: a #lt_variant_db_t.
+ *
+ * Increases the reference count of @variantdb.
+ *
+ * Returns: (transfer none): the same @variantdb object.
+ */
 lt_variant_db_t *
 lt_variant_db_ref(lt_variant_db_t *variantdb)
 {
@@ -251,6 +274,13 @@ lt_variant_db_ref(lt_variant_db_t *variantdb)
 	return lt_mem_ref(&variantdb->parent);
 }
 
+/**
+ * lt_variant_db_unref:
+ * @variantdb: a #lt_variant_db_t.
+ *
+ * Decreases the reference count of @variantdb. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_variant_db_unref(lt_variant_db_t *variantdb)
 {
@@ -258,6 +288,16 @@ lt_variant_db_unref(lt_variant_db_t *variantdb)
 		lt_mem_unref(&variantdb->parent);
 }
 
+/**
+ * lt_variant_db_lookup:
+ * @variantdb: a #lt_variant_db_t.
+ * @subtag: a subtag name to lookup.
+ *
+ * Lookup @lt_variant_t if @subtag is valid and registered into the database.
+ *
+ * Returns: (transfer full): a #lt_variant_t that meets with @subtag.
+ *                           otherwise %NULL.
+ */
 lt_variant_t *
 lt_variant_db_lookup(lt_variant_db_t *variantdb,
 		     const gchar     *subtag)

@@ -29,6 +29,13 @@
 #include "lt-script-private.h"
 
 
+/**
+ * SECTION: lt-script
+ * @Short_Description: A container class for Script subtag
+ * @Title: Container - Script
+ *
+ * This container class provides a data access to Script subtag entry.
+ */
 struct _lt_script_t {
 	lt_mem_t  parent;
 	gchar    *tag;
@@ -76,6 +83,14 @@ lt_script_set_tag(lt_script_t *script,
 }
 
 /*< public >*/
+/**
+ * lt_script_ref:
+ * @script: a #lt_script_t.
+ *
+ * Increases the reference count of @script.
+ *
+ * Returns: (transfer none): the same @script object.
+ */
 lt_script_t *
 lt_script_ref(lt_script_t *script)
 {
@@ -84,6 +99,13 @@ lt_script_ref(lt_script_t *script)
 	return lt_mem_ref(&script->parent);
 }
 
+/**
+ * lt_script_unref:
+ * @script: a #lt_script_t.
+ *
+ * Decreases the reference count of @script. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_script_unref(lt_script_t *script)
 {
@@ -91,6 +113,14 @@ lt_script_unref(lt_script_t *script)
 		lt_mem_unref(&script->parent);
 }
 
+/**
+ * lt_script_get_name:
+ * @script: a #lt_script_t.
+ *
+ * Obtains the description of the subtag.
+ *
+ * Returns: a description string.
+ */
 const gchar *
 lt_script_get_name(const lt_script_t *script)
 {
@@ -99,6 +129,14 @@ lt_script_get_name(const lt_script_t *script)
 	return script->description;
 }
 
+/**
+ * lt_script_get_tag:
+ * @script: a #lt_script_t.
+ *
+ * Obtains the tag name.
+ *
+ * Returns: a tag string.
+ */
 const gchar *
 lt_script_get_tag(const lt_script_t *script)
 {
@@ -107,6 +145,12 @@ lt_script_get_tag(const lt_script_t *script)
 	return script->tag;
 }
 
+/**
+ * lt_script_dump:
+ * @script: a #lt_script_t.
+ *
+ * Dumps the container information to the standard output.
+ */
 void
 lt_script_dump(const lt_script_t *script)
 {
@@ -115,6 +159,14 @@ lt_script_dump(const lt_script_t *script)
 		lt_script_get_name(script));
 }
 
+/**
+ * lt_script_convert_to_modifier:
+ * @script: a #lt_script_t.
+ *
+ * Convert the script subtag to the locale variant modifier.
+ *
+ * Returns: a modifier string or %NULL.
+ */
 const gchar *
 lt_script_convert_to_modifier(const lt_script_t *script)
 {
@@ -149,6 +201,15 @@ lt_script_convert_to_modifier(const lt_script_t *script)
 	return NULL;
 }
 
+/**
+ * lt_script_compare:
+ * @v1: a #lt_script_t.
+ * @v2: a #lt_script_t.
+ *
+ * Compare if @v1 and @v2 is the same object or not.
+ *
+ * Returns: %TRUE if it's the same, otherwise %FALSE.
+ */
 gboolean
 lt_script_compare(const lt_script_t *v1,
 		  const lt_script_t *v2)

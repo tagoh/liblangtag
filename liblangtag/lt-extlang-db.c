@@ -307,6 +307,7 @@ lt_extlang_db_unref(lt_extlang_db_t *extlangdb)
  * Lookup @lt_extlang_t if @subtag is valid and registered into the database.
  *
  * Returns: (transfer full): a #lt_extlang_t that meets with @subtag.
+ *                           otherwise %NULL.
  */
 lt_extlang_t *
 lt_extlang_db_lookup(lt_extlang_db_t *extlangdb,
