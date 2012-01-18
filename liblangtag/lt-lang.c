@@ -194,7 +194,7 @@ lt_lang_get_name(const lt_lang_t *lang)
  * Obtains the better tag for use. this is a convenient function to get
  * the preferred-value if available.
  *
- * Returns a tag string.
+ * Returns: a tag string.
  */
 const gchar *
 lt_lang_get_better_tag(const lt_lang_t *lang)
