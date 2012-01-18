@@ -22,7 +22,7 @@ Please visit [[https://github.com/tagoh/liblangtag/downloads][here]] to get the 
 
 * Documentation
 
-API reference are available [[https://tagoh.github.com/liblangtag/docs/][here]].
+API reference are available [[http://tagoh.github.com/liblangtag/docs/][here]].
 
 * Bug report
 
