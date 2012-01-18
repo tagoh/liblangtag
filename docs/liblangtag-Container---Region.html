@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Container - Region</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="liblangtag Documentation">
+<link rel="up" href="Container.html" title="Container APIs">
+<link rel="prev" href="liblangtag-Container---Language.html" title="Container - Language">
+<link rel="next" href="liblangtag-Container---Script.html" title="Container - Script">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="liblangtag-Container---Language.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Container.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">liblangtag Documentation</th>
+<td><a accesskey="n" href="liblangtag-Container---Script.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#liblangtag-Container---Region.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#liblangtag-Container---Region.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="liblangtag-Container---Region"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="liblangtag-Container---Region.top_of_page"></a>Container - Region</span></h2>
+<p>Container - Region — A container class for Region subtag</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="liblangtag-Container---Region.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="liblangtag-Container---Region.html#lt-region-compare" title="lt_region_compare ()">lt_region_compare</a>                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *v2</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Region.html#lt-region-dump" title="lt_region_dump ()">lt_region_dump</a>                      (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Region.html#lt-region-get-better-tag" title="lt_region_get_better_tag ()">lt_region_get_better_tag</a>            (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Region.html#lt-region-get-name" title="lt_region_get_name ()">lt_region_get_name</a>                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Region.html#lt-region-get-preferred-tag" title="lt_region_get_preferred_tag ()">lt_region_get_preferred_tag</a>         (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Region.html#lt-region-get-tag" title="lt_region_get_tag ()">lt_region_get_tag</a>                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);
+<a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="returnvalue">lt_region_t</span></a> *       <a class="link" href="liblangtag-Container---Region.html#lt-region-ref" title="lt_region_ref ()">lt_region_ref</a>                       (<em class="parameter"><code><a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);
+                    <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t">lt_region_t</a>;
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Region.html#lt-region-unref" title="lt_region_unref ()">lt_region_unref</a>                     (<em class="parameter"><code><a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Container---Region.description"></a><h2>Description</h2>
+<p>
+This container class provides a data access to Region subtag entry.
+</p>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Container---Region.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="lt-region-compare"></a><h3>lt_region_compare ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            lt_region_compare                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *v2</code></em>);</pre>
+<p>
+Compare if <em class="parameter"><code>v1</code></em> and <em class="parameter"><code>v2</code></em> is the same object or not.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>v1</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>v2</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if it's the same, otherwise <a href="../glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-region-dump"></a><h3>lt_region_dump ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_region_dump                      (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);</pre>
+<p>
+Dumps the container information to the standard output.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>region</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-region-get-better-tag"></a><h3>lt_region_get_better_tag ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_region_get_better_tag            (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);</pre>
+<p>
+Obtains the better tag for use. this is a convenient function to get
+the preferred-value if available.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>region</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a tag string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-region-get-name"></a><h3>lt_region_get_name ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_region_get_name                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);</pre>
+<p>
+Obtains the description of the subtag.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>region</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a description string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-region-get-preferred-tag"></a><h3>lt_region_get_preferred_tag ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_region_get_preferred_tag         (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);</pre>
+<p>
+Obtains the preferred-value. this is available only when the tag is
+marked as deprecated.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>region</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a preferred-value for the tag or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-region-get-tag"></a><h3>lt_region_get_tag ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_region_get_tag                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);</pre>
+<p>
+Obtains the tag name.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>region</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a tag string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-region-ref"></a><h3>lt_region_ref ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="returnvalue">lt_region_t</span></a> *       lt_region_ref                       (<em class="parameter"><code><a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);</pre>
+<p>
+Increases the reference count of <em class="parameter"><code>region</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>region</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>region</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-region-t"></a><h3>lt_region_t</h3>
+<pre class="programlisting">typedef struct _lt_region_t lt_region_t;</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-region-unref"></a><h3>lt_region_unref ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_region_unref                     (<em class="parameter"><code><a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> *region</code></em>);</pre>
+<p>
+Decreases the reference count of <em class="parameter"><code>region</code></em>. when its reference count
+drops to 0, the object is finalized (i.e. its memory is freed).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>region</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

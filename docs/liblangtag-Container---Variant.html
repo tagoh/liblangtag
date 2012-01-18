@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Container - Variant</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="liblangtag Documentation">
+<link rel="up" href="Container.html" title="Container APIs">
+<link rel="prev" href="liblangtag-Container---Tag.html" title="Container - Tag">
+<link rel="next" href="liblangtag-Error.html" title="Error">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="liblangtag-Container---Tag.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Container.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">liblangtag Documentation</th>
+<td><a accesskey="n" href="liblangtag-Error.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#liblangtag-Container---Variant.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#liblangtag-Container---Variant.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="liblangtag-Container---Variant"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="liblangtag-Container---Variant.top_of_page"></a>Container - Variant</span></h2>
+<p>Container - Variant — A container class for Variant subtag</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="liblangtag-Container---Variant.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="liblangtag-Container---Variant.html#lt-variant-compare" title="lt_variant_compare ()">lt_variant_compare</a>                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *v2</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Variant.html#lt-variant-dump" title="lt_variant_dump ()">lt_variant_dump</a>                     (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Variant.html#lt-variant-get-better-tag" title="lt_variant_get_better_tag ()">lt_variant_get_better_tag</a>           (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Variant.html#lt-variant-get-name" title="lt_variant_get_name ()">lt_variant_get_name</a>                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Variant.html#lt-variant-get-preferred-tag" title="lt_variant_get_preferred_tag ()">lt_variant_get_preferred_tag</a>        (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);
+const <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *       <a class="link" href="liblangtag-Container---Variant.html#lt-variant-get-prefix" title="lt_variant_get_prefix ()">lt_variant_get_prefix</a>               (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Variant.html#lt-variant-get-tag" title="lt_variant_get_tag ()">lt_variant_get_tag</a>                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);
+<a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="returnvalue">lt_variant_t</span></a> *      <a class="link" href="liblangtag-Container---Variant.html#lt-variant-ref" title="lt_variant_ref ()">lt_variant_ref</a>                      (<em class="parameter"><code><a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);
+                    <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t">lt_variant_t</a>;
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Variant.html#lt-variant-unref" title="lt_variant_unref ()">lt_variant_unref</a>                    (<em class="parameter"><code><a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Container---Variant.description"></a><h2>Description</h2>
+<p>
+This container class provides a data access to Variant subtag entry.
+</p>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Container---Variant.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="lt-variant-compare"></a><h3>lt_variant_compare ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            lt_variant_compare                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *v2</code></em>);</pre>
+<p>
+Compare if <em class="parameter"><code>v1</code></em> and <em class="parameter"><code>v2</code></em> is the same object or not.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>v1</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>v2</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if it's the same, otherwise <a href="../glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-variant-dump"></a><h3>lt_variant_dump ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_variant_dump                     (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);</pre>
+<p>
+Dumps the container information to the standard output.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>variant</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-variant-get-better-tag"></a><h3>lt_variant_get_better_tag ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_variant_get_better_tag           (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);</pre>
+<p>
+Obtains the better tag for use. this is a convenient function to get
+the preferred-value if available.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>variant</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a tag string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-variant-get-name"></a><h3>lt_variant_get_name ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_variant_get_name                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);</pre>
+<p>
+Obtains the description of the subtag.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>variant</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a description string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-variant-get-preferred-tag"></a><h3>lt_variant_get_preferred_tag ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_variant_get_preferred_tag        (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);</pre>
+<p>
+Obtains the preferred-value. this is available only when the tag is
+marked as deprecated.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>variant</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a preferred-value for the tag or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-variant-get-prefix"></a><h3>lt_variant_get_prefix ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *       lt_variant_get_prefix               (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);</pre>
+<p>
+Obtains the prefix being assigned to the subtag.
+This is available only when the subtag has any suitable sequence of
+subtags for forming (with other subtags, as appropriate) a language
+tag when using the variant.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>variant</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> contains prefix
+strings or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. <span class="annotation">[<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> utf8][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-variant-get-tag"></a><h3>lt_variant_get_tag ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_variant_get_tag                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);</pre>
+<p>
+Obtains the tag name.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>variant</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a tag string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-variant-ref"></a><h3>lt_variant_ref ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="returnvalue">lt_variant_t</span></a> *      lt_variant_ref                      (<em class="parameter"><code><a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);</pre>
+<p>
+Increases the reference count of <em class="parameter"><code>variant</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>variant</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>variant</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-variant-t"></a><h3>lt_variant_t</h3>
+<pre class="programlisting">typedef struct _lt_variant_t lt_variant_t;</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-variant-unref"></a><h3>lt_variant_unref ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_variant_unref                    (<em class="parameter"><code><a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> *variant</code></em>);</pre>
+<p>
+Decreases the reference count of <em class="parameter"><code>variant</code></em>. when its reference count
+drops to 0, the object is finalized (i.e. its memory is freed).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>variant</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

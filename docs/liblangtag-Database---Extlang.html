@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Database - Extlang</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="liblangtag Documentation">
+<link rel="up" href="ch01.html#Database" title="Database APIs">
+<link rel="prev" href="liblangtag-Database.html" title="Database">
+<link rel="next" href="liblangtag-Database---Grandfathered.html" title="Database - Grandfathered">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="liblangtag-Database.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html#Database"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">liblangtag Documentation</th>
+<td><a accesskey="n" href="liblangtag-Database---Grandfathered.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#liblangtag-Database---Extlang.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#liblangtag-Database---Extlang.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="liblangtag-Database---Extlang"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="liblangtag-Database---Extlang.top_of_page"></a>Database - Extlang</span></h2>
+<p>Database - Extlang — An interface to access Extlang Database</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="liblangtag-Database---Extlang.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="returnvalue">lt_extlang_t</span></a> *      <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-lookup" title="lt_extlang_db_lookup ()">lt_extlang_db_lookup</a>                (<em class="parameter"><code><a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a> *extlangdb</code></em>,
+                                                         <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *subtag</code></em>);
+<a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="returnvalue">lt_extlang_db_t</span></a> *   <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-new" title="lt_extlang_db_new ()">lt_extlang_db_new</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="returnvalue">lt_extlang_db_t</span></a> *   <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-ref" title="lt_extlang_db_ref ()">lt_extlang_db_ref</a>                   (<em class="parameter"><code><a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a> *extlangdb</code></em>);
+                    <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t">lt_extlang_db_t</a>;
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-unref" title="lt_extlang_db_unref ()">lt_extlang_db_unref</a>                 (<em class="parameter"><code><a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a> *extlangdb</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Database---Extlang.description"></a><h2>Description</h2>
+<p>
+This class provides an interface to access Extlang database. which has been
+registered as ISO 639 code.
+</p>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Database---Extlang.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="lt-extlang-db-lookup"></a><h3>lt_extlang_db_lookup ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="returnvalue">lt_extlang_t</span></a> *      lt_extlang_db_lookup                (<em class="parameter"><code><a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a> *extlangdb</code></em>,
+                                                         <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *subtag</code></em>);</pre>
+<p>
+Lookup <em class="parameter"><code>lt_extlang_t</code></em> if <em class="parameter"><code>subtag</code></em> is valid and registered into the database.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>extlangdb</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>subtag</code></em> :</span></p></td>
+<td>a subtag name to lookup.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> that meets with <em class="parameter"><code>subtag</code></em>.
+otherwise <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-db-new"></a><h3>lt_extlang_db_new ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="returnvalue">lt_extlang_db_t</span></a> *   lt_extlang_db_new                   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Create a new instance of a <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new instance of <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a>. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-db-ref"></a><h3>lt_extlang_db_ref ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="returnvalue">lt_extlang_db_t</span></a> *   lt_extlang_db_ref                   (<em class="parameter"><code><a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a> *extlangdb</code></em>);</pre>
+<p>
+Increases the reference count of <em class="parameter"><code>extlangdb</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>extlangdb</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>extlangdb</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-db-t"></a><h3>lt_extlang_db_t</h3>
+<pre class="programlisting">typedef struct _lt_extlang_db_t lt_extlang_db_t;</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-db-unref"></a><h3>lt_extlang_db_unref ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_extlang_db_unref                 (<em class="parameter"><code><a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a> *extlangdb</code></em>);</pre>
+<p>
+Decreases the reference count of <em class="parameter"><code>extlangdb</code></em>. when its reference count
+drops to 0, the object is finalized (i.e. its memory is freed).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>extlangdb</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

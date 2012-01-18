@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Container - Extlang</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="liblangtag Documentation">
+<link rel="up" href="Container.html" title="Container APIs">
+<link rel="prev" href="Container.html" title="Container APIs">
+<link rel="next" href="liblangtag-Container---Grandfathered.html" title="Container - Grandfathered">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="Container.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Container.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">liblangtag Documentation</th>
+<td><a accesskey="n" href="liblangtag-Container---Grandfathered.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#liblangtag-Container---Extlang.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#liblangtag-Container---Extlang.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="liblangtag-Container---Extlang"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="liblangtag-Container---Extlang.top_of_page"></a>Container - Extlang</span></h2>
+<p>Container - Extlang — A container class for Extlang subtag</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="liblangtag-Container---Extlang.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-compare" title="lt_extlang_compare ()">lt_extlang_compare</a>                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *v2</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-dump" title="lt_extlang_dump ()">lt_extlang_dump</a>                     (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-get-macro-language" title="lt_extlang_get_macro_language ()">lt_extlang_get_macro_language</a>       (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-get-name" title="lt_extlang_get_name ()">lt_extlang_get_name</a>                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-get-preferred-tag" title="lt_extlang_get_preferred_tag ()">lt_extlang_get_preferred_tag</a>        (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-get-prefix" title="lt_extlang_get_prefix ()">lt_extlang_get_prefix</a>               (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-get-tag" title="lt_extlang_get_tag ()">lt_extlang_get_tag</a>                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);
+<a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="returnvalue">lt_extlang_t</span></a> *      <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-ref" title="lt_extlang_ref ()">lt_extlang_ref</a>                      (<em class="parameter"><code><a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);
+                    <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t">lt_extlang_t</a>;
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-unref" title="lt_extlang_unref ()">lt_extlang_unref</a>                    (<em class="parameter"><code><a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Container---Extlang.description"></a><h2>Description</h2>
+<p>
+This container class provides a data access to Extlang subtag entry.
+</p>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Container---Extlang.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="lt-extlang-compare"></a><h3>lt_extlang_compare ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            lt_extlang_compare                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *v2</code></em>);</pre>
+<p>
+Compares if <em class="parameter"><code>v1</code></em> and <em class="parameter"><code>v2</code></em> is the same object or not.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>v1</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>v2</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if it's the same, otherwise <a href="../glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-dump"></a><h3>lt_extlang_dump ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_extlang_dump                     (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);</pre>
+<p>
+Dumps the container information to the standard output.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>extlang</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-get-macro-language"></a><h3>lt_extlang_get_macro_language ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_extlang_get_macro_language       (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);</pre>
+<p>
+Obtains the macrolanguage being assigned for the subtag.
+This is available only when the subtag is registered as the macrolanguage
+in ISO 639-3.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>extlang</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a macrolanguage string or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-get-name"></a><h3>lt_extlang_get_name ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_extlang_get_name                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);</pre>
+<p>
+Obtains the description of the subtag.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>extlang</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a description string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-get-preferred-tag"></a><h3>lt_extlang_get_preferred_tag ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_extlang_get_preferred_tag        (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);</pre>
+<p>
+Obtains the preferred-value. this is available only when the subtag is
+marked as deprecated.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>extlang</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a preferred-value for the subtag or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-get-prefix"></a><h3>lt_extlang_get_prefix ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_extlang_get_prefix               (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);</pre>
+<p>
+Obtains the prefix being assigned to the subtag.
+This is available only when the subtag has a particular seqnence of
+subgtags that form a meaningful tag with the subtag.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>extlang</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a prefix string or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-get-tag"></a><h3>lt_extlang_get_tag ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_extlang_get_tag                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);</pre>
+<p>
+Obtains the subtag that is registered as ISO 639 code.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>extlang</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a subtag name.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-ref"></a><h3>lt_extlang_ref ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="returnvalue">lt_extlang_t</span></a> *      lt_extlang_ref                      (<em class="parameter"><code><a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);</pre>
+<p>
+Increases the reference count of <em class="parameter"><code>extlang</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>extlang</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>extlang</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-t"></a><h3>lt_extlang_t</h3>
+<pre class="programlisting">typedef struct _lt_extlang_t lt_extlang_t;</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-extlang-unref"></a><h3>lt_extlang_unref ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_extlang_unref                    (<em class="parameter"><code><a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> *extlang</code></em>);</pre>
+<p>
+Decreases the reference count of <em class="parameter"><code>extlang</code></em>. when its reference count
+drops to 0, the object is finalized (i.e. its memory is freed).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>extlang</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

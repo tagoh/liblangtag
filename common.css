@@ -1,0 +1,47 @@
+body {
+    background: white;
+    color: black;
+    margin-left: 3%;
+    margin-right: 7%;
+}
+p {
+    margin-top: 1%;
+}
+p.verse {
+    margin-left: 3%;
+}
+.example {
+    margin-left: 3%;
+}
+
+h1 {
+    color: #666666;
+    text-shadow: 1px 1px 0.5px #cccccc;
+}
+h2 {
+    color: #666666;
+    margin-top: 25px;
+    margin-bottom: 0px;
+}
+h3 {
+    color: #666666;
+    margin-bottom: 0px;
+}
+
+a:link {
+    color: #335d6e;
+}
+a:visited {
+    color: #888888;
+}
+a:hover {
+    color: #66bbdd;
+}
+
+div#toc {
+    float: right;
+    width: 30%;
+    border: thin solid #000000;
+    padding: 10px;
+    background-color: #eeeeee;
+}

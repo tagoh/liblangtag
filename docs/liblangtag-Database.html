@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Database</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="liblangtag Documentation">
+<link rel="up" href="ch01.html#Database" title="Database APIs">
+<link rel="prev" href="ch01.html" title="liblangtag API References">
+<link rel="next" href="liblangtag-Database---Extlang.html" title="Database - Extlang">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="ch01.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch01.html#Database"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">liblangtag Documentation</th>
+<td><a accesskey="n" href="liblangtag-Database---Extlang.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#liblangtag-Database.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#liblangtag-Database.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="liblangtag-Database"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="liblangtag-Database.top_of_page"></a>Database</span></h2>
+<p>Database — convenient function sets to deal with the language tags database</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="liblangtag-Database.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><span class="returnvalue">void</span>                <a class="link" href="liblangtag-Database.html#lt-db-finalize" title="lt_db_finalize ()">lt_db_finalize</a>                      (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="returnvalue">lt_extlang_db_t</span></a> *   <a class="link" href="liblangtag-Database.html#lt-db-get-extlang" title="lt_db_get_extlang ()">lt_db_get_extlang</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-t" title="lt_grandfathered_db_t"><span class="returnvalue">lt_grandfathered_db_t</span></a> * <a class="link" href="liblangtag-Database.html#lt-db-get-grandfathered" title="lt_db_get_grandfathered ()">lt_db_get_grandfathered</a>         (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="liblangtag-Database---Language.html#lt-lang-db-t" title="lt_lang_db_t"><span class="returnvalue">lt_lang_db_t</span></a> *      <a class="link" href="liblangtag-Database.html#lt-db-get-lang" title="lt_db_get_lang ()">lt_db_get_lang</a>                      (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="liblangtag-Database---Region.html#lt-region-db-t" title="lt_region_db_t"><span class="returnvalue">lt_region_db_t</span></a> *    <a class="link" href="liblangtag-Database.html#lt-db-get-region" title="lt_db_get_region ()">lt_db_get_region</a>                    (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="liblangtag-Database---Script.html#lt-script-db-t" title="lt_script_db_t"><span class="returnvalue">lt_script_db_t</span></a> *    <a class="link" href="liblangtag-Database.html#lt-db-get-script" title="lt_db_get_script ()">lt_db_get_script</a>                    (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="liblangtag-Database---Variant.html#lt-variant-db-t" title="lt_variant_db_t"><span class="returnvalue">lt_variant_db_t</span></a> *   <a class="link" href="liblangtag-Database.html#lt-db-get-variant" title="lt_db_get_variant ()">lt_db_get_variant</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()">lt_db_initialize</a>                    (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Database.description"></a><h2>Description</h2>
+<p>
+This section describes convenient functions to obtain the database instance.
+</p>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Database.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="lt-db-finalize"></a><h3>lt_db_finalize ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_db_finalize                      (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Decreases the reference count of the language tags database, which was
+increased with <a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a>.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-get-extlang"></a><h3>lt_db_get_extlang ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="returnvalue">lt_extlang_db_t</span></a> *   lt_db_get_extlang                   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Obtains the instance of <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a>. This still allows to use without
+<a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a>. but it will takes some time to load the database on
+the memory every time.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The instance of <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="type">lt_extlang_db_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-get-grandfathered"></a><h3>lt_db_get_grandfathered ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-t" title="lt_grandfathered_db_t"><span class="returnvalue">lt_grandfathered_db_t</span></a> * lt_db_get_grandfathered         (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Obtains the instance of <a class="link" href="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-t" title="lt_grandfathered_db_t"><span class="type">lt_grandfathered_db_t</span></a>. This still allows to use
+without <a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a>. but it will takes some time to load the database
+on the memory every time.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The instance of <a class="link" href="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-t" title="lt_grandfathered_db_t"><span class="type">lt_grandfathered_db_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-get-lang"></a><h3>lt_db_get_lang ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Database---Language.html#lt-lang-db-t" title="lt_lang_db_t"><span class="returnvalue">lt_lang_db_t</span></a> *      lt_db_get_lang                      (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Obtains the instance of <a class="link" href="liblangtag-Database---Language.html#lt-lang-db-t" title="lt_lang_db_t"><span class="type">lt_lang_db_t</span></a>. This still allows to use without
+<a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a>. but it will takes some time to load the database on
+the memory every time.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The instance of <a class="link" href="liblangtag-Database---Language.html#lt-lang-db-t" title="lt_lang_db_t"><span class="type">lt_lang_db_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-get-region"></a><h3>lt_db_get_region ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Database---Region.html#lt-region-db-t" title="lt_region_db_t"><span class="returnvalue">lt_region_db_t</span></a> *    lt_db_get_region                    (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Obtains the instance of <a class="link" href="liblangtag-Database---Region.html#lt-region-db-t" title="lt_region_db_t"><span class="type">lt_region_db_t</span></a>. This still allows to use without
+<a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a>. but it will takes some time to load the database on
+the memory every time.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The instance of <a class="link" href="liblangtag-Database---Region.html#lt-region-db-t" title="lt_region_db_t"><span class="type">lt_region_db_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-get-script"></a><h3>lt_db_get_script ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Database---Script.html#lt-script-db-t" title="lt_script_db_t"><span class="returnvalue">lt_script_db_t</span></a> *    lt_db_get_script                    (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Obtains the instance of <a class="link" href="liblangtag-Database---Script.html#lt-script-db-t" title="lt_script_db_t"><span class="type">lt_script_db_t</span></a>. This still allows to use without
+<a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a>. but it will takes some time to load the database on
+the memory every time.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The instance of <a class="link" href="liblangtag-Database---Script.html#lt-script-db-t" title="lt_script_db_t"><span class="type">lt_script_db_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-get-variant"></a><h3>lt_db_get_variant ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Database---Variant.html#lt-variant-db-t" title="lt_variant_db_t"><span class="returnvalue">lt_variant_db_t</span></a> *   lt_db_get_variant                   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Obtains the instance of <a class="link" href="liblangtag-Database---Variant.html#lt-variant-db-t" title="lt_variant_db_t"><span class="type">lt_variant_db_t</span></a>. This still allows to use without
+<a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a>. but it will takes some time to load the database on
+the memory every time.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The instance of <a class="link" href="liblangtag-Database---Variant.html#lt-variant-db-t" title="lt_variant_db_t"><span class="type">lt_variant_db_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-initialize"></a><h3>lt_db_initialize ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_db_initialize                    (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Initialize all of the language tags database instance.
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

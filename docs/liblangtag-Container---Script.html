@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Container - Script</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="liblangtag Documentation">
+<link rel="up" href="Container.html" title="Container APIs">
+<link rel="prev" href="liblangtag-Container---Region.html" title="Container - Region">
+<link rel="next" href="liblangtag-Container---Tag.html" title="Container - Tag">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="liblangtag-Container---Region.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Container.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">liblangtag Documentation</th>
+<td><a accesskey="n" href="liblangtag-Container---Tag.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#liblangtag-Container---Script.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#liblangtag-Container---Script.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="liblangtag-Container---Script"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="liblangtag-Container---Script.top_of_page"></a>Container - Script</span></h2>
+<p>Container - Script — A container class for Script subtag</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="liblangtag-Container---Script.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="liblangtag-Container---Script.html#lt-script-compare" title="lt_script_compare ()">lt_script_compare</a>                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *v2</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Script.html#lt-script-convert-to-modifier" title="lt_script_convert_to_modifier ()">lt_script_convert_to_modifier</a>       (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Script.html#lt-script-dump" title="lt_script_dump ()">lt_script_dump</a>                      (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Script.html#lt-script-get-name" title="lt_script_get_name ()">lt_script_get_name</a>                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);
+const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Script.html#lt-script-get-tag" title="lt_script_get_tag ()">lt_script_get_tag</a>                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);
+<a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="returnvalue">lt_script_t</span></a> *       <a class="link" href="liblangtag-Container---Script.html#lt-script-ref" title="lt_script_ref ()">lt_script_ref</a>                       (<em class="parameter"><code><a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);
+                    <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t">lt_script_t</a>;
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Script.html#lt-script-unref" title="lt_script_unref ()">lt_script_unref</a>                     (<em class="parameter"><code><a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Container---Script.description"></a><h2>Description</h2>
+<p>
+This container class provides a data access to Script subtag entry.
+</p>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Container---Script.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="lt-script-compare"></a><h3>lt_script_compare ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            lt_script_compare                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *v2</code></em>);</pre>
+<p>
+Compare if <em class="parameter"><code>v1</code></em> and <em class="parameter"><code>v2</code></em> is the same object or not.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>v1</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>v2</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if it's the same, otherwise <a href="../glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-script-convert-to-modifier"></a><h3>lt_script_convert_to_modifier ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_script_convert_to_modifier       (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);</pre>
+<p>
+Convert the script subtag to the locale variant modifier.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>script</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a modifier string or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-script-dump"></a><h3>lt_script_dump ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_script_dump                      (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);</pre>
+<p>
+Dumps the container information to the standard output.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>script</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-script-get-name"></a><h3>lt_script_get_name ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_script_get_name                  (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);</pre>
+<p>
+Obtains the description of the subtag.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>script</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a description string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-script-get-tag"></a><h3>lt_script_get_tag ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       lt_script_get_tag                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);</pre>
+<p>
+Obtains the tag name.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>script</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a tag string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-script-ref"></a><h3>lt_script_ref ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="returnvalue">lt_script_t</span></a> *       lt_script_ref                       (<em class="parameter"><code><a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);</pre>
+<p>
+Increases the reference count of <em class="parameter"><code>script</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>script</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>script</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-script-t"></a><h3>lt_script_t</h3>
+<pre class="programlisting">typedef struct _lt_script_t lt_script_t;</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-script-unref"></a><h3>lt_script_unref ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_script_unref                     (<em class="parameter"><code><a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> *script</code></em>);</pre>
+<p>
+Decreases the reference count of <em class="parameter"><code>script</code></em>. when its reference count
+drops to 0, the object is finalized (i.e. its memory is freed).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>script</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

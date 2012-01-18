@@ -1,0 +1,29 @@
+#title liblangtag
+#author Akira TAGOH
+
+<div id="toc" style="float: right; width: 30%; border: thin solid #000000; padding: 10px;">
+Index
+
+<contents>
+</div>
+
+liblangtag is an interface library to access/deal with tags
+for identifying languages, which is described in RFC 5646.
+
+* Requirements
+
+ - libxml2
+ - GLib 2.0
+ - GObject Introspection (optional)
+
+* Download
+
+Please visit [[http://github.com/tagoh/liblangtag/downloads][here]] to get the latest archive.
+
+* Documentation
+
+API reference are available [[http://tagoh.github.com/liblangtag/docs/][here]].
+
+* Bug report
+
+https://github.com/tagoh/liblangtag/issues

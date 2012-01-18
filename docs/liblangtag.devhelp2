@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="liblangtag Documentation" link="index.html" author="" name="liblangtag" version="2" language="c">
+  <chapters>
+    <sub name="liblangtag API References" link="ch01.html">
+      <sub name="Database APIs" link="ch01.html#Database">
+        <sub name="Database" link="liblangtag-Database.html"/>
+        <sub name="Database - Extlang" link="liblangtag-Database---Extlang.html"/>
+        <sub name="Database - Grandfathered" link="liblangtag-Database---Grandfathered.html"/>
+        <sub name="Database - Language" link="liblangtag-Database---Language.html"/>
+        <sub name="Database - Region" link="liblangtag-Database---Region.html"/>
+        <sub name="Database - Script" link="liblangtag-Database---Script.html"/>
+        <sub name="Database - Variant" link="liblangtag-Database---Variant.html"/>
+      </sub>
+      <sub name="Container APIs" link="Container.html">
+        <sub name="Container - Extlang" link="liblangtag-Container---Extlang.html"/>
+        <sub name="Container - Grandfathered" link="liblangtag-Container---Grandfathered.html"/>
+        <sub name="Container - Language" link="liblangtag-Container---Language.html"/>
+        <sub name="Container - Region" link="liblangtag-Container---Region.html"/>
+        <sub name="Container - Script" link="liblangtag-Container---Script.html"/>
+        <sub name="Container - Tag" link="liblangtag-Container---Tag.html"/>
+        <sub name="Container - Variant" link="liblangtag-Container---Variant.html"/>
+      </sub>
+      <sub name="Error" link="liblangtag-Error.html"/>
+    </sub>
+    <sub name="Object Hierarchy" link="object-tree.html"/>
+    <sub name="API Index" link="api-index-full.html"/>
+    <sub name="Index of deprecated API" link="deprecated-api-index.html"/>
+    <sub name="Annotation Glossary" link="annotation-glossary.html"/>
+  </chapters>
+  <functions>
+    <keyword type="function" name="lt_db_finalize ()" link="liblangtag-Database.html#lt-db-finalize"/>
+    <keyword type="function" name="lt_db_get_extlang ()" link="liblangtag-Database.html#lt-db-get-extlang"/>
+    <keyword type="function" name="lt_db_get_grandfathered ()" link="liblangtag-Database.html#lt-db-get-grandfathered"/>
+    <keyword type="function" name="lt_db_get_lang ()" link="liblangtag-Database.html#lt-db-get-lang"/>
+    <keyword type="function" name="lt_db_get_region ()" link="liblangtag-Database.html#lt-db-get-region"/>
+    <keyword type="function" name="lt_db_get_script ()" link="liblangtag-Database.html#lt-db-get-script"/>
+    <keyword type="function" name="lt_db_get_variant ()" link="liblangtag-Database.html#lt-db-get-variant"/>
+    <keyword type="function" name="lt_db_initialize ()" link="liblangtag-Database.html#lt-db-initialize"/>
+    <keyword type="function" name="lt_extlang_db_lookup ()" link="liblangtag-Database---Extlang.html#lt-extlang-db-lookup"/>
+    <keyword type="function" name="lt_extlang_db_new ()" link="liblangtag-Database---Extlang.html#lt-extlang-db-new"/>
+    <keyword type="function" name="lt_extlang_db_ref ()" link="liblangtag-Database---Extlang.html#lt-extlang-db-ref"/>
+    <keyword type="struct" name="lt_extlang_db_t" link="liblangtag-Database---Extlang.html#lt-extlang-db-t"/>
+    <keyword type="function" name="lt_extlang_db_unref ()" link="liblangtag-Database---Extlang.html#lt-extlang-db-unref"/>
+    <keyword type="function" name="lt_grandfathered_db_lookup ()" link="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-lookup"/>
+    <keyword type="function" name="lt_grandfathered_db_new ()" link="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-new"/>
+    <keyword type="function" name="lt_grandfathered_db_ref ()" link="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-ref"/>
+    <keyword type="struct" name="lt_grandfathered_db_t" link="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-t"/>
+    <keyword type="function" name="lt_grandfathered_db_unref ()" link="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-unref"/>
+    <keyword type="function" name="lt_lang_db_lookup ()" link="liblangtag-Database---Language.html#lt-lang-db-lookup"/>
+    <keyword type="function" name="lt_lang_db_new ()" link="liblangtag-Database---Language.html#lt-lang-db-new"/>
+    <keyword type="function" name="lt_lang_db_ref ()" link="liblangtag-Database---Language.html#lt-lang-db-ref"/>
+    <keyword type="struct" name="lt_lang_db_t" link="liblangtag-Database---Language.html#lt-lang-db-t"/>
+    <keyword type="function" name="lt_lang_db_unref ()" link="liblangtag-Database---Language.html#lt-lang-db-unref"/>
+    <keyword type="function" name="lt_region_db_lookup ()" link="liblangtag-Database---Region.html#lt-region-db-lookup"/>
+    <keyword type="function" name="lt_region_db_new ()" link="liblangtag-Database---Region.html#lt-region-db-new"/>
+    <keyword type="function" name="lt_region_db_ref ()" link="liblangtag-Database---Region.html#lt-region-db-ref"/>
+    <keyword type="struct" name="lt_region_db_t" link="liblangtag-Database---Region.html#lt-region-db-t"/>
+    <keyword type="function" name="lt_region_db_unref ()" link="liblangtag-Database---Region.html#lt-region-db-unref"/>
+    <keyword type="function" name="lt_script_db_lookup ()" link="liblangtag-Database---Script.html#lt-script-db-lookup"/>
+    <keyword type="function" name="lt_script_db_new ()" link="liblangtag-Database---Script.html#lt-script-db-new"/>
+    <keyword type="function" name="lt_script_db_ref ()" link="liblangtag-Database---Script.html#lt-script-db-ref"/>
+    <keyword type="struct" name="lt_script_db_t" link="liblangtag-Database---Script.html#lt-script-db-t"/>
+    <keyword type="function" name="lt_script_db_unref ()" link="liblangtag-Database---Script.html#lt-script-db-unref"/>
+    <keyword type="function" name="lt_variant_db_lookup ()" link="liblangtag-Database---Variant.html#lt-variant-db-lookup"/>
+    <keyword type="function" name="lt_variant_db_new ()" link="liblangtag-Database---Variant.html#lt-variant-db-new"/>
+    <keyword type="function" name="lt_variant_db_ref ()" link="liblangtag-Database---Variant.html#lt-variant-db-ref"/>
+    <keyword type="struct" name="lt_variant_db_t" link="liblangtag-Database---Variant.html#lt-variant-db-t"/>
+    <keyword type="function" name="lt_variant_db_unref ()" link="liblangtag-Database---Variant.html#lt-variant-db-unref"/>
+    <keyword type="function" name="lt_extlang_compare ()" link="liblangtag-Container---Extlang.html#lt-extlang-compare"/>
+    <keyword type="function" name="lt_extlang_dump ()" link="liblangtag-Container---Extlang.html#lt-extlang-dump"/>
+    <keyword type="function" name="lt_extlang_get_macro_language ()" link="liblangtag-Container---Extlang.html#lt-extlang-get-macro-language"/>
+    <keyword type="function" name="lt_extlang_get_name ()" link="liblangtag-Container---Extlang.html#lt-extlang-get-name"/>
+    <keyword type="function" name="lt_extlang_get_preferred_tag ()" link="liblangtag-Container---Extlang.html#lt-extlang-get-preferred-tag"/>
+    <keyword type="function" name="lt_extlang_get_prefix ()" link="liblangtag-Container---Extlang.html#lt-extlang-get-prefix"/>
+    <keyword type="function" name="lt_extlang_get_tag ()" link="liblangtag-Container---Extlang.html#lt-extlang-get-tag"/>
+    <keyword type="function" name="lt_extlang_ref ()" link="liblangtag-Container---Extlang.html#lt-extlang-ref"/>
+    <keyword type="struct" name="lt_extlang_t" link="liblangtag-Container---Extlang.html#lt-extlang-t"/>
+    <keyword type="function" name="lt_extlang_unref ()" link="liblangtag-Container---Extlang.html#lt-extlang-unref"/>
+    <keyword type="function" name="lt_grandfathered_compare ()" link="liblangtag-Container---Grandfathered.html#lt-grandfathered-compare"/>
+    <keyword type="function" name="lt_grandfathered_dump ()" link="liblangtag-Container---Grandfathered.html#lt-grandfathered-dump"/>
+    <keyword type="function" name="lt_grandfathered_get_better_tag ()" link="liblangtag-Container---Grandfathered.html#lt-grandfathered-get-better-tag"/>
+    <keyword type="function" name="lt_grandfathered_get_name ()" link="liblangtag-Container---Grandfathered.html#lt-grandfathered-get-name"/>
+    <keyword type="function" name="lt_grandfathered_get_preferred_tag ()" link="liblangtag-Container---Grandfathered.html#lt-grandfathered-get-preferred-tag"/>
+    <keyword type="function" name="lt_grandfathered_get_tag ()" link="liblangtag-Container---Grandfathered.html#lt-grandfathered-get-tag"/>
+    <keyword type="function" name="lt_grandfathered_ref ()" link="liblangtag-Container---Grandfathered.html#lt-grandfathered-ref"/>
+    <keyword type="struct" name="lt_grandfathered_t" link="liblangtag-Container---Grandfathered.html#lt-grandfathered-t"/>
+    <keyword type="function" name="lt_grandfathered_unref ()" link="liblangtag-Container---Grandfathered.html#lt-grandfathered-unref"/>
+    <keyword type="function" name="lt_lang_compare ()" link="liblangtag-Container---Language.html#lt-lang-compare"/>
+    <keyword type="function" name="lt_lang_dump ()" link="liblangtag-Container---Language.html#lt-lang-dump"/>
+    <keyword type="function" name="lt_lang_get_better_tag ()" link="liblangtag-Container---Language.html#lt-lang-get-better-tag"/>
+    <keyword type="function" name="lt_lang_get_macro_language ()" link="liblangtag-Container---Language.html#lt-lang-get-macro-language"/>
+    <keyword type="function" name="lt_lang_get_name ()" link="liblangtag-Container---Language.html#lt-lang-get-name"/>
+    <keyword type="function" name="lt_lang_get_preferred_tag ()" link="liblangtag-Container---Language.html#lt-lang-get-preferred-tag"/>
+    <keyword type="function" name="lt_lang_get_scope ()" link="liblangtag-Container---Language.html#lt-lang-get-scope"/>
+    <keyword type="function" name="lt_lang_get_suppress_script ()" link="liblangtag-Container---Language.html#lt-lang-get-suppress-script"/>
+    <keyword type="function" name="lt_lang_get_tag ()" link="liblangtag-Container---Language.html#lt-lang-get-tag"/>
+    <keyword type="function" name="lt_lang_ref ()" link="liblangtag-Container---Language.html#lt-lang-ref"/>
+    <keyword type="struct" name="lt_lang_t" link="liblangtag-Container---Language.html#lt-lang-t"/>
+    <keyword type="function" name="lt_lang_unref ()" link="liblangtag-Container---Language.html#lt-lang-unref"/>
+    <keyword type="function" name="lt_region_compare ()" link="liblangtag-Container---Region.html#lt-region-compare"/>
+    <keyword type="function" name="lt_region_dump ()" link="liblangtag-Container---Region.html#lt-region-dump"/>
+    <keyword type="function" name="lt_region_get_better_tag ()" link="liblangtag-Container---Region.html#lt-region-get-better-tag"/>
+    <keyword type="function" name="lt_region_get_name ()" link="liblangtag-Container---Region.html#lt-region-get-name"/>
+    <keyword type="function" name="lt_region_get_preferred_tag ()" link="liblangtag-Container---Region.html#lt-region-get-preferred-tag"/>
+    <keyword type="function" name="lt_region_get_tag ()" link="liblangtag-Container---Region.html#lt-region-get-tag"/>
+    <keyword type="function" name="lt_region_ref ()" link="liblangtag-Container---Region.html#lt-region-ref"/>
+    <keyword type="struct" name="lt_region_t" link="liblangtag-Container---Region.html#lt-region-t"/>
+    <keyword type="function" name="lt_region_unref ()" link="liblangtag-Container---Region.html#lt-region-unref"/>
+    <keyword type="function" name="lt_script_compare ()" link="liblangtag-Container---Script.html#lt-script-compare"/>
+    <keyword type="function" name="lt_script_convert_to_modifier ()" link="liblangtag-Container---Script.html#lt-script-convert-to-modifier"/>
+    <keyword type="function" name="lt_script_dump ()" link="liblangtag-Container---Script.html#lt-script-dump"/>
+    <keyword type="function" name="lt_script_get_name ()" link="liblangtag-Container---Script.html#lt-script-get-name"/>
+    <keyword type="function" name="lt_script_get_tag ()" link="liblangtag-Container---Script.html#lt-script-get-tag"/>
+    <keyword type="function" name="lt_script_ref ()" link="liblangtag-Container---Script.html#lt-script-ref"/>
+    <keyword type="struct" name="lt_script_t" link="liblangtag-Container---Script.html#lt-script-t"/>
+    <keyword type="function" name="lt_script_unref ()" link="liblangtag-Container---Script.html#lt-script-unref"/>
+    <keyword type="function" name="lt_tag_canonicalize ()" link="liblangtag-Container---Tag.html#lt-tag-canonicalize"/>
+    <keyword type="function" name="lt_tag_clear ()" link="liblangtag-Container---Tag.html#lt-tag-clear"/>
+    <keyword type="function" name="lt_tag_compare ()" link="liblangtag-Container---Tag.html#lt-tag-compare"/>
+    <keyword type="function" name="lt_tag_convert_to_locale ()" link="liblangtag-Container---Tag.html#lt-tag-convert-to-locale"/>
+    <keyword type="function" name="lt_tag_dump ()" link="liblangtag-Container---Tag.html#lt-tag-dump"/>
+    <keyword type="function" name="lt_tag_get_string ()" link="liblangtag-Container---Tag.html#lt-tag-get-string"/>
+    <keyword type="function" name="lt_tag_lookup ()" link="liblangtag-Container---Tag.html#lt-tag-lookup"/>
+    <keyword type="function" name="lt_tag_match ()" link="liblangtag-Container---Tag.html#lt-tag-match"/>
+    <keyword type="function" name="lt_tag_new ()" link="liblangtag-Container---Tag.html#lt-tag-new"/>
+    <keyword type="function" name="lt_tag_parse ()" link="liblangtag-Container---Tag.html#lt-tag-parse"/>
+    <keyword type="function" name="lt_tag_ref ()" link="liblangtag-Container---Tag.html#lt-tag-ref"/>
+    <keyword type="struct" name="lt_tag_t" link="liblangtag-Container---Tag.html#lt-tag-t"/>
+    <keyword type="function" name="lt_tag_unref ()" link="liblangtag-Container---Tag.html#lt-tag-unref"/>
+    <keyword type="function" name="lt_variant_compare ()" link="liblangtag-Container---Variant.html#lt-variant-compare"/>
+    <keyword type="function" name="lt_variant_dump ()" link="liblangtag-Container---Variant.html#lt-variant-dump"/>
+    <keyword type="function" name="lt_variant_get_better_tag ()" link="liblangtag-Container---Variant.html#lt-variant-get-better-tag"/>
+    <keyword type="function" name="lt_variant_get_name ()" link="liblangtag-Container---Variant.html#lt-variant-get-name"/>
+    <keyword type="function" name="lt_variant_get_preferred_tag ()" link="liblangtag-Container---Variant.html#lt-variant-get-preferred-tag"/>
+    <keyword type="function" name="lt_variant_get_prefix ()" link="liblangtag-Container---Variant.html#lt-variant-get-prefix"/>
+    <keyword type="function" name="lt_variant_get_tag ()" link="liblangtag-Container---Variant.html#lt-variant-get-tag"/>
+    <keyword type="function" name="lt_variant_ref ()" link="liblangtag-Container---Variant.html#lt-variant-ref"/>
+    <keyword type="struct" name="lt_variant_t" link="liblangtag-Container---Variant.html#lt-variant-t"/>
+    <keyword type="function" name="lt_variant_unref ()" link="liblangtag-Container---Variant.html#lt-variant-unref"/>
+    <keyword type="macro" name="LT_ERROR" link="liblangtag-Error.html#LT-ERROR:CAPS"/>
+    <keyword type="function" name="lt_error_get_quark ()" link="liblangtag-Error.html#lt-error-get-quark"/>
+    <keyword type="enum" name="enum lt_error_t" link="liblangtag-Error.html#lt-error-t"/>
+    <keyword type="constant" name="LT_ERR_UNKNOWN" link="liblangtag-Error.html#LT-ERR-UNKNOWN:CAPS"/>
+    <keyword type="constant" name="LT_ERR_SUCCESS" link="liblangtag-Error.html#LT-ERR-SUCCESS:CAPS"/>
+    <keyword type="constant" name="LT_ERR_OOM" link="liblangtag-Error.html#LT-ERR-OOM:CAPS"/>
+    <keyword type="constant" name="LT_ERR_FAIL_ON_XML" link="liblangtag-Error.html#LT-ERR-FAIL-ON-XML:CAPS"/>
+    <keyword type="constant" name="LT_ERR_EOT" link="liblangtag-Error.html#LT-ERR-EOT:CAPS"/>
+    <keyword type="constant" name="LT_ERR_FAIL_ON_SCANNER" link="liblangtag-Error.html#LT-ERR-FAIL-ON-SCANNER:CAPS"/>
+    <keyword type="constant" name="LT_ERR_NO_TAG" link="liblangtag-Error.html#LT-ERR-NO-TAG:CAPS"/>
+    <keyword type="constant" name="LT_ERR_END" link="liblangtag-Error.html#LT-ERR-END:CAPS"/>
+  </functions>
+</book>
