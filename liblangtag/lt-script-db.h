@@ -37,9 +37,8 @@ typedef struct _lt_script_db_t	lt_script_db_t;
 lt_script_db_t *lt_script_db_new        (void);
 lt_script_db_t *lt_script_db_ref        (lt_script_db_t *scriptdb);
 void            lt_script_db_unref      (lt_script_db_t *scriptdb);
-GList          *lt_script_db_get_scripts(lt_script_db_t *scriptdb);
 lt_script_t    *lt_script_db_lookup     (lt_script_db_t *scriptdb,
-                                         const gchar    *script_name_or_alpha_code_or_num_code);
+                                         const gchar    *subtag);
 
 G_END_DECLS
 

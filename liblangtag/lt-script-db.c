@@ -32,6 +32,14 @@
 #include "lt-script-db.h"
 
 
+/**
+ * SECTION:lt-script-db
+ * @Short_Description: An interface to access Script Database
+ * @Title: Database - Script
+ *
+ * This class provides an interface to access Script Database. which has been
+ * registered as ISO 15924.
+ */
 struct _lt_script_db_t {
 	lt_mem_t    parent;
 	GHashTable *script_entries;
@@ -180,6 +188,13 @@ lt_script_db_parse(lt_script_db_t  *scriptdb,
 }
 
 /*< public >*/
+/**
+ * lt_script_db_new:
+ *
+ * Create a new instance of a #lt_script_db_t.
+ *
+ * Returns: (transfer full): a new instance of #lt_script_db_t.
+ */
 lt_script_db_t *
 lt_script_db_new(void)
 {
@@ -221,33 +236,57 @@ lt_script_db_new(void)
 	return retval;
 }
 
+/**
+ * lt_script_db_ref:
+ * @scriptdb: a #lt_script_db_t.
+ *
+ * Increases the reference count of @scriptdb.
+ *
+ * Returns: (transfer none): the same @scriptdb object.
+ */
 lt_script_db_t *
-lt_script_db_ref(lt_script_db_t *script)
+lt_script_db_ref(lt_script_db_t *scriptdb)
 {
-	g_return_val_if_fail (script != NULL, NULL);
+	g_return_val_if_fail (scriptdb != NULL, NULL);
 
-	return lt_mem_ref(&script->parent);
+	return lt_mem_ref(&scriptdb->parent);
 }
 
+/**
+ * lt_script_db_unref:
+ * @scriptdb: a #lt_script_db_t.
+ *
+ * Decreases the reference count of @scriptdb. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
-lt_script_db_unref(lt_script_db_t *script)
+lt_script_db_unref(lt_script_db_t *scriptdb)
 {
-	if (script)
-		lt_mem_unref(&script->parent);
+	if (scriptdb)
+		lt_mem_unref(&scriptdb->parent);
 }
 
+/**
+ * lt_script_db_lookup:
+ * @scriptdb: a #lt_script_db_t.
+ * @subtag: a subtag name to lookup.
+ *
+ * Lookup @lt_script_t if @subtag is valid and registered into the database.
+ *
+ * Returns: (transfer full): a #lt_script_t that meets with @subtag.
+ */
 lt_script_t *
-lt_script_db_lookup(lt_script_db_t *script,
-		    const gchar    *script_name)
+lt_script_db_lookup(lt_script_db_t *scriptdb,
+		    const gchar    *subtag)
 {
 	lt_script_t *retval;
 	gchar *s;
 
-	g_return_val_if_fail (script != NULL, NULL);
-	g_return_val_if_fail (script_name != NULL, NULL);
+	g_return_val_if_fail (scriptdb != NULL, NULL);
+	g_return_val_if_fail (subtag != NULL, NULL);
 
-	s = g_strdup(script_name);
-	retval = g_hash_table_lookup(script->script_entries,
+	s = g_strdup(subtag);
+	retval = g_hash_table_lookup(scriptdb->script_entries,
 				     lt_strlower(s));
 	g_free(s);
 	if (retval)
