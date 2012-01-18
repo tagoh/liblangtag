@@ -30,6 +30,9 @@
 
 G_BEGIN_DECLS
 
+/**
+ * lt_extlang_t:
+ */
 typedef struct _lt_extlang_t	lt_extlang_t;
 
 

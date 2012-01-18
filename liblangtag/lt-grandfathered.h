@@ -30,6 +30,9 @@
 
 G_BEGIN_DECLS
 
+/**
+ * lt_grandfathered_t:
+ */
 typedef struct _lt_grandfathered_t	lt_grandfathered_t;
 
 

@@ -31,6 +31,9 @@
 
 G_BEGIN_DECLS
 
+/**
+ * lt_variant_db_t:
+ */
 typedef struct _lt_variant_db_t	lt_variant_db_t;
 
 

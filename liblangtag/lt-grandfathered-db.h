@@ -31,6 +31,9 @@
 
 G_BEGIN_DECLS
 
+/**
+ * lt_grandfathered_db_t:
+ */
 typedef struct _lt_grandfathered_db_t	lt_grandfathered_db_t;
 
 

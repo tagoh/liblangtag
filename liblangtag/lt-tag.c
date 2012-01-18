@@ -32,6 +32,13 @@
 #include "lt-tag-private.h"
 
 
+/**
+ * SECTION: lt-tag
+ * @Short_Description: A container class for Language tag
+ * @Title: Container - Tag
+ *
+ * This container class provides an interface to deal with the language tag.
+ */
 typedef struct _lt_tag_scanner_t {
 	lt_mem_t  parent;
 	gchar    *string;
@@ -839,6 +846,13 @@ lt_tag_parse_wildcard(lt_tag_t     *tag,
 }
 
 /*< public >*/
+/**
+ * lt_tag_new:
+ *
+ * Create a new instance of #lt_tag_t.
+ *
+ * Returns: (transfer full): a new instance of #lt_tag_t.
+ */
 lt_tag_t *
 lt_tag_new(void)
 {
@@ -853,6 +867,14 @@ lt_tag_new(void)
 	return retval;
 }
 
+/**
+ * lt_tag_ref:
+ * @tag: a #lt_tag_t.
+ *
+ * Increases the reference count of @tag.
+ *
+ * Returns: (transfer none): the same @tag object.
+ */
 lt_tag_t *
 lt_tag_ref(lt_tag_t *tag)
 {
@@ -861,6 +883,13 @@ lt_tag_ref(lt_tag_t *tag)
 	return lt_mem_ref(&tag->parent);
 }
 
+/**
+ * lt_tag_unref:
+ * @tag: a #lt_tag_t.
+ *
+ * Decreases the reference count of @tag. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_tag_unref(lt_tag_t *tag)
 {
@@ -868,6 +897,12 @@ lt_tag_unref(lt_tag_t *tag)
 		lt_mem_unref(&tag->parent);
 }
 
+/**
+ * lt_tag_clear:
+ * @tag: a #lt_tag_t.
+ *
+ * (Re-)Initialize all of the subtag information stored in @tag.
+ */
 void
 lt_tag_clear(lt_tag_t *tag)
 {
@@ -910,6 +945,16 @@ lt_tag_clear(lt_tag_t *tag)
 	}
 }
 
+/**
+ * lt_tag_parse:
+ * @tag: a #lt_tag_t.
+ * @tag_string: language tag to be parsed.
+ * @error: (allow-none): a #GError or %NULL.
+ *
+ * Parse @tag_string and create appropriate instances for subtags.
+ *
+ * Returns: %TRUE if it's successfully completed, otherwise %FALSE.
+ */
 gboolean
 lt_tag_parse(lt_tag_t     *tag,
 	     const gchar  *tag_string,
@@ -920,6 +965,14 @@ lt_tag_parse(lt_tag_t     *tag,
 	return _lt_tag_parse(tag, tag_string, FALSE, &state, error);
 }
 
+/**
+ * lt_tag_get_string:
+ * @tag: a #lt_tag_t.
+ *
+ * Obtains a language tag in string.
+ *
+ * Returns: a language tag string.
+ */
 const gchar *
 lt_tag_get_string(lt_tag_t *tag)
 {
@@ -970,6 +1023,15 @@ lt_tag_get_string(lt_tag_t *tag)
 	return tag->tag_string;
 }
 
+/**
+ * lt_tag_canonicalize:
+ * @tag: a #lt_tag_t.
+ * @error: (allow-none): a #GError or %NULL.
+ *
+ * Canonicalize the language tag according to various information of subtags.
+ *
+ * Returns: a language tag string.
+ */
 gchar *
 lt_tag_canonicalize(lt_tag_t  *tag,
 		    GError   **error)
@@ -1063,6 +1125,15 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 	return retval;
 }
 
+/**
+ * lt_tag_convert_to_locale:
+ * @tag: a #lt_tag_t.
+ * @error: (allow-none): a #GError or %NULL.
+ *
+ * Convert the language tag to the locale.
+ *
+ * Returns: a locale string or %NULL if fails
+ */
 gchar *
 lt_tag_convert_to_locale(lt_tag_t  *tag,
 			 GError   **error)
@@ -1107,6 +1178,12 @@ lt_tag_convert_to_locale(lt_tag_t  *tag,
 	return retval;
 }
 
+/**
+ * lt_tag_dump:
+ * @tag: a #lt_tag_t.
+ *
+ * Dumps the container information to the standard output.
+ */
 void
 lt_tag_dump(const lt_tag_t *tag)
 {
@@ -1143,6 +1220,15 @@ lt_tag_dump(const lt_tag_t *tag)
 		g_print("Private Use: %s\n", tag->privateuse->str);
 }
 
+/**
+ * lt_tag_compare:
+ * @v1: a #lt_tag_t.
+ * @v2: a #lt_tag_t.
+ *
+ * Compare if @v1 and @v2 is the same object or not.
+ *
+ * Returns: %TRUE if it's the same, otherwise %FALSE.
+ */
 gboolean
 lt_tag_compare(const lt_tag_t *v1,
 	       const lt_tag_t *v2)
@@ -1190,6 +1276,17 @@ lt_tag_compare(const lt_tag_t *v1,
 	return retval;
 }
 
+/**
+ * lt_tag_match:
+ * @v1: a #lt_tag_t.
+ * @v2: a language range string.
+ * @error: (allow-none): a #GError or %NULL.
+ *
+ * Try matching of @v1 and @v2. any of subtags in @v2 is allowed to use
+ * the wildcard according to the syntax in RFC 4647.
+ *
+ * Returns: %TRUE if it matches, otherwise %FALSE.
+ */
 gboolean
 lt_tag_match(const lt_tag_t  *v1,
 	     const gchar     *v2,
@@ -1223,6 +1320,18 @@ lt_tag_match(const lt_tag_t  *v1,
 	return retval;
 }
 
+/**
+ * lt_tag_lookup:
+ * @tag: a #lt_tag_t.
+ * @pattern: a language range string.
+ * @error: (allow-none): a #GError or %NULL.
+ *
+ * Lookup the language tag that @tag meets with @pattern.
+ * Any of subtags in @pattern is allowed to use the wildcard according to
+ * the syntax in RFC 4647.
+ *
+ * Returns: a language tag string if any matches, otherwise %NULL.
+ */
 gchar *
 lt_tag_lookup(const lt_tag_t  *tag,
 	      const gchar     *pattern,

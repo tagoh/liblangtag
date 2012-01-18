@@ -30,6 +30,9 @@
 
 G_BEGIN_DECLS
 
+/**
+ * lt_tag_t:
+ */
 typedef struct _lt_tag_t	lt_tag_t;
 
 
@@ -37,7 +40,7 @@ lt_tag_t    *lt_tag_new              (void);
 lt_tag_t    *lt_tag_ref              (lt_tag_t        *tag);
 void         lt_tag_unref            (lt_tag_t        *tag);
 gboolean     lt_tag_parse            (lt_tag_t        *tag,
-                                      const gchar     *langtag,
+                                      const gchar     *tag_string,
                                       GError         **error);
 void         lt_tag_clear            (lt_tag_t        *tag);
 const gchar *lt_tag_get_string       (lt_tag_t        *tag);

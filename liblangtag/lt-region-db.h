@@ -31,6 +31,9 @@
 
 G_BEGIN_DECLS
 
+/**
+ * lt_region_db_t:
+ */
 typedef struct _lt_region_db_t		lt_region_db_t;
 
 

@@ -30,6 +30,9 @@
 
 G_BEGIN_DECLS
 
+/**
+ * lt_script_t:
+ */
 typedef struct _lt_script_t	lt_script_t;
 
 
