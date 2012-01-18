@@ -2,12 +2,13 @@
 # Global definitions
 NULL =
 EXTRA_DIST =				\
+	language-subtag-registry	\
 	$(NULL)
 MAINTAINERCLEANFILES =			\
 	language-subtag-registry	\
-	language-subtag-registry.xml	\
 	$(NULL)
 CLEANFILES =				\
+	language-subtag-registry.xml	\
 	$(NULL)
 BUILT_FILES =				\
 	language-subtag-registry	\
@@ -23,7 +24,7 @@ language-subtag-registry:
 	wget -O $@ http://www.iana.org/assignments/language-subtag-registry || \
 	curl -o $@ http://www.iana.org/assignments/language-subtag-registry
 language-subtag-registry.xml: language-subtag-registry reg2xml Makefile
-	$(builddir)/reg2xml language-subtag-registry > $@
+	$(builddir)/reg2xml $(srcdir)/language-subtag-registry > $@
 
 ##
 # Target platform

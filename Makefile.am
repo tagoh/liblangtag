@@ -31,6 +31,7 @@ DISTCLEANFILES =			\
 DISTCHECK_CONFIGURE_FLAGS =		\
 	--enable-introspection		\
 	--enable-gtk-doc		\
+	--enable-debug			\
 	$(NULL)
 
 #
