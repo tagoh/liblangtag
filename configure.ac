@@ -109,6 +109,8 @@ dnl ======================================================================
 AC_CONFIG_FILES([
 	Makefile
 	data/Makefile
+	docs/Makefile
+	docs/version.xml
 	liblangtag/Makefile
 	liblangtag-gobject/Makefile
 	liblangtag.pc
