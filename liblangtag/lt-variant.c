@@ -28,6 +28,13 @@
 #include "lt-variant-private.h"
 
 
+/**
+ * SECTION: lt-variant
+ * @Short_Description: A container class for Variant subtag
+ * @Title: Container - Variant
+ *
+ * This container class provides a data access to Variant subtag entry.
+ */
 struct _lt_variant_t {
 	lt_mem_t  parent;
 	gchar    *tag;
@@ -118,6 +125,14 @@ lt_variant_add_prefix(lt_variant_t *variant,
 }
 
 /*< public >*/
+/**
+ * lt_variant_ref:
+ * @variant: a #lt_variant_t.
+ *
+ * Increases the reference count of @variant.
+ *
+ * Returns: (transfer none): the same @variant object.
+ */
 lt_variant_t *
 lt_variant_ref(lt_variant_t *variant)
 {
@@ -126,6 +141,13 @@ lt_variant_ref(lt_variant_t *variant)
 	return lt_mem_ref(&variant->parent);
 }
 
+/**
+ * lt_variant_unref:
+ * @variant: a #lt_variant_t.
+ *
+ * Decreases the reference count of @variant. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_variant_unref(lt_variant_t *variant)
 {
@@ -133,6 +155,15 @@ lt_variant_unref(lt_variant_t *variant)
 		lt_mem_unref(&variant->parent);
 }
 
+/**
+ * lt_variant_get_better_tag:
+ * @variant: a #lt_variant_t.
+ *
+ * Obtains the better tag for use. this is a convenient function to get
+ * the preferred-value if available.
+ *
+ * Returns: a tag string.
+ */
 const gchar *
 lt_variant_get_better_tag(const lt_variant_t *variant)
 {
@@ -144,6 +175,14 @@ lt_variant_get_better_tag(const lt_variant_t *variant)
 	return retval;
 }
 
+/**
+ * lt_variant_get_tag:
+ * @variant: a #lt_variant_t.
+ *
+ * Obtains the tag name.
+ *
+ * Returns: a tag string.
+ */
 const gchar *
 lt_variant_get_tag(const lt_variant_t *variant)
 {
@@ -152,6 +191,15 @@ lt_variant_get_tag(const lt_variant_t *variant)
 	return variant->tag;
 }
 
+/**
+ * lt_variant_get_preferred_tag:
+ * @variant: a #lt_variant_t.
+ *
+ * Obtains the preferred-value. this is available only when the tag is
+ * marked as deprecated.
+ *
+ * Returns: a preferred-value for the tag or %NULL.
+ */
 const gchar *
 lt_variant_get_preferred_tag(const lt_variant_t *variant)
 {
@@ -160,6 +208,14 @@ lt_variant_get_preferred_tag(const lt_variant_t *variant)
 	return variant->preferred_tag;
 }
 
+/**
+ * lt_variant_get_name:
+ * @variant: a #lt_variant_t.
+ *
+ * Obtains the description of the subtag.
+ *
+ * Returns: a description string.
+ */
 const gchar *
 lt_variant_get_name(const lt_variant_t *variant)
 {
@@ -168,6 +224,18 @@ lt_variant_get_name(const lt_variant_t *variant)
 	return variant->description;
 }
 
+/**
+ * lt_variant_get_prefix:
+ * @variant: a #lt_variant_t.
+ *
+ * Obtains the prefix being assigned to the subtag.
+ * This is available only when the subtag has any suitable sequence of
+ * subtags for forming (with other subtags, as appropriate) a language
+ * tag when using the variant.
+ *
+ * Returns: (element-type utf8) (transfer none): a #GList contains prefix
+ *          strings or %NULL.
+ */
 const GList *
 lt_variant_get_prefix(const lt_variant_t *variant)
 {
@@ -176,6 +244,12 @@ lt_variant_get_prefix(const lt_variant_t *variant)
 	return variant->prefix;
 }
 
+/**
+ * lt_variant_dump:
+ * @variant: a #lt_variant_t.
+ *
+ * Dumps the container information to the standard output.
+ */
 void
 lt_variant_dump(const lt_variant_t *variant)
 {
@@ -212,6 +286,15 @@ lt_variant_dump(const lt_variant_t *variant)
 	g_string_free(string, TRUE);
 }
 
+/**
+ * lt_variant_compare:
+ * @v1: a #lt_variant_t.
+ * @v2: a #lt_variant_t.
+ *
+ * Compare if @v1 and @v2 is the same object or not.
+ *
+ * Returns: %TRUE if it's the same, otherwise %FALSE.
+ */
 gboolean
 lt_variant_compare(const lt_variant_t *v1,
 		   const lt_variant_t *v2)
