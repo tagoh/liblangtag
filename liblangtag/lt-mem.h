@@ -31,10 +31,10 @@ typedef struct _lt_mem_t		lt_mem_t;
 typedef void (* lt_destroy_func_t)	(gpointer data);
 
 struct _lt_mem_t {
-	gint        ref_count;
-	gsize       size;
-	GHashTable *refs;
-	GList      *weak_pointers;
+	volatile guint  ref_count;
+	gsize           size;
+	GHashTable     *refs;
+	GList          *weak_pointers;
 };
 
 gpointer lt_mem_alloc_object       (gsize              size);
