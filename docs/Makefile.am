@@ -66,6 +66,7 @@ IGNORE_HFILES=				\
 	lt-grandfathered-private.h	\
 	lt-lang-private.h		\
 	lt-mem.h			\
+	lt-redundant-private.h		\
 	lt-region-private.h		\
 	lt-script-private.h		\
 	lt-tag-private.h		\

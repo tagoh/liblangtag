@@ -25,6 +25,7 @@
       <xi:include href="xml/lt-extlang-db.xml"/>
       <xi:include href="xml/lt-grandfathered-db.xml"/>
       <xi:include href="xml/lt-lang-db.xml"/>
+      <xi:include href="xml/lt-redundant-db.xml"/>
       <xi:include href="xml/lt-region-db.xml"/>
       <xi:include href="xml/lt-script-db.xml"/>
       <xi:include href="xml/lt-variant-db.xml"/>
@@ -34,6 +35,7 @@
       <xi:include href="xml/lt-extlang.xml"/>
       <xi:include href="xml/lt-grandfathered.xml"/>
       <xi:include href="xml/lt-lang.xml"/>
+      <xi:include href="xml/lt-redundant.xml"/>
       <xi:include href="xml/lt-region.xml"/>
       <xi:include href="xml/lt-script.xml"/>
       <xi:include href="xml/lt-tag.xml"/>
