@@ -43,6 +43,9 @@ gboolean     lt_tag_parse            (lt_tag_t        *tag,
                                       const gchar     *tag_string,
                                       GError         **error);
 void         lt_tag_clear            (lt_tag_t        *tag);
+lt_tag_t    *lt_tag_copy             (const lt_tag_t  *tag);
+gboolean     lt_tag_truncate         (lt_tag_t        *tag,
+				      GError         **error);
 const gchar *lt_tag_get_string       (lt_tag_t        *tag);
 gchar       *lt_tag_canonicalize     (lt_tag_t        *tag,
                                       GError         **error);

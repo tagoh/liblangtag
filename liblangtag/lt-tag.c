@@ -245,6 +245,80 @@ _lt_tag_variant_compare(gconstpointer a,
 	return (gulong)a - (gulong)b;
 }
 
+#define DEFUNC_TAG_FREE(__func__)					\
+	G_INLINE_FUNC void						\
+	lt_tag_free_ ##__func__ (lt_tag_t *tag)				\
+	{								\
+		if (tag->__func__) {					\
+			lt_mem_remove_ref(&tag->parent, tag->__func__);	\
+			tag->__func__ = NULL;				\
+		}							\
+	}
+
+DEFUNC_TAG_FREE (language)
+DEFUNC_TAG_FREE (extlang)
+DEFUNC_TAG_FREE (script)
+DEFUNC_TAG_FREE (region)
+DEFUNC_TAG_FREE (variants)
+DEFUNC_TAG_FREE (extensions)
+DEFUNC_TAG_FREE (grandfathered)
+DEFUNC_TAG_FREE (tag_string)
+
+#undef DEFUNC_TAG_FREE
+
+#define DEFUNC_TAG_SET(__func__, __unref_func__)			\
+	G_INLINE_FUNC void						\
+	lt_tag_set_ ##__func__ (lt_tag_t *tag, gpointer p)		\
+	{								\
+		lt_tag_free_ ##__func__ (tag);				\
+		if (p) {						\
+			tag->__func__ = p;				\
+			lt_mem_add_ref(&tag->parent, tag->__func__,	\
+				       (lt_destroy_func_t)__unref_func__); \
+		}							\
+	}
+
+DEFUNC_TAG_SET (language, lt_lang_unref)
+DEFUNC_TAG_SET (extlang, lt_extlang_unref)
+DEFUNC_TAG_SET (script, lt_script_unref)
+DEFUNC_TAG_SET (region, lt_region_unref)
+DEFUNC_TAG_SET (grandfathered, lt_grandfathered_unref)
+DEFUNC_TAG_SET (tag_string, g_free)
+
+G_INLINE_FUNC void
+lt_tag_set_variant(lt_tag_t *tag,
+		   gpointer  p)
+{
+	gboolean no_variants = (tag->variants == NULL);
+
+	if (p) {
+		tag->variants = g_list_append(tag->variants, p);
+		if (no_variants)
+			lt_mem_add_ref(&tag->parent, tag->variants,
+				       (lt_destroy_func_t)_lt_tag_variants_list_free);
+	} else {
+		g_warn_if_reached();
+	}
+}
+
+G_INLINE_FUNC void
+lt_tag_set_extension(lt_tag_t *tag,
+		     gpointer  p)
+{
+	gboolean no_extensions = (tag->extensions == NULL);
+
+	if (p) {
+		tag->extensions = g_list_append(tag->extensions, p);
+		if (no_extensions)
+			lt_mem_add_ref(&tag->parent, tag->extensions,
+				       (lt_destroy_func_t)_lt_tag_extensions_list_free);
+	} else {
+		g_warn_if_reached();
+	}
+}
+
+#undef DEFUNC_TAG_SET
+
 static void
 lt_tag_fill_wildcard(lt_tag_t       *tag,
 		     lt_tag_state_t  begin,
@@ -262,45 +336,31 @@ lt_tag_fill_wildcard(lt_tag_t       *tag,
 		switch (i) {
 		    case STATE_LANG:
 			    langdb = lt_db_get_lang();
-			    tag->language = lt_lang_db_lookup(langdb, "*");
-			    lt_mem_add_ref(&tag->parent, tag->language,
-					   (lt_destroy_func_t)lt_lang_unref);
+			    lt_tag_set_language(tag, lt_lang_db_lookup(langdb, "*"));
 			    lt_lang_db_unref(langdb);
 			    break;
 		    case STATE_EXTLANG:
 			    extlangdb = lt_db_get_extlang();
-			    tag->extlang = lt_extlang_db_lookup(extlangdb, "*");
-			    lt_mem_add_ref(&tag->parent, tag->extlang,
-					   (lt_destroy_func_t)lt_extlang_unref);
+			    lt_tag_set_extlang(tag, lt_extlang_db_lookup(extlangdb, "*"));
 			    lt_extlang_db_unref(extlangdb);
 			    break;
 		    case STATE_SCRIPT:
 			    scriptdb = lt_db_get_script();
-			    tag->script = lt_script_db_lookup(scriptdb, "*");
-			    lt_mem_add_ref(&tag->parent, tag->script,
-					   (lt_destroy_func_t)lt_script_unref);
+			    lt_tag_set_script(tag, lt_script_db_lookup(scriptdb, "*"));
 			    lt_script_db_unref(scriptdb);
 			    break;
 		    case STATE_REGION:
 			    regiondb = lt_db_get_region();
-			    tag->region = lt_region_db_lookup(regiondb, "*");
-			    lt_mem_add_ref(&tag->parent, tag->region,
-					   (lt_destroy_func_t)lt_region_unref);
+			    lt_tag_set_region(tag, lt_region_db_lookup(regiondb, "*"));
 			    lt_region_db_unref(regiondb);
 			    break;
 		    case STATE_VARIANT:
 			    variantdb = lt_db_get_variant();
-			    tag->variants = g_list_append(tag->variants,
-							  lt_variant_db_lookup(variantdb, "*"));
-			    lt_mem_add_ref(&tag->parent, tag->variants,
-					   (lt_destroy_func_t)_lt_tag_variants_list_free);
+			    lt_tag_set_variant(tag, lt_variant_db_lookup(variantdb, "*"));
 			    lt_variant_db_unref(variantdb);
 			    break;
 		    case STATE_EXTENSION:
-			    tag->extensions = g_list_append(tag->extensions,
-							    g_string_new("*"));
-			    lt_mem_add_ref(&tag->parent, tag->extensions,
-					   (lt_destroy_func_t)_lt_tag_extensions_list_free);
+			    lt_tag_set_extension(tag, g_string_new("*"));
 			    break;
 		    case STATE_PRIVATEUSE:
 			    g_string_truncate(tag->privateuse, 0);
@@ -463,11 +523,9 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    if (length == 4) {
 			    lt_script_db_t *scriptdb = lt_db_get_script();
 
-			    tag->script = lt_script_db_lookup(scriptdb, token);
+			    lt_tag_set_script(tag, lt_script_db_lookup(scriptdb, token));
 			    lt_script_db_unref(scriptdb);
 			    if (tag->script) {
-				    lt_mem_add_ref(&tag->parent, tag->script,
-						   (lt_destroy_func_t)lt_script_unref);
 				    *state = STATE_PRE_REGION;
 				    break;
 			    }
@@ -483,11 +541,9 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			 g_ascii_isdigit(token[2]))) {
 			    lt_region_db_t *regiondb = lt_db_get_region();
 
-			    tag->region = lt_region_db_lookup(regiondb, token);
+			    lt_tag_set_region(tag, lt_region_db_lookup(regiondb, token));
 			    lt_region_db_unref(regiondb);
 			    if (tag->region) {
-				    lt_mem_add_ref(&tag->parent, tag->region,
-						   (lt_destroy_func_t)lt_region_unref);
 				    *state = STATE_PRE_VARIANT;
 				    break;
 			    }
@@ -534,18 +590,12 @@ lt_tag_parse_state(lt_tag_t        *tag,
 					    lt_variant_unref(variant);
 				    } else {
 					    if (!tag->variants) {
-						    tag->variants = g_list_append(tag->variants,
-										  variant);
-						    lt_mem_add_ref(&tag->parent, tag->variants,
-								   (lt_destroy_func_t)_lt_tag_variants_list_free);
+						    lt_tag_set_variant(tag, variant);
 					    } else {
 						    GList *prefixes = (GList *)lt_variant_get_prefix(variant);
 						    const gchar *tstr;
 
-						    if (tag->tag_string) {
-							    lt_mem_remove_ref(&tag->parent, tag->tag_string);
-							    tag->tag_string = NULL;
-						    }
+						    lt_tag_free_tag_string(tag);
 						    tstr = lt_tag_get_string(tag);
 						    if (prefixes && !g_list_find_custom(prefixes, tstr, (GCompareFunc)g_strcmp0)) {
 							    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
@@ -581,18 +631,11 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			token[0] != 'X' &&
 			token[0] != '*' &&
 			token[0] != '-') {
-			    GString *string;
-			    gboolean noref = tag->extensions == NULL;
-
 			    if (tag->extensions && g_list_find_custom(tag->extensions, token, _lt_tag_extensions_singleton_compare)) {
 				    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 						"Duplicate singleton for extension: %s", token);
 			    } else {
-				    string = g_string_new(token);
-				    tag->extensions = g_list_append(tag->extensions, string);
-				    if (noref)
-					    lt_mem_add_ref(&tag->parent, tag->extensions,
-							   (lt_destroy_func_t)_lt_tag_extensions_list_free);
+				    lt_tag_set_extension(tag, g_string_new(token));
 				    *state = STATE_IN_EXTENSION;
 			    }
 			    break;
@@ -628,8 +671,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    l = g_list_last(tag->extensions);
 
 			    if (g_list_previous(l) == NULL) {
-				    lt_mem_remove_ref(&tag->parent, tag->extensions);
-				    tag->extensions = NULL;
+				    lt_tag_free_extensions(tag);
 			    } else {
 				    g_string_free(l->data, TRUE);
 				    tag->extensions = g_list_delete_link(tag->extensions, l);
@@ -686,12 +728,10 @@ _lt_tag_parse(lt_tag_t        *tag,
 	lt_tag_clear(tag);
 
 	grandfathereddb = lt_db_get_grandfathered();
-	tag->grandfathered = lt_grandfathered_db_lookup(grandfathereddb, langtag);
+	lt_tag_set_grandfathered(tag, lt_grandfathered_db_lookup(grandfathereddb, langtag));
 	lt_grandfathered_db_unref(grandfathereddb);
 	if (tag->grandfathered) {
 		/* no need to lookup anymore. */
-		lt_mem_add_ref(&tag->parent, tag->grandfathered,
-			       (lt_destroy_func_t)lt_grandfathered_unref);
 		goto bail;
 	}
 
@@ -752,11 +792,7 @@ _lt_tag_parse(lt_tag_t        *tag,
 			    langtag, token, *state, count);
 	}
   bail:
-	if (tag->tag_string)
-		lt_mem_remove_ref(&tag->parent, tag->tag_string);
-	tag->tag_string = g_strdup(langtag);
-	lt_mem_add_ref(&tag->parent, tag->tag_string,
-		       (lt_destroy_func_t)g_free);
+	lt_tag_set_tag_string(tag, g_strdup(langtag));
 	lt_tag_scanner_unref(scanner);
 	if (err) {
 		if (error)
@@ -782,42 +818,108 @@ _lt_tag_match(const lt_tag_t *v1,
 	if (state > STATE_EXTLANG && !v2->extlang && v1->extlang) {
 		lt_extlang_db_t *db = lt_db_get_extlang();
 
-		v2->extlang = lt_extlang_db_lookup(db, "");
-		lt_mem_add_ref(&v2->parent, v2->extlang,
-			       (lt_destroy_func_t)lt_extlang_unref);
+		lt_tag_set_extlang(v2, lt_extlang_db_lookup(db, ""));
 		lt_extlang_db_unref(db);
 	}
 	if (state > STATE_SCRIPT && !v2->script && v1->script) {
 		lt_script_db_t *db = lt_db_get_script();
 
-		v2->script = lt_script_db_lookup(db, "");
-		lt_mem_add_ref(&v2->parent, v2->script,
-			       (lt_destroy_func_t)lt_script_unref);
+		lt_tag_set_script(v2, lt_script_db_lookup(db, ""));
 		lt_script_db_unref(db);
 	}
 	if (state > STATE_REGION && !v2->region && v1->region) {
 		lt_region_db_t *db = lt_db_get_region();
 
-		v2->region = lt_region_db_lookup(db, "");
-		lt_mem_add_ref(&v2->parent, v2->region,
-			       (lt_destroy_func_t)lt_region_unref);
+		lt_tag_set_region(v2, lt_region_db_lookup(db, ""));
 		lt_region_db_unref(db);
 	}
 	if (state > STATE_VARIANT && !v2->variants && v1->variants) {
 		lt_variant_db_t *db = lt_db_get_variant();
 
-		v2->variants = g_list_append(v2->variants, lt_variant_db_lookup(db, ""));
-		lt_mem_add_ref(&v2->parent, v2->variants,
-			       (lt_destroy_func_t)_lt_tag_variants_list_free);
+		lt_tag_set_variant(v2, lt_variant_db_lookup(db, ""));
 		lt_variant_db_unref(db);
 	}
 	if (state > STATE_EXTENSION && !v2->extensions && v1->extensions) {
-		v2->extensions = g_list_append(v2->extensions, g_string_new(""));
-		lt_mem_add_ref(&v2->parent, v2->extensions,
-			       (lt_destroy_func_t)_lt_tag_extensions_list_free);
+		lt_tag_set_extension(v2, g_string_new(""));
 	}
 
 	return lt_tag_compare(v1, v2);
+}
+
+static void
+_lt_tag_subtract(lt_tag_t       *tag,
+		 const lt_tag_t *rtag)
+{
+	if (rtag->language) {
+		lt_tag_free_language(tag);
+	}
+	if (rtag->extlang) {
+		lt_tag_free_extlang(tag);
+	}
+	if (rtag->script) {
+		lt_tag_free_script(tag);
+	}
+	if (rtag->region) {
+		lt_tag_free_region(tag);
+	}
+	if (rtag->variants) {
+		lt_tag_free_variants(tag);
+	}
+	if (rtag->extensions) {
+		lt_tag_free_extensions(tag);
+	}
+	if (rtag->privateuse) {
+		if (tag->privateuse)
+			g_string_truncate(tag->privateuse, 0);
+	}
+}
+
+static void
+_lt_tag_replace(lt_tag_t       *tag,
+		const lt_tag_t *rtag)
+{
+	if (rtag->language) {
+		g_return_if_fail (!tag->language);
+		lt_tag_set_language(tag, lt_lang_ref(rtag->language));
+	}
+	if (rtag->extlang) {
+		g_return_if_fail (!tag->extlang);
+		lt_tag_set_extlang(tag, lt_extlang_ref(rtag->extlang));
+	}
+	if (rtag->script) {
+		g_return_if_fail (!tag->script);
+		lt_tag_set_script(tag, lt_script_ref(rtag->script));
+	}
+	if (rtag->region) {
+		g_return_if_fail (!tag->region);
+		lt_tag_set_region(tag, lt_region_ref(rtag->region));
+	}
+	if (rtag->variants) {
+		GList *l = rtag->variants;
+
+		g_return_if_fail (!tag->variants);
+
+		while (l != NULL) {
+			lt_tag_set_variant(tag, lt_variant_ref(l->data));
+			l = g_list_next(l);
+		}
+	}
+	if (rtag->extensions) {
+		GList *l = rtag->extensions;
+		GString *s;
+
+		g_return_if_fail (!tag->extensions);
+
+		while (l != NULL) {
+			s = l->data;
+			lt_tag_set_extension(tag, g_string_new(s->str));
+			l = g_list_next(l);
+		}
+	}
+	if (rtag->privateuse) {
+		g_string_truncate(tag->privateuse, 0);
+		g_string_append(tag->privateuse, rtag->privateuse->str);
+	}
 }
 
 /*< protected >*/
@@ -908,41 +1010,17 @@ lt_tag_clear(lt_tag_t *tag)
 {
 	g_return_if_fail (tag != NULL);
 
-	if (tag->tag_string) {
-		lt_mem_remove_ref(&tag->parent, tag->tag_string);
-		tag->tag_string = NULL;
-	}
-	if (tag->language) {
-		lt_mem_remove_ref(&tag->parent, tag->language);
-		tag->language = NULL;
-	}
-	if (tag->extlang) {
-		lt_mem_remove_ref(&tag->parent, tag->extlang);
-		tag->extlang = NULL;
-	}
-	if (tag->script) {
-		lt_mem_remove_ref(&tag->parent, tag->script);
-		tag->script = NULL;
-	}
-	if (tag->region) {
-		lt_mem_remove_ref(&tag->parent, tag->region);
-		tag->region = NULL;
-	}
-	if (tag->variants) {
-		lt_mem_remove_ref(&tag->parent, tag->variants);
-		tag->variants = NULL;
-	}
-	if (tag->extensions) {
-		lt_mem_remove_ref(&tag->parent, tag->extensions);
-		tag->extensions = NULL;
-	}
+	lt_tag_free_tag_string(tag);
+	lt_tag_free_language(tag);
+	lt_tag_free_extlang(tag);
+	lt_tag_free_script(tag);
+	lt_tag_free_region(tag);
+	lt_tag_free_variants(tag);
+	lt_tag_free_extensions(tag);
 	if (tag->privateuse) {
 		g_string_truncate(tag->privateuse, 0);
 	}
-	if (tag->grandfathered) {
-		lt_mem_remove_ref(&tag->parent, tag->grandfathered);
-		tag->grandfathered = NULL;
-	}
+	lt_tag_free_grandfathered(tag);
 }
 
 /**
@@ -963,6 +1041,158 @@ lt_tag_parse(lt_tag_t     *tag,
 	lt_tag_state_t state = STATE_NONE;
 
 	return _lt_tag_parse(tag, tag_string, FALSE, &state, error);
+}
+
+/**
+ * lt_tag_copy:
+ * @tag: a #lt_tag_t.
+ *
+ * Create a copy instance of @tag.
+ *
+ * Returns: (transfer full): a new instance of #lt_tag_t or %NULL if fails.
+ */
+lt_tag_t *
+lt_tag_copy(const lt_tag_t *tag)
+{
+	lt_tag_t *retval;
+	GList *l;
+
+	g_return_val_if_fail (tag != NULL, NULL);
+
+	retval = lt_tag_new();
+	retval->wildcard_map = tag->wildcard_map;
+	if (tag->language) {
+		lt_tag_set_language(retval, lt_lang_ref(tag->language));
+	}
+	if (tag->extlang) {
+		lt_tag_set_extlang(retval, lt_extlang_ref(tag->extlang));
+	}
+	if (tag->script) {
+		lt_tag_set_script(retval, lt_script_ref(tag->script));
+	}
+	if (tag->region) {
+		lt_tag_set_region(retval, lt_region_ref(tag->region));
+	}
+	l = tag->variants;
+	while (l != NULL) {
+		lt_tag_set_variant(retval, lt_variant_ref(l->data));
+		l = g_list_next(l);
+	}
+	l = tag->extensions;
+	while (l != NULL) {
+		GString *s = l->data;
+
+		lt_tag_set_extension(retval, g_string_new(s->str));
+		l = g_list_next(l);
+	}
+	if (tag->privateuse) {
+		g_string_append(retval->privateuse, tag->privateuse->str);
+	}
+	if (tag->grandfathered) {
+		lt_tag_set_grandfathered(retval, lt_grandfathered_ref(tag->grandfathered));
+	}
+
+	return retval;
+}
+
+/**
+ * lt_tag_truncate:
+ * @tag: a #lt_tag_t.
+ * @error: (allow-none): a #GError.
+ *
+ * Truncate the last subtag.
+ *
+ * Returns: %TRUE if a subtag was truncated, otherwise %FALSE.
+ */
+gboolean
+lt_tag_truncate(lt_tag_t  *tag,
+		GError   **error)
+{
+	GError *err = NULL;
+	gboolean retval = TRUE;
+
+	g_return_val_if_fail (tag != NULL, FALSE);
+
+	if (tag->grandfathered) {
+		g_set_error(&err, LT_ERROR, LT_ERR_NO_TAG,
+			    "Grandfathered subtag can't be truncated.");
+		goto bail;
+	}
+	while (1) {
+		if (tag->privateuse && tag->privateuse->len > 0) {
+			g_string_truncate(tag->privateuse, 0);
+			break;
+		}
+		if (tag->extensions) {
+			GList *le = g_list_copy(tag->extensions), *l;
+			GString *s;
+
+			/* find out the last subtag */
+			le = g_list_sort(le, _lt_tag_extensions_compare);
+			l = g_list_last(le);
+			s = l->data;
+			g_list_free(le);
+			l = g_list_find(tag->extensions, s);
+			if (tag->extensions == l) {
+				lt_mem_delete_ref(&tag->parent, tag->extensions);
+				tag->extensions = g_list_delete_link(tag->extensions, l);
+				if (tag->extensions)
+					lt_mem_add_ref(&tag->parent, tag->extensions,
+						       (lt_destroy_func_t)_lt_tag_extensions_list_free);
+			} else {
+				l = g_list_delete_link(l, l);
+			}
+			g_string_free(s, TRUE);
+			break;
+		}
+		if (tag->variants) {
+			GList *l = g_list_last(tag->variants);
+			lt_variant_t *v = l->data;
+
+			if (tag->variants == l) {
+				lt_mem_delete_ref(&tag->parent, tag->variants);
+				tag->variants = g_list_delete_link(tag->variants, l);
+				if (tag->variants)
+					lt_mem_add_ref(&tag->parent, tag->variants,
+						       (lt_destroy_func_t)_lt_tag_variants_list_free);
+			} else {
+				l = g_list_delete_link(l, l);
+			}
+			lt_variant_unref(v);
+			break;
+		}
+		if (tag->region) {
+			lt_tag_free_region(tag);
+			break;
+		}
+		if (tag->script) {
+			lt_tag_free_script(tag);
+			break;
+		}
+		if (tag->extlang) {
+			lt_tag_free_extlang(tag);
+			break;
+		}
+		if (tag->language) {
+			lt_tag_free_language(tag);
+			break;
+		}
+		g_set_error(&err, LT_ERROR, LT_ERR_NO_TAG,
+			    "No tags to be truncated.");
+		goto bail;
+	}
+	lt_tag_free_tag_string(tag);
+  bail:
+	if (err) {
+		if (error)
+			*error = g_error_copy(err);
+		else
+			g_warning(err->message);
+		g_error_free(err);
+		retval = FALSE;
+	}
+
+	return retval;
 }
 
 /**
@@ -1016,9 +1246,7 @@ lt_tag_get_string(lt_tag_t *tag)
 		g_string_append(string, tag->privateuse->str);
 	}
 
-	tag->tag_string = g_string_free(string, FALSE);
-	lt_mem_add_ref(&tag->parent, tag->tag_string,
-		       (lt_destroy_func_t)g_free);
+	lt_tag_set_tag_string(tag, g_string_free(string, FALSE));
 
 	return tag->tag_string;
 }
@@ -1040,6 +1268,9 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 	GString *string = NULL;
 	GError *err = NULL;
 	GList *l, *ll;
+	lt_redundant_db_t *rdb = NULL;
+	lt_redundant_t *r = NULL;
+	lt_tag_t *ctag = NULL;
 
 	g_return_val_if_fail (tag != NULL, NULL);
 
@@ -1049,8 +1280,63 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 		goto bail1;
 	}
 
+	ctag = lt_tag_copy(tag);
+	rdb = lt_db_get_redundant();
+	while (1) {
+		const gchar *tag_string = lt_tag_get_string(ctag);
+
+		if (tag_string[0] == 0)
+			break;
+		if (r)
+			lt_redundant_unref(r);
+		r = lt_redundant_db_lookup(rdb, tag_string);
+		if (r) {
+			const gchar *preferred = lt_redundant_get_preferred_tag(r);
+
+			if (preferred) {
+				lt_tag_t *rtag = lt_tag_new();
+				lt_tag_t *ntag = lt_tag_new();
+
+				if (!lt_tag_parse(rtag, lt_redundant_get_tag(r), &err)) {
+					lt_tag_unref(rtag);
+					lt_tag_unref(ntag);
+					goto bail1;
+				}
+				if (!lt_tag_parse(ntag, preferred, &err)) {
+					lt_tag_unref(rtag);
+					lt_tag_unref(ntag);
+					goto bail1;
+				}
+				_lt_tag_subtract(tag, rtag);
+				_lt_tag_replace(tag, ntag);
+				lt_tag_unref(rtag);
+				lt_tag_unref(ntag);
+			}
+			break;
+		} else {
+			if (!lt_tag_truncate(ctag, &err))
+				goto bail1;
+		}
+	}
+
 	if (tag->language) {
 		gsize len;
+		lt_extlang_db_t *edb = lt_db_get_extlang();
+		lt_extlang_t *e;
+
+		/* If the language tag starts with a primary language subtag
+		 * that is also an extlang subtag, then the language tag is
+		 * prepended with the extlang's 'Prefix'.
+		 */
+		e = lt_extlang_db_lookup(edb, lt_lang_get_better_tag(tag->language));
+		if (e) {
+			const gchar *prefix = lt_extlang_get_prefix(e);
+
+			if (prefix)
+				g_string_append_printf(string, "%s-", prefix);
+			lt_extlang_unref(e);
+		}
+		lt_extlang_db_unref(edb);
 
 		g_string_append(string, lt_lang_get_better_tag(tag->language));
 		if (tag->extlang) {
@@ -1110,6 +1396,12 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 			    "No tag to convert.");
 	}
   bail1:
+	if (ctag)
+		lt_tag_unref(ctag);
+	if (rdb)
+		lt_redundant_db_unref(rdb);
+	if (r)
+		lt_redundant_unref(r);
 	retval = g_string_free(string, FALSE);
 	if (err) {
 		if (error)
@@ -1357,77 +1649,44 @@ lt_tag_lookup(const lt_tag_t  *tag,
 			if (t2->wildcard_map & (1 << i)) {
 				switch (i + 1) {
 				    case STATE_LANG:
-					    t2->language = lt_lang_ref(tag->language);
-					    lt_mem_add_ref(&t2->parent, t2->language,
-							   (lt_destroy_func_t)lt_lang_unref);
+					    lt_tag_set_language(t2, lt_lang_ref(tag->language));
 					    break;
 				    case STATE_EXTLANG:
-					    if (t2->extlang) {
-						    lt_mem_remove_ref(&t2->parent, t2->extlang);
-						    t2->extlang = NULL;
-					    }
+					    lt_tag_free_extlang(t2);
 					    if (tag->extlang) {
-						    t2->extlang = lt_extlang_ref(tag->extlang);
-						    lt_mem_add_ref(&t2->parent, t2->extlang,
-								   (lt_destroy_func_t)lt_extlang_unref);
+						    lt_tag_set_extlang(t2, lt_extlang_ref(tag->extlang));
 					    }
 					    break;
 				    case STATE_SCRIPT:
-					    if (t2->script) {
-						    lt_mem_remove_ref(&t2->parent, t2->script);
-						    t2->script = NULL;
-					    }
+					    lt_tag_free_script(t2);
 					    if (tag->script) {
-						    t2->script = lt_script_ref(tag->script);
-						    lt_mem_add_ref(&t2->parent, t2->script,
-								   (lt_destroy_func_t)lt_script_unref);
+						    lt_tag_set_script(t2, lt_script_ref(tag->script));
 					    }
 					    break;
 				    case STATE_REGION:
-					    if (t2->region) {
-						    lt_mem_remove_ref(&t2->parent, t2->region);
-						    t2->region = NULL;
-					    }
+					    lt_tag_free_region(t2);
 					    if (tag->region) {
-						    t2->region = lt_region_ref(tag->region);
-						    lt_mem_add_ref(&t2->parent, t2->region,
-								   (lt_destroy_func_t)lt_region_unref);
+						    lt_tag_set_region(t2, lt_region_ref(tag->region));
 					    }
 					    break;
 				    case STATE_VARIANT:
-					    if (t2->variants) {
-						    lt_mem_remove_ref(&t2->parent, t2->variants);
-						    t2->variants = NULL;
-					    }
+					    lt_tag_free_variants(t2);
 					    l = tag->variants;
 					    while (l != NULL) {
-						    t2->variants = g_list_append(t2->variants,
-										 lt_variant_ref(l->data));
+						    lt_tag_set_variant(t2, lt_variant_ref(l->data));
 						    l = g_list_next(l);
-					    }
-					    if (t2->variants) {
-						    lt_mem_add_ref(&t2->parent, t2->variants,
-								   (lt_destroy_func_t)_lt_tag_variants_list_free);
 					    }
 					    break;
 				    case STATE_EXTENSION:
 				    case STATE_EXTENSIONTOKEN:
 				    case STATE_EXTENSIONTOKEN2:
-					    if (t2->extensions) {
-						    lt_mem_remove_ref(&t2->parent, t2->extensions);
-						    t2->extensions = NULL;
-					    }
+					    lt_tag_free_extensions(t2);
 					    l = tag->extensions;
 					    while (l != NULL) {
 						    GString *s = l->data;
 
-						    t2->extensions = g_list_append(t2->extensions,
-										   g_string_new(s->str));
+						    lt_tag_set_extension(t2, g_string_new(s->str));
 						    l = g_list_next(l);
-					    }
-					    if (t2->extensions) {
-						    lt_mem_add_ref(&t2->parent, t2->extensions,
-								   (lt_destroy_func_t)_lt_tag_extensions_list_free);
 					    }
 					    break;
 				    case STATE_PRIVATEUSE:
@@ -1445,10 +1704,7 @@ lt_tag_lookup(const lt_tag_t  *tag,
 				}
 			}
 		}
-		if (t2->tag_string) {
-			lt_mem_remove_ref(&t2->parent, t2->tag_string);
-			t2->tag_string = NULL;
-		}
+		lt_tag_free_tag_string(t2);
 		retval = g_strdup(lt_tag_get_string(t2));
 	}
   bail:
