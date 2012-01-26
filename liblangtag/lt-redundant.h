@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-database.h
+ * lt-redundant.h
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -23,30 +23,29 @@
 #error "Only <liblangtag/langtag.h> can be included directly."
 #endif
 
-#ifndef __LT_DATABASE_H__
-#define __LT_DATABASE_H__
+#ifndef __LT_REDUNDANT_H__
+#define __LT_REDUNDANT_H__
 
 #include <glib.h>
-#include <liblangtag/lt-extlang-db.h>
-#include <liblangtag/lt-grandfathered-db.h>
-#include <liblangtag/lt-lang-db.h>
-#include <liblangtag/lt-redundant-db.h>
-#include <liblangtag/lt-region-db.h>
-#include <liblangtag/lt-script-db.h>
-#include <liblangtag/lt-variant-db.h>
 
 G_BEGIN_DECLS
 
-void                   lt_db_initialize       (void);
-void                   lt_db_finalize         (void);
-lt_lang_db_t          *lt_db_get_lang         (void);
-lt_extlang_db_t       *lt_db_get_extlang      (void);
-lt_script_db_t        *lt_db_get_script       (void);
-lt_region_db_t        *lt_db_get_region       (void);
-lt_variant_db_t       *lt_db_get_variant      (void);
-lt_grandfathered_db_t *lt_db_get_grandfathered(void);
-lt_redundant_db_t     *lt_db_get_redundant    (void);
+/**
+ * lt_redundant_t:
+ */
+typedef struct _lt_redundant_t	lt_redundant_t;
+
+
+lt_redundant_t *lt_redundant_ref              (lt_redundant_t       *redundant);
+void            lt_redundant_unref            (lt_redundant_t       *redundant);
+const gchar    *lt_redundant_get_better_tag   (const lt_redundant_t *redundant);
+const gchar    *lt_redundant_get_tag          (const lt_redundant_t *redundant);
+const gchar    *lt_redundant_get_preferred_tag(const lt_redundant_t *redundant);
+const gchar    *lt_redundant_get_name         (const lt_redundant_t *redundant);
+void            lt_redundant_dump             (const lt_redundant_t *redundant);
+gboolean        lt_redundant_compare          (const lt_redundant_t *v1,
+                                               const lt_redundant_t *v2);
 
 G_END_DECLS
 
-#endif /* __LT_DATABASE_H__ */
+#endif /* __LT_REDUNDANT_H__ */

@@ -41,6 +41,7 @@ static lt_script_db_t        *__db_script = NULL;
 static lt_region_db_t        *__db_region = NULL;
 static lt_variant_db_t       *__db_variant = NULL;
 static lt_grandfathered_db_t *__db_grandfathered = NULL;
+static lt_redundant_db_t     *__db_redundant = NULL;
 
 
 /*< private >*/
@@ -60,6 +61,7 @@ lt_db_initialize(void)
 	lt_db_get_region();
 	lt_db_get_variant();
 	lt_db_get_grandfathered();
+	lt_db_get_redundant();
 }
 
 /**
@@ -77,6 +79,7 @@ lt_db_finalize(void)
 	lt_region_db_unref(__db_region);
 	lt_variant_db_unref(__db_variant);
 	lt_grandfathered_db_unref(__db_grandfathered);
+	lt_redundant_db_unref(__db_redundant);
 }
 
 #define DEFUNC_GET_INSTANCE(__type__)					\
@@ -125,15 +128,15 @@ DEFUNC_GET_INSTANCE(extlang)
  */
 DEFUNC_GET_INSTANCE(grandfathered)
 /**
- * lt_db_get_script:
+ * lt_db_get_redundant:
  *
- * Obtains the instance of #lt_script_db_t. This still allows to use without
- * lt_db_initialize(). but it will takes some time to load the database on
- * the memory every time.
+ * Obtains the instance of #lt_redundant_db_t. This still allows to use
+ * without lt_db_initialize(). but it will takes some time to load the database
+ * on the memory every time.
  *
- * Returns: The instance of #lt_script_db_t.
+ * Returns: The instance of #lt_redundant_db_t.
  */
-DEFUNC_GET_INSTANCE(script)
+DEFUNC_GET_INSTANCE(redundant)
 /**
  * lt_db_get_region:
  *
@@ -144,6 +147,16 @@ DEFUNC_GET_INSTANCE(script)
  * Returns: The instance of #lt_region_db_t.
  */
 DEFUNC_GET_INSTANCE(region)
+/**
+ * lt_db_get_script:
+ *
+ * Obtains the instance of #lt_script_db_t. This still allows to use without
+ * lt_db_initialize(). but it will takes some time to load the database on
+ * the memory every time.
+ *
+ * Returns: The instance of #lt_script_db_t.
+ */
+DEFUNC_GET_INSTANCE(script)
 /**
  * lt_db_get_variant:
  *
