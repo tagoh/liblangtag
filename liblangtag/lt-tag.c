@@ -1434,26 +1434,33 @@ lt_tag_convert_to_locale(lt_tag_t  *tag,
 	GString *string = NULL;
 	GError *err = NULL;
 	const gchar *mod = NULL;
+	gchar *canonical_tag = NULL;
+	lt_tag_t *ctag;
 
 	g_return_val_if_fail (tag != NULL, NULL);
 
-	if (!tag->tag_string) {
-		g_set_error(&err, LT_ERROR, LT_ERR_NO_TAG,
-			    "No tag to convert.");
+	canonical_tag = lt_tag_canonicalize(tag, &err);
+	if (!canonical_tag)
+		goto bail;
+	ctag = lt_tag_new();
+	if (!lt_tag_parse(ctag, canonical_tag, &err)) {
+		lt_tag_unref(ctag);
 		goto bail;
 	}
 	string = g_string_new(NULL);
-	g_string_append(string, lt_lang_get_better_tag(tag->language));
-	if (tag->region)
+	g_string_append(string, lt_lang_get_better_tag(ctag->language));
+	if (ctag->region)
 		g_string_append_printf(string, "_%s",
-				       lt_region_get_tag(tag->region));
-	if (tag->script) {
-		mod = lt_script_convert_to_modifier(tag->script);
+				       lt_region_get_tag(ctag->region));
+	if (ctag->script) {
+		mod = lt_script_convert_to_modifier(ctag->script);
 		if (mod)
 			g_string_append_printf(string, "@%s", mod);
 	}
+	lt_tag_unref(ctag);
 
   bail:
+	g_free(canonical_tag);
 	if (string)
 		retval = g_string_free(string, FALSE);
 	if (err) {
