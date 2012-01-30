@@ -23,13 +23,13 @@
 #include "config.h"
 #endif
 
-#include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-variant.h"
 #include "lt-variant-private.h"
 #include "lt-mem.h"
 #include "lt-utils.h"
+#include "lt-xml.h"
 #include "lt-variant-db.h"
 
 
@@ -43,6 +43,7 @@
  */
 struct _lt_variant_db_t {
 	lt_mem_t    parent;
+	lt_xml_t   *xml;
 	GHashTable *variant_entries;
 };
 
@@ -52,8 +53,6 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 		    GError          **error)
 {
 	gboolean retval = TRUE;
-	gchar *regfile = NULL;
-	xmlParserCtxtPtr xmlparser;
 	xmlDocPtr doc = NULL;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
@@ -62,28 +61,7 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 
 	g_return_val_if_fail (variantdb != NULL, FALSE);
 
-#ifdef GNOME_ENABLE_DEBUG
-	regfile = g_build_filename(BUILDDIR, "data", "language-subtag-registry.xml", NULL);
-	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
-		g_free(regfile);
-#endif
-	regfile = g_build_filename(REGDATADIR, "language-subtag-registry.xml", NULL);
-#ifdef GNOME_ENABLE_DEBUG
-	}
-#endif
-	xmlparser = xmlNewParserCtxt();
-	if (!xmlparser) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlParserCtxt.");
-		goto bail;
-	}
-	doc = xmlCtxtReadFile(xmlparser, regfile, "UTF-8", 0);
-	if (!doc) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "Unable to read the xml file: %s",
-			    regfile);
-		goto bail;
-	}
+	doc = lt_xml_get_subtag_registry(variantdb->xml);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
 		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
@@ -193,18 +171,11 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 		g_error_free(err);
 		retval = FALSE;
 	}
-	g_free(regfile);
 
 	if (xobj)
 		xmlXPathFreeObject(xobj);
 	if (xctxt)
 		xmlXPathFreeContext(xctxt);
-	if (doc)
-		xmlFreeDoc(doc);
-	if (xmlparser)
-		xmlFreeParserCtxt(xmlparser);
-
-	xmlCleanupParser();
 
 	return retval;
 }
@@ -246,6 +217,15 @@ lt_variant_db_new(void)
 				     g_strdup(lt_variant_get_tag(le)),
 				     le);
 
+		retval->xml = lt_xml_new();
+		if (!retval->xml) {
+			lt_variant_db_unref(retval);
+			retval = NULL;
+			goto bail;
+		}
+		lt_mem_add_ref(&retval->parent, retval->xml,
+			       (lt_destroy_func_t)lt_xml_unref);
+
 		lt_variant_db_parse(retval, &err);
 		if (err) {
 			g_printerr(err->message);
@@ -254,6 +234,7 @@ lt_variant_db_new(void)
 			g_error_free(err);
 		}
 	}
+  bail:
 
 	return retval;
 }

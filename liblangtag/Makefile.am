@@ -65,6 +65,7 @@ liblangtag_private_headers =			\
 	lt-tag-private.h			\
 	lt-utils.h				\
 	lt-variant-private.h			\
+	lt-xml.h				\
 	$(NULL)
 liblangtag_built_public_headers =		\
 	$(NULL)
@@ -94,6 +95,7 @@ liblangtag_sources =				\
 	lt-utils.c				\
 	lt-variant.c				\
 	lt-variant-db.c				\
+	lt-xml.c				\
 	$(NULL)
 #
 stamp_files =					\

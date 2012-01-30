@@ -23,13 +23,13 @@
 #include "config.h"
 #endif
 
-#include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-redundant.h"
 #include "lt-redundant-private.h"
 #include "lt-mem.h"
 #include "lt-utils.h"
+#include "lt-xml.h"
 #include "lt-redundant-db.h"
 
 
@@ -44,6 +44,7 @@
  */
 struct _lt_redundant_db_t {
 	lt_mem_t    parent;
+	lt_xml_t   *xml;
 	GHashTable *redundant_entries;
 };
 
@@ -53,8 +54,6 @@ lt_redundant_db_parse(lt_redundant_db_t  *redundantdb,
 		      GError            **error)
 {
 	gboolean retval = TRUE;
-	gchar *regfile = NULL;
-	xmlParserCtxtPtr xmlparser;
 	xmlDocPtr doc = NULL;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
@@ -63,28 +62,7 @@ lt_redundant_db_parse(lt_redundant_db_t  *redundantdb,
 
 	g_return_val_if_fail (redundantdb != NULL, FALSE);
 
-#ifdef GNOME_ENABLE_DEBUG
-	regfile = g_build_filename(BUILDDIR, "data", "language-subtag-registry.xml", NULL);
-	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
-		g_free(regfile);
-#endif
-	regfile = g_build_filename(REGDATADIR, "language-subtag-registry.xml", NULL);
-#ifdef GNOME_ENABLE_DEBUG
-	}
-#endif
-	xmlparser = xmlNewParserCtxt();
-	if (!xmlparser) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlParserCtxt.");
-		goto bail;
-	}
-	doc = xmlCtxtReadFile(xmlparser, regfile, "UTF-8", 0);
-	if (!doc) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "Unable to read the xml file: %s",
-			    regfile);
-		goto bail;
-	}
+	doc = lt_xml_get_subtag_registry(redundantdb->xml);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
 		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
@@ -184,18 +162,11 @@ lt_redundant_db_parse(lt_redundant_db_t  *redundantdb,
 		g_error_free(err);
 		retval = FALSE;
 	}
-	g_free(regfile);
 
 	if (xobj)
 		xmlXPathFreeObject(xobj);
 	if (xctxt)
 		xmlXPathFreeContext(xctxt);
-	if (doc)
-		xmlFreeDoc(doc);
-	if (xmlparser)
-		xmlFreeParserCtxt(xmlparser);
-
-	xmlCleanupParser();
 
 	return retval;
 }
@@ -223,6 +194,15 @@ lt_redundant_db_new(void)
 		lt_mem_add_ref(&retval->parent, retval->redundant_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
 
+		retval->xml = lt_xml_new();
+		if (!retval->xml) {
+			lt_redundant_db_unref(retval);
+			retval = NULL;
+			goto bail;
+		}
+		lt_mem_add_ref(&retval->parent, retval->xml,
+			       (lt_destroy_func_t)lt_xml_unref);
+
 		lt_redundant_db_parse(retval, &err);
 		if (err) {
 			g_printerr(err->message);
@@ -231,6 +211,7 @@ lt_redundant_db_new(void)
 			g_error_free(err);
 		}
 	}
+  bail:
 
 	return retval;
 }
