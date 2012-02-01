@@ -32,6 +32,9 @@ G_BEGIN_DECLS
 
 /**
  * lt_redundant_t:
+ *
+ * All the fields in the <structname>lt_redundant_t</structname>
+ * structure are private to the #lt_redundant_t implementation.
  */
 typedef struct _lt_redundant_t	lt_redundant_t;
 

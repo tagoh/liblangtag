@@ -32,6 +32,9 @@ G_BEGIN_DECLS
 
 /**
  * lt_lang_t:
+ *
+ * All the fields in the <structname>lt_lang_t</structname>
+ * structure are private to the #lt_lang_t implementation.
  */
 typedef struct _lt_lang_t	lt_lang_t;
 

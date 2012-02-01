@@ -32,6 +32,9 @@ G_BEGIN_DECLS
 
 /**
  * lt_tag_t:
+ *
+ * All the fields in the <structname>lt_tag_t</structname>
+ * structure are private to the #lt_tag_t implementation.
  */
 typedef struct _lt_tag_t	lt_tag_t;
 

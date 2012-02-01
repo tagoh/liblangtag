@@ -32,6 +32,9 @@ G_BEGIN_DECLS
 
 /**
  * lt_region_t:
+ *
+ * All the fields in the <structname>lt_region_t</structname>
+ * structure are private to the #lt_region_t implementation.
  */
 typedef struct _lt_region_t	lt_region_t;
 

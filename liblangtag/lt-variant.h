@@ -31,7 +31,10 @@
 G_BEGIN_DECLS
 
 /**
- * lt_variant:
+ * lt_variant_t:
+ *
+ * All the fields in the <structname>lt_variant_t</structname>
+ * structure are private to the #lt_variant_t implementation.
  */
 typedef struct _lt_variant_t	lt_variant_t;
 

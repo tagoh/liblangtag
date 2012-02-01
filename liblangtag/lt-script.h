@@ -32,6 +32,9 @@ G_BEGIN_DECLS
 
 /**
  * lt_script_t:
+ *
+ * All the fields in the <structname>lt_script_t</structname>
+ * structure are private to the #lt_script_t implementation.
  */
 typedef struct _lt_script_t	lt_script_t;
 

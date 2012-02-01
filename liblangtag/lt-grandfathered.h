@@ -32,6 +32,9 @@ G_BEGIN_DECLS
 
 /**
  * lt_grandfathered_t:
+ *
+ * All the fields in the <structname>lt_grandfathered_t</structname>
+ * structure are private to the #lt_grandfathered_t implementation.
  */
 typedef struct _lt_grandfathered_t	lt_grandfathered_t;
 
