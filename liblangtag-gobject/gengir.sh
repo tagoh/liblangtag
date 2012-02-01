@@ -42,7 +42,7 @@ sed -i -e 's,^\(#include[ \t]<\)liblangtag\(/lt-.*\)\(\.h>\),\1liblangtag-gobjec
 
 while [ 1 ]; do
     if [ "x$type" == "xh" ]; then
-	line=`grep -E "${_ns}_.*_t[ \t].*" $_tmpgen | grep -v "struct" | grep -v -E "enum.*{"`
+	line=`grep -E "${_ns}_.*_t[ \t].*" $_tmpgen | grep -v -E "(struct|func)" | grep -v -E "enum.*{"`
     elif [ "x$type" == "xc" ]; then
 	line=`sed -n -e '/\/\*< public >\*\//{:a p;n;b a};{d}' $_tmpgen|grep "[^#]${_ns}_.*_t[^a-z]"|grep -v -E "(func)"`
     else

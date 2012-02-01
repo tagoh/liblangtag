@@ -1,18 +1,22 @@
 ##
 # Global definitions
 NULL =
-INCLUDES =						\
-	-I$(top_srcdir)/liblangtag/			\
-	-I$(top_srcdir)					\
-	-D__LANGTAG_COMPILATION				\
-	-DBUILDDIR="\"$(abs_top_builddir)\""		\
-	-DREGDATADIR="\"$(datadir)/liblangtag\""	\
-	$(GLIB_CFLAGS)					\
-	$(LIBXML2_CFLAGS)				\
+SUBDIRS =
+INCLUDES =							\
+	-I$(top_srcdir)/liblangtag/				\
+	-I$(top_srcdir)						\
+	-D__LANGTAG_COMPILATION					\
+	-DBUILDDIR="\"$(abs_top_builddir)\""			\
+	-DREGDATADIR="\"$(datadir)/liblangtag\""		\
+	-DLANGTAG_EXT_MODULE_PATH="\"$(LANGTAG_MODULEDIR)\""	\
+	$(GLIB_CFLAGS)						\
+	$(GMODULE_CFLAGS)					\
+	$(LIBXML2_CFLAGS)					\
 	$(NULL)
 LIBS =						\
 	@LDFLAGS@				\
 	$(GLIB_LIBS)				\
+	$(GMODULE_LIBS)				\
 	$(LIBXML2_LIBS)				\
 	$(NULL)
 EXTRA_DIST =					\
@@ -38,6 +42,9 @@ BUILT_FILES =					\
 liblangtag_public_headers =			\
 	lt-database.h				\
 	lt-error.h				\
+	lt-ext-module.h				\
+	lt-ext-module-data.h			\
+	lt-extension.h				\
 	lt-extlang.h				\
 	lt-extlang-db.h				\
 	lt-grandfathered.h			\
@@ -55,6 +62,8 @@ liblangtag_public_headers =			\
 	lt-variant-db.h				\
 	$(NULL)
 liblangtag_private_headers =			\
+	lt-ext-module-private.h			\
+	lt-extension-private.h			\
 	lt-extlang-private.h			\
 	lt-grandfathered-private.h		\
 	lt-lang-private.h			\
@@ -78,6 +87,9 @@ liblangtag_sources =				\
 	$(liblangtag_built_sources)		\
 	lt-database.c				\
 	lt-error.c				\
+	lt-ext-module.c				\
+	lt-ext-module-data.c			\
+	lt-extension.c				\
 	lt-extlang.c				\
 	lt-extlang-db.c				\
 	lt-grandfathered.c			\
@@ -97,6 +109,9 @@ liblangtag_sources =				\
 	lt-variant-db.c				\
 	lt-xml.c				\
 	$(NULL)
+if ENABLE_GMODULE
+SUBDIRS += extensions
+endif
 #
 stamp_files =					\
 	$(NULL)

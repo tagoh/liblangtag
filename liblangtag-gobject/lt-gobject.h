@@ -26,6 +26,9 @@
 
 G_BEGIN_DECLS
 
+#define LT_TYPE_EXT_MODULE		lt_ext_module_get_type()
+#define LT_TYPE_EXT_MODULE_DATA		lt_ext_module_data_get_type()
+#define LT_TYPE_EXTENSION		lt_extension_get_type()
 #define LT_TYPE_EXTLANG_DB		lt_extlang_db_get_type()
 #define LT_TYPE_EXTLANG			lt_extlang_get_type()
 #define LT_TYPE_GRANDFATHERED_DB	lt_grandfathered_db_get_type()
@@ -43,6 +46,9 @@ G_BEGIN_DECLS
 #define LT_TYPE_VARIANT			lt_variant_get_type()
 
 
+GType lt_ext_module_get_type      (void);
+GType lt_ext_module_data_get_type (void);
+GType lt_extension_get_type       (void);
 GType lt_extlang_db_get_type      (void);
 GType lt_extlang_get_type         (void);
 GType lt_grandfathered_db_get_type(void);

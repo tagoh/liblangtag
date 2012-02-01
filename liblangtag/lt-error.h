@@ -42,6 +42,7 @@ G_BEGIN_DECLS
  * @LT_ERR_EOT: No tokens to scan.
  * @LT_ERR_FAIL_ON_SCANNER: an error happened in the scanner.
  * @LT_ERR_NO_TAG: No tags to process.
+ * @LT_ERR_INVALID: Invalid operation.
  * @LT_ERR_END: No real error, but just a terminator.
  *
  * Error code used in this library.
@@ -54,6 +55,7 @@ enum _lt_error_t {
 	LT_ERR_EOT,
 	LT_ERR_FAIL_ON_SCANNER,
 	LT_ERR_NO_TAG,
+	LT_ERR_INVALID,
 	LT_ERR_END
 };
 

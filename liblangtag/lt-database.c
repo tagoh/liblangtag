@@ -24,6 +24,7 @@
 #endif
 
 #include "lt-mem.h"
+#include "lt-ext-module.h"
 #include "lt-database.h"
 
 
@@ -62,6 +63,7 @@ lt_db_initialize(void)
 	lt_db_get_variant();
 	lt_db_get_grandfathered();
 	lt_db_get_redundant();
+	lt_ext_modules_load();
 }
 
 /**
@@ -80,6 +82,7 @@ lt_db_finalize(void)
 	lt_variant_db_unref(__db_variant);
 	lt_grandfathered_db_unref(__db_grandfathered);
 	lt_redundant_db_unref(__db_redundant);
+	lt_ext_modules_unload();
 }
 
 #define DEFUNC_GET_INSTANCE(__type__)					\

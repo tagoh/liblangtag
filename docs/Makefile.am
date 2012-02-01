@@ -62,6 +62,8 @@ EXTRA_HFILES=
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h private_code
 IGNORE_HFILES=				\
 	langtag.h			\
+	lt-ext-module-private.h		\
+	lt-extension-private.h		\
 	lt-extlang-private.h		\
 	lt-grandfathered-private.h	\
 	lt-lang-private.h		\
@@ -72,6 +74,7 @@ IGNORE_HFILES=				\
 	lt-tag-private.h		\
 	lt-utils.h			\
 	lt-variant-private.h		\
+	lt-xml.h			\
 	$(NULL)
 
 # Images to copy into HTML directory.

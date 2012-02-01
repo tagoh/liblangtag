@@ -40,6 +40,9 @@
 		return type;						\
 	}
 
+LT_DEFINE_BOXED_TYPE(ext_module, ExtModule)
+LT_DEFINE_BOXED_TYPE(ext_module_data, ExtModuleData)
+LT_DEFINE_BOXED_TYPE(extension, Extension)
 LT_DEFINE_BOXED_TYPE(extlang_db, ExtlangDb)
 LT_DEFINE_BOXED_TYPE(extlang, Extlang)
 LT_DEFINE_BOXED_TYPE(grandfathered_db, GrandfatheredDb)

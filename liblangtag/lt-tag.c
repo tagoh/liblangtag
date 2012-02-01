@@ -26,6 +26,8 @@
 #include <string.h>
 #include "lt-database.h"
 #include "lt-error.h"
+#include "lt-ext-module-private.h"
+#include "lt-extension-private.h"
 #include "lt-mem.h"
 #include "lt-utils.h"
 #include "lt-tag.h"
@@ -55,7 +57,7 @@ struct _lt_tag_t {
 	lt_script_t        *script;
 	lt_region_t        *region;
 	GList              *variants;
-	GList              *extensions;
+	lt_extension_t     *extension;
 	GString            *privateuse;
 	lt_grandfathered_t *grandfathered;
 };
@@ -103,36 +105,6 @@ _lt_tag_variants_list_free(GList *list)
 		lt_variant_unref(l->data);
 	}
 	g_list_free(list);
-}
-
-static void
-_lt_tag_extensions_list_free(GList *list)
-{
-	GList *l;
-
-	for (l = list; l != NULL; l = g_list_next(l)) {
-		g_string_free(l->data, TRUE);
-	}
-	g_list_free(list);
-}
-
-static gint
-_lt_tag_extensions_singleton_compare(gconstpointer v1,
-				     gconstpointer v2)
-{
-	const GString *s1 = v1;
-	const gchar *s2 = v2;
-
-	return s1->str[0] - s2[0];
-}
-
-static gint
-_lt_tag_extensions_compare(gconstpointer v1,
-			   gconstpointer v2)
-{
-	const GString *s1 = v1, *s2 = v2;
-
-	return g_strcmp0(s1->str, s2->str);
 }
 
 static lt_tag_scanner_t *
@@ -260,7 +232,7 @@ DEFUNC_TAG_FREE (extlang)
 DEFUNC_TAG_FREE (script)
 DEFUNC_TAG_FREE (region)
 DEFUNC_TAG_FREE (variants)
-DEFUNC_TAG_FREE (extensions)
+DEFUNC_TAG_FREE (extension)
 DEFUNC_TAG_FREE (grandfathered)
 DEFUNC_TAG_FREE (tag_string)
 
@@ -282,6 +254,7 @@ DEFUNC_TAG_SET (language, lt_lang_unref)
 DEFUNC_TAG_SET (extlang, lt_extlang_unref)
 DEFUNC_TAG_SET (script, lt_script_unref)
 DEFUNC_TAG_SET (region, lt_region_unref)
+DEFUNC_TAG_SET (extension, lt_extension_unref)
 DEFUNC_TAG_SET (grandfathered, lt_grandfathered_unref)
 DEFUNC_TAG_SET (tag_string, g_free)
 
@@ -301,22 +274,6 @@ lt_tag_set_variant(lt_tag_t *tag,
 	}
 }
 
-G_INLINE_FUNC void
-lt_tag_set_extension(lt_tag_t *tag,
-		     gpointer  p)
-{
-	gboolean no_extensions = (tag->extensions == NULL);
-
-	if (p) {
-		tag->extensions = g_list_append(tag->extensions, p);
-		if (no_extensions)
-			lt_mem_add_ref(&tag->parent, tag->extensions,
-				       (lt_destroy_func_t)_lt_tag_extensions_list_free);
-	} else {
-		g_warn_if_reached();
-	}
-}
-
 #undef DEFUNC_TAG_SET
 
 static void
@@ -330,6 +287,7 @@ lt_tag_fill_wildcard(lt_tag_t       *tag,
 	lt_script_db_t *scriptdb;
 	lt_region_db_t *regiondb;
 	lt_variant_db_t *variantdb;
+	lt_extension_t *e;
 
 	for (i = begin; i < end; i++) {
 		tag->wildcard_map |= (1 << (i - 1));
@@ -360,7 +318,9 @@ lt_tag_fill_wildcard(lt_tag_t       *tag,
 			    lt_variant_db_unref(variantdb);
 			    break;
 		    case STATE_EXTENSION:
-			    lt_tag_set_extension(tag, g_string_new("*"));
+			    e = lt_extension_create();
+			    lt_extension_add_singleton(e, '*');
+			    lt_tag_set_extension(tag, e);
 			    break;
 		    case STATE_PRIVATEUSE:
 			    g_string_truncate(tag->privateuse, 0);
@@ -436,7 +396,6 @@ lt_tag_parse_state(lt_tag_t        *tag,
 {
 	gboolean retval = TRUE;
 	const gchar *p;
-	GList *l;
 
 	switch (*state) {
 	    case STATE_LANG:
@@ -631,12 +590,19 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			token[0] != 'X' &&
 			token[0] != '*' &&
 			token[0] != '-') {
-			    if (tag->extensions && g_list_find_custom(tag->extensions, token, _lt_tag_extensions_singleton_compare)) {
+			    if (!tag->extension)
+				    lt_tag_set_extension(tag, lt_extension_create());
+			    if (lt_extension_has_singleton(tag->extension, token[0])) {
 				    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 						"Duplicate singleton for extension: %s", token);
 			    } else {
-				    lt_tag_set_extension(tag, g_string_new(token));
-				    *state = STATE_IN_EXTENSION;
+				    if (!lt_extension_add_singleton(tag->extension,
+								    token[0])) {
+					    g_set_error(error, LT_ERROR, LT_ERR_OOM,
+							"Unable to add an extension singleton.");
+				    } else {
+					    *state = STATE_IN_EXTENSION;
+				    }
 			    }
 			    break;
 		    } else {
@@ -654,13 +620,9 @@ lt_tag_parse_state(lt_tag_t        *tag,
 	    case STATE_EXTENSIONTOKEN:
 	    case STATE_EXTENSIONTOKEN2:
 		    if (length >= 2 && length <= 8) {
-			    GString *string;
-
-			    l = g_list_last(tag->extensions);
-			    string = l->data;
-			    g_string_append_printf(string, "-%s", token);
-			    /* try to check more extension token first */
-			    *state = STATE_IN_EXTENSIONTOKEN;
+			    if (lt_extension_add_tag(tag->extension,
+						      token, error))
+				    *state = STATE_IN_EXTENSIONTOKEN;
 		    } else {
 			    if (*state == STATE_EXTENSIONTOKEN2) {
 				    /* No need to destroy the previous tokens.
@@ -668,14 +630,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 				     */
 				    goto extension;
 			    }
-			    l = g_list_last(tag->extensions);
-
-			    if (g_list_previous(l) == NULL) {
-				    lt_tag_free_extensions(tag);
-			    } else {
-				    g_string_free(l->data, TRUE);
-				    tag->extensions = g_list_delete_link(tag->extensions, l);
-			    }
+			    lt_extension_cancel_tag(tag->extension);
 			    /* No state to try */
 			    retval = FALSE;
 		    }
@@ -839,8 +794,11 @@ _lt_tag_match(const lt_tag_t *v1,
 		lt_tag_set_variant(v2, lt_variant_db_lookup(db, ""));
 		lt_variant_db_unref(db);
 	}
-	if (state > STATE_EXTENSION && !v2->extensions && v1->extensions) {
-		lt_tag_set_extension(v2, g_string_new(""));
+	if (state > STATE_EXTENSION && !v2->extension && v1->extension) {
+		lt_extension_t *e = lt_extension_create();
+
+		lt_extension_add_singleton(e, ' ');
+		lt_tag_set_extension(v2, e);
 	}
 
 	return lt_tag_compare(v1, v2);
@@ -865,8 +823,9 @@ _lt_tag_subtract(lt_tag_t       *tag,
 	if (rtag->variants) {
 		lt_tag_free_variants(tag);
 	}
-	if (rtag->extensions) {
-		lt_tag_free_extensions(tag);
+	if (rtag->extension) {
+		/* XXX: how to deal with the multiple extensions? */
+		lt_tag_free_extension(tag);
 	}
 	if (rtag->privateuse) {
 		if (tag->privateuse)
@@ -904,17 +863,9 @@ _lt_tag_replace(lt_tag_t       *tag,
 			l = g_list_next(l);
 		}
 	}
-	if (rtag->extensions) {
-		GList *l = rtag->extensions;
-		GString *s;
-
-		g_return_if_fail (!tag->extensions);
-
-		while (l != NULL) {
-			s = l->data;
-			lt_tag_set_extension(tag, g_string_new(s->str));
-			l = g_list_next(l);
-		}
+	if (rtag->extension) {
+		g_return_if_fail (!tag->extension);
+		lt_tag_set_extension(tag, lt_extension_ref(rtag->extension));
 	}
 	if (rtag->privateuse) {
 		g_string_truncate(tag->privateuse, 0);
@@ -1016,7 +967,7 @@ lt_tag_clear(lt_tag_t *tag)
 	lt_tag_free_script(tag);
 	lt_tag_free_region(tag);
 	lt_tag_free_variants(tag);
-	lt_tag_free_extensions(tag);
+	lt_tag_free_extension(tag);
 	if (tag->privateuse) {
 		g_string_truncate(tag->privateuse, 0);
 	}
@@ -1078,12 +1029,8 @@ lt_tag_copy(const lt_tag_t *tag)
 		lt_tag_set_variant(retval, lt_variant_ref(l->data));
 		l = g_list_next(l);
 	}
-	l = tag->extensions;
-	while (l != NULL) {
-		GString *s = l->data;
-
-		lt_tag_set_extension(retval, g_string_new(s->str));
-		l = g_list_next(l);
+	if (tag->extension) {
+		lt_tag_set_extension(retval, lt_extension_copy(tag->extension));
 	}
 	if (tag->privateuse) {
 		g_string_append(retval->privateuse, tag->privateuse->str);
@@ -1123,26 +1070,24 @@ lt_tag_truncate(lt_tag_t  *tag,
 			g_string_truncate(tag->privateuse, 0);
 			break;
 		}
-		if (tag->extensions) {
-			GList *le = g_list_copy(tag->extensions), *l;
-			GString *s;
+		if (tag->extension) {
+			gint i;
+			gchar c;
+			gboolean has_tag = FALSE;
 
-			/* find out the last subtag */
-			le = g_list_sort(le, _lt_tag_extensions_compare);
-			l = g_list_last(le);
-			s = l->data;
-			g_list_free(le);
-			l = g_list_find(tag->extensions, s);
-			if (tag->extensions == l) {
-				lt_mem_delete_ref(&tag->parent, tag->extensions);
-				tag->extensions = g_list_delete_link(tag->extensions, l);
-				if (tag->extensions)
-					lt_mem_add_ref(&tag->parent, tag->extensions,
-						       (lt_destroy_func_t)_lt_tag_extensions_list_free);
-			} else {
-				l = g_list_delete_link(l, l);
+			lt_extension_truncate(tag->extension);
+			for (i = 0; i < LT_MAX_EXT_MODULES; i++) {
+				c = lt_ext_module_singleton_int_to_char(i);
+
+				if (c == 'x')
+					continue;
+				has_tag = lt_extension_has_singleton(tag->extension, c);
+				if (has_tag)
+					break;
 			}
-			g_string_free(s, TRUE);
+			if (!has_tag) {
+				lt_tag_free_extension(tag);
+			}
 			break;
 		}
 		if (tag->variants) {
@@ -1232,14 +1177,9 @@ lt_tag_get_string(lt_tag_t *tag)
 					       lt_variant_get_tag(l->data));
 			l = g_list_next(l);
 		}
-		l = tag->extensions;
-		while (l != NULL) {
-			GString *s = l->data;
-
+		if (tag->extension)
 			g_string_append_printf(string, "-%s",
-					       s->str);
-			l = g_list_next(l);
-		}
+					       lt_extension_get_tag(tag->extension));
 		if (tag->privateuse && tag->privateuse->len > 0)
 			g_string_append_printf(string, "-%s", tag->privateuse->str);
 	} else if (tag->privateuse && tag->privateuse->len > 0) {
@@ -1267,7 +1207,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 	gchar *retval = NULL;
 	GString *string = NULL;
 	GError *err = NULL;
-	GList *l, *ll;
+	GList *l;
 	lt_redundant_db_t *rdb = NULL;
 	lt_redundant_t *r = NULL;
 	lt_tag_t *ctag = NULL;
@@ -1375,16 +1315,12 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 			g_string_append_printf(string, "-%s", better ? better : s);
 			l = g_list_next(l);
 		}
-		l = g_list_copy(tag->extensions);
-		l = g_list_sort(l, _lt_tag_extensions_compare);
-		ll = l;
-		while (ll != NULL) {
-			GString *str = ll->data;
+		if (tag->extension) {
+			gchar *s = lt_extension_get_canonicalized_tag(tag->extension);
 
-			g_string_append_printf(string, "-%s", str->str);
-			ll = g_list_next(ll);
+			g_string_append_printf(string, "-%s", s);
+			g_free(s);
 		}
-		g_list_free(l);
 	}
 	if (tag->privateuse && tag->privateuse->len > 0) {
 		g_string_append_printf(string, "%s%s",
@@ -1508,13 +1444,8 @@ lt_tag_dump(const lt_tag_t *tag)
 		lt_variant_dump(variant);
 		l = g_list_next(l);
 	}
-	l = tag->extensions;
-	while (l != NULL) {
-		GString *ext = l->data;
-
-		g_print("Extension: %s\n", ext->str);
-		l = g_list_next(l);
-	}
+	if (tag->extension)
+		lt_extension_dump(tag->extension);
 	if (tag->privateuse->len > 0)
 		g_print("Private Use: %s\n", tag->privateuse->str);
 }
@@ -1558,17 +1489,8 @@ lt_tag_compare(const lt_tag_t *v1,
 		l1 = l1 ? g_list_next(l1) : NULL;
 		l2 = g_list_next(l2);
 	}
-	l1 = v1->extensions;
-	l2 = v2->extensions;
-	while (l2 != NULL) {
-		GString *s1, *s2;
-
-		s1 = l1 ? l1->data : NULL;
-		s2 = l2->data;
-		retval &= _lt_tag_gstring_compare(s1, s2);
-		l1 = l1 ? g_list_next(l1) : NULL;
-		l2 = g_list_next(l2);
-	}
+	if (v2->extension)
+		retval &= lt_extension_compare(v1->extension, v2->extension);
 	if (v2->privateuse && v2->privateuse->len > 0)
 		retval &= _lt_tag_gstring_compare(v1->privateuse, v2->privateuse);
 
@@ -1687,13 +1609,9 @@ lt_tag_lookup(const lt_tag_t  *tag,
 				    case STATE_EXTENSION:
 				    case STATE_EXTENSIONTOKEN:
 				    case STATE_EXTENSIONTOKEN2:
-					    lt_tag_free_extensions(t2);
-					    l = tag->extensions;
-					    while (l != NULL) {
-						    GString *s = l->data;
-
-						    lt_tag_set_extension(t2, g_string_new(s->str));
-						    l = g_list_next(l);
+					    lt_tag_free_extension(t2);
+					    if (tag->extension) {
+						    lt_tag_set_extension(t2, lt_extension_ref(tag->extension));
 					    }
 					    break;
 				    case STATE_PRIVATEUSE:

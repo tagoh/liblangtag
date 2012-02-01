@@ -58,6 +58,9 @@ liblangtag_gobject_built_public_headers =	\
 liblangtag_gobject_built_private_headers =	\
 	lt-database.gir.h			\
 	lt-error.gir.h				\
+	lt-ext-module-data.gir.h		\
+	lt-ext-module.gir.h			\
+	lt-extension.gir.h			\
 	lt-extlang-db.gir.h			\
 	lt-extlang.gir.h			\
 	lt-grandfathered-db.gir.h		\
@@ -77,6 +80,9 @@ liblangtag_gobject_built_private_headers =	\
 #
 liblangtag_gobject_built_sources =	\
 	lt-error.gir.c			\
+	lt-ext-module-data.gir.c	\
+	lt-ext-module.gir.c		\
+	lt-extension.gir.c		\
 	lt-extlang-db.gir.c		\
 	lt-extlang.gir.c		\
 	lt-grandfathered-db.gir.c	\
