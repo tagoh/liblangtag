@@ -109,6 +109,26 @@ _lt_ext_ldml_lookup_type(lt_ext_ldml_data_t  *data,
 					retval = TRUE;
 					xmlFree(name);
 					goto bail;
+				} else if (g_strcmp0((const gchar *)name, "CODEPOINTS") == 0) {
+					gsize len = strlen(subtag), j;
+					static const gchar *hexdigit = "0123456789abcdefABCDEF";
+					gchar *p;
+					guint64 x;
+
+					/* an exception to deal with the unicode code point. */
+					if (len >= 4 && len <= 6) {
+						for (j = 0; j < len; j++) {
+							if (!strchr(hexdigit, subtag[j]))
+								goto bail2;
+						}
+						x = g_ascii_strtoull(subtag, &p, 16);
+						if (p && p[0] == 0 && x <= 0x10ffff) {
+							retval = TRUE;
+							xmlFree(name);
+							goto bail;
+						}
+					}
+				  bail2:;
 				}
 				xmlFree(name);
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"text") == 0) {
