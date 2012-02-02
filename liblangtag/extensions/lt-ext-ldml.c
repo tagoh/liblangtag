@@ -27,6 +27,7 @@
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-ext-module.h"
+#include "lt-utils.h"
 #include "lt-xml.h"
 
 
@@ -46,6 +47,22 @@ typedef struct _lt_ext_ldml_data_t {
 } lt_ext_ldml_data_t;
 
 /*< private >*/
+static gint
+_lt_ext_ldml_sort_attributes(gconstpointer a,
+			     gconstpointer b)
+{
+	return g_ascii_strcasecmp(a, b);
+}
+
+static gint
+_lt_ext_ldml_sort_tags(gconstpointer a,
+		       gconstpointer b)
+{
+	const GString *s1 = a, *s2 = b;
+
+	return g_ascii_strcasecmp(s1->str, s2->str);
+}
+
 static gboolean
 _lt_ext_ldml_lookup_type(lt_ext_ldml_data_t  *data,
 			 const gchar         *subtag,
@@ -377,6 +394,7 @@ _lt_ext_ldml_get_tag(lt_ext_module_data_t *data)
 	GList *l;
 
 	if (d->attributes) {
+		d->attributes = g_list_sort(d->attributes, _lt_ext_ldml_sort_attributes);
 		for (l = d->attributes; l != NULL; l = g_list_next(l)) {
 			const gchar *a = l->data;
 
@@ -386,15 +404,18 @@ _lt_ext_ldml_get_tag(lt_ext_module_data_t *data)
 		}
 	}
 	if (d->tags) {
+		d->tags = g_list_sort(d->tags, _lt_ext_ldml_sort_tags);
 		for (l = d->tags; l != NULL; l = g_list_next(l)) {
 			const GString *t = l->data;
+			gchar *ts = g_strdup(t->str);
 
 			if (s->len > 0)
 				g_string_append_c(s, '-');
 			if (t->len == 2) {
 				/* XXX: do we need to auto-complete the clipped type here? */
 			}
-			g_string_append(s, t->str);
+			g_string_append(s, lt_strlower(ts));
+			g_free(ts);
 		}
 	}
 
