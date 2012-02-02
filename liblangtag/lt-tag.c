@@ -319,7 +319,7 @@ lt_tag_fill_wildcard(lt_tag_t       *tag,
 			    break;
 		    case STATE_EXTENSION:
 			    e = lt_extension_create();
-			    lt_extension_add_singleton(e, '*');
+			    lt_extension_add_singleton(e, '*', NULL, NULL);
 			    lt_tag_set_extension(tag, e);
 			    break;
 		    case STATE_PRIVATEUSE:
@@ -596,11 +596,9 @@ lt_tag_parse_state(lt_tag_t        *tag,
 				    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 						"Duplicate singleton for extension: %s", token);
 			    } else {
-				    if (!lt_extension_add_singleton(tag->extension,
-								    token[0])) {
-					    g_set_error(error, LT_ERROR, LT_ERR_OOM,
-							"Unable to add an extension singleton.");
-				    } else {
+				    if (lt_extension_add_singleton(tag->extension,
+								    token[0],
+								    tag, error)) {
 					    *state = STATE_IN_EXTENSION;
 				    }
 			    }
@@ -798,7 +796,7 @@ _lt_tag_match(const lt_tag_t *v1,
 	if (state > STATE_EXTENSION && !v2->extension && v1->extension) {
 		lt_extension_t *e = lt_extension_create();
 
-		lt_extension_add_singleton(e, ' ');
+		lt_extension_add_singleton(e, ' ', NULL, NULL);
 		lt_tag_set_extension(v2, e);
 	}
 

@@ -33,7 +33,9 @@ lt_extension_t *lt_extension_copy          (lt_extension_t  *extension);
 gboolean        lt_extension_has_singleton (lt_extension_t  *extension,
                                             gchar            singleton_c);
 gboolean        lt_extension_add_singleton (lt_extension_t  *extension,
-                                            gchar            singleton_c);
+					    gchar            singleton_c,
+					    const lt_tag_t  *tag,
+					    GError         **error);
 gboolean        lt_extension_add_tag       (lt_extension_t  *extension,
                                             const gchar     *subtag,
                                             GError         **error);

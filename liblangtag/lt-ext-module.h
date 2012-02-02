@@ -28,6 +28,7 @@
 
 #include <glib.h>
 #include <liblangtag/lt-ext-module-data.h>
+#include <liblangtag/lt-tag.h>
 
 G_BEGIN_DECLS
 
@@ -88,6 +89,21 @@ typedef gchar                  (* lt_ext_module_singleton_func_t) (void);
  */
 typedef lt_ext_module_data_t * (* lt_ext_module_data_new_func_t)  (void);
 /**
+ * lt_ext_module_precheck_func_t:
+ * @data: a #lt_ext_module_data_t.
+ * @tag: a #lt_tag_t.
+ * @error: (allow-none): a #GError.
+ *
+ * The type of the callback function used to check @tag prior to process
+ * parsing subtags for the extension.
+ *
+ * Returns: %TRUE if @tag is valid to process parsing subtags for the extension.
+ *          otherwise %FALSE.
+ */
+typedef gboolean               (* lt_ext_module_precheck_func_t)  (lt_ext_module_data_t  *data,
+								   const lt_tag_t        *tag,
+								   GError               **error);
+/**
  * lt_ext_module_parse_func_t:
  * @data: a #lt_ext_module_data_t.
  * @subtag: a subtag string to parse.
@@ -125,6 +141,7 @@ typedef gboolean               (* lt_ext_module_validate_func_t)  (lt_ext_module
  *                 that are supposed in the module.
  * @create_data: A callback function to create a new instance of
  *               #lt_ext_module_data_t for the module.
+ * @precheck_tag: A callback function to check tags prior to parse subtags.
  * @parse_tag: A callback function to parse a tag.
  * @get_tag: A callback function to obtain the tag string.
  * @validate_tag: A callback function to validate the tag.
@@ -136,6 +153,7 @@ typedef gboolean               (* lt_ext_module_validate_func_t)  (lt_ext_module
 struct _lt_ext_module_funcs_t {
 	const lt_ext_module_singleton_func_t get_singleton;
 	const lt_ext_module_data_new_func_t  create_data;
+	const lt_ext_module_precheck_func_t  precheck_tag;
 	const lt_ext_module_parse_func_t     parse_tag;
 	const lt_ext_module_get_tag_func_t   get_tag;
 	const lt_ext_module_validate_func_t  validate_tag;

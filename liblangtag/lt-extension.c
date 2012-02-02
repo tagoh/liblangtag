@@ -83,24 +83,42 @@ lt_extension_has_singleton(lt_extension_t *extension,
 }
 
 gboolean
-lt_extension_add_singleton(lt_extension_t *extension,
-			   gchar           singleton_c)
+lt_extension_add_singleton(lt_extension_t  *extension,
+			   gchar            singleton_c,
+			   const lt_tag_t  *tag,
+			   GError         **error)
 {
 	gint singleton = lt_ext_module_singleton_char_to_int(singleton_c);
+	lt_ext_module_t *m;
+	lt_ext_module_data_t *d;
+	GError *err = NULL;
 
 	g_return_val_if_fail (extension != NULL, FALSE);
 	g_return_val_if_fail (singleton_c != 'X' && singleton_c != 'x', FALSE);
 	g_return_val_if_fail (!lt_extension_has_singleton(extension, singleton_c), FALSE);
 	g_return_val_if_fail (singleton >= 0, FALSE);
 
+	m = lt_ext_module_lookup(singleton_c);
+	d = lt_ext_module_create_data(m);
+	if (!d) {
+		lt_ext_module_unref(m);
+		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
+			    "Unable to create an instance of lt_ext_module_data_t.");
+
+		goto bail;
+	}
+	if (tag && !lt_ext_module_precheck_tag(m, d, tag, &err)) {
+		lt_ext_module_data_unref(d);
+		lt_ext_module_unref(m);
+
+		goto bail;
+	}
 	if (extension->module)
 		lt_mem_remove_ref(&extension->parent, extension->module);
-	extension->module = lt_ext_module_lookup(singleton_c);
+	extension->module = m;
 	lt_mem_add_ref(&extension->parent, extension->module,
 		       (lt_destroy_func_t)lt_ext_module_unref);
-	extension->extensions[singleton] = lt_ext_module_create_data(extension->module);
-	if (!extension->extensions[singleton])
-		return FALSE;
+	extension->extensions[singleton] = d;
 	lt_mem_add_ref(&extension->parent, extension->extensions[singleton],
 		       (lt_destroy_func_t)lt_ext_module_data_unref);
 	extension->singleton = singleton;
@@ -109,6 +127,17 @@ lt_extension_add_singleton(lt_extension_t *extension,
 		g_string_append_printf(extension->cached_tag, "-%c", singleton_c);
 	else
 		g_string_append_c(extension->cached_tag, singleton_c);
+
+  bail:
+	if (err) {
+		if (error)
+			*error = g_error_copy(err);
+		else
+			g_warning(err->message);
+		g_error_free(err);
+
+		return FALSE;
+	}
 
 	return TRUE;
 }

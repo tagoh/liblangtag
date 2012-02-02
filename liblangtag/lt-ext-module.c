@@ -54,12 +54,18 @@ typedef struct _lt_ext_default_data_t {
 } lt_ext_default_data_t;
 
 static lt_ext_module_data_t *_lt_ext_default_create_data (void);
+static gboolean              _lt_ext_default_precheck_tag(lt_ext_module_data_t  *data,
+							  const lt_tag_t        *tag,
+							  GError               **error);
 static gboolean              _lt_ext_default_parse_tag   (lt_ext_module_data_t  *data,
 							  const gchar           *subtag,
 							  GError               **error);
 static gchar                *_lt_ext_default_get_tag     (lt_ext_module_data_t  *data);
 static gboolean              _lt_ext_default_validate_tag(lt_ext_module_data_t  *data);
 static lt_ext_module_data_t *_lt_ext_eaw_create_data     (void);
+static gboolean              _lt_ext_eaw_precheck_tag    (lt_ext_module_data_t  *data,
+							  const lt_tag_t        *tag,
+							  GError               **error);
 static gboolean              _lt_ext_eaw_parse_tag       (lt_ext_module_data_t  *data,
 							  const gchar           *subtag,
 							  GError               **error);
@@ -73,6 +79,7 @@ static gboolean __lt_ext_module_initialized = FALSE;
 static const lt_ext_module_funcs_t __default_funcs = {
 	NULL,
 	_lt_ext_default_create_data,
+	_lt_ext_default_precheck_tag,
 	_lt_ext_default_parse_tag,
 	_lt_ext_default_get_tag,
 	_lt_ext_default_validate_tag,
@@ -80,6 +87,7 @@ static const lt_ext_module_funcs_t __default_funcs = {
 static const lt_ext_module_funcs_t __empty_and_wildcard_funcs = {
 	NULL,
 	_lt_ext_eaw_create_data,
+	_lt_ext_eaw_precheck_tag,
 	_lt_ext_eaw_parse_tag,
 	_lt_ext_eaw_get_tag,
 	_lt_ext_eaw_validate_tag,
@@ -107,6 +115,14 @@ _lt_ext_default_create_data(void)
 	}
 
 	return retval;
+}
+
+static gboolean
+_lt_ext_default_precheck_tag(lt_ext_module_data_t  *data,
+			     const lt_tag_t        *tag,
+			     GError               **error)
+{
+	return TRUE;
 }
 
 static gboolean
@@ -150,6 +166,16 @@ _lt_ext_eaw_create_data(void)
 							      _lt_ext_eaw_destroy_data);
 
 	return retval;
+}
+
+static gboolean
+_lt_ext_eaw_precheck_tag(lt_ext_module_data_t  *data,
+			 const lt_tag_t        *tag,
+			 GError               **error)
+{
+	/* not allowed to process any extensions */
+
+	return FALSE;
 }
 
 static gboolean
@@ -489,6 +515,33 @@ lt_ext_module_validate_tag(lt_ext_module_t      *module,
 	g_return_val_if_fail (module->funcs->validate_tag != NULL, FALSE);
 
 	return module->funcs->validate_tag(data);
+}
+
+gboolean
+lt_ext_module_precheck_tag(lt_ext_module_t       *module,
+			   lt_ext_module_data_t  *data,
+			   const lt_tag_t        *tag,
+			   GError               **error)
+{
+	GError *err = NULL;
+	gboolean retval;
+
+	g_return_val_if_fail (module != NULL, FALSE);
+	g_return_val_if_fail (data != NULL, FALSE);
+	g_return_val_if_fail (module->funcs != NULL, FALSE);
+	g_return_val_if_fail (module->funcs->precheck_tag != NULL, FALSE);
+
+	retval = module->funcs->precheck_tag(data, tag, &err);
+	if (err) {
+		if (error)
+			*error = g_error_copy(err);
+		else
+			g_warning(err->message);
+		g_error_free(err);
+		retval = FALSE;
+	}
+
+	return retval;
 }
 
 /*< public >*/

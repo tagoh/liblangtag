@@ -46,6 +46,10 @@ gboolean              lt_ext_module_parse_tag            (lt_ext_module_t       
                                                           GError               **error);
 gboolean              lt_ext_module_validate_tag         (lt_ext_module_t       *module,
 							  lt_ext_module_data_t  *data);
+gboolean              lt_ext_module_precheck_tag         (lt_ext_module_t       *module,
+							  lt_ext_module_data_t  *data,
+							  const lt_tag_t        *tag,
+							  GError               **error);
 
 G_END_DECLS
 
