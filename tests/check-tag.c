@@ -85,6 +85,16 @@ TDEF (lt_tag_parse) {
 	fail_unless(!lt_tag_parse(t1, "sl-rozaj-1994-biske", NULL), "not a valid form");
 	fail_unless(lt_tag_parse(t1, "sl-Latn-rozaj", NULL), "should be valid entry");
 	fail_unless(lt_tag_parse(t1, "sl-IT-rozaj", NULL), "should be valid entry");
+	fail_unless(!lt_tag_parse(t1, "zh-cmn-u-ca-chinese", NULL), "extlang isn't allowed.");
+	fail_unless(!lt_tag_parse(t1, "i-default-u-ca-chinese", NULL), "grandfathered isn't allowed");
+	fail_unless(lt_tag_parse(t1, "ja-u-tz", NULL), "no type subtag should be still valid");
+	fail_unless(lt_tag_parse(t1, "en-u-vt-0061", NULL), "should be valid entry");
+	fail_unless(lt_tag_parse(t1, "en-u-vt-0061-0065", NULL), "should be valid entry");
+	fail_unless(!lt_tag_parse(t1, "en-u-vt-A0", NULL), "not a valid form");
+	fail_unless(!lt_tag_parse(t1, "en-u-vt-CODEPOINTS", NULL), "not a valid form");
+	fail_unless(!lt_tag_parse(t1, "en-u-vt-U060C", NULL), "not a valid form");
+	fail_unless(!lt_tag_parse(t1, "en-u-vt-110000", NULL), "not a valid form");
+	fail_unless(lt_tag_parse(t1, "en-u-vt-10D40C", NULL), "should be valid entry");
 
 	lt_tag_unref(t1);
 } TEND
