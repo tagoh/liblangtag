@@ -22,6 +22,7 @@ function capitalize() {
     __Cl=`type_capitalize $__cl`
     __tmpsed=`mktemp gengir.XXXXXXXX`
     echo "s/^${__cl}/${__Cl}/g
+s/\(const[ \t].*\)${__cl}/\1${__Cl}/g
 s/\([ \t].*\)_${__cl}/\1_${__Cl}/g
 s/\([\t(].*\)${__cl}/\1${__Cl}/g
 s/^\([ \t].*\)${__cl}/\1${__Cl}/g" > $__tmpsed
