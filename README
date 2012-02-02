@@ -3,6 +3,21 @@ liblangtag
 
 An interface library to access tags for identifying languages
 
+Features
+===========
+- several subtag registry database supports:
+  - language
+  - extlang
+  - script
+  - region
+  - variant
+  - extension
+  - grandfathered
+  - redundant
+- handling of the language tags
+  - parser
+  - matching
+  - canonicalizing
 
 Requirements
 ===============
@@ -15,5 +30,10 @@ References
 =============
 
 - RFC4647 - Matching of Language Tags
+  http://www.ietf.org/rfc/rfc4647.txt
 - RFC5646 - Tags for Identifying Languages
-
+  http://www.ietf.org/rfc/rfc5646.txt
+- Unicode Locale Data Markup Language
+  http://unicode.org/reports/tr35/
+- Unicode Locale Extension for BCP 47 in Unicode Common Locale Data Repository
+  http://cldr.unicode.org/index/bcp47-extension

@@ -154,25 +154,25 @@ introspection_sources =					\
 %.gir.c: $(top_builddir)/liblangtag/liblangtag.la gengir.sh Makefile
 	$(srcdir)/gengir.sh $(top_srcdir)/liblangtag $@
 
-LangTag-0.1.gir: liblangtag-gobject.la Makefile
-LangTag_0_1_gir_INCLUDES =		\
+LangTag-0.2.gir: liblangtag-gobject.la Makefile
+LangTag_0_2_gir_INCLUDES =		\
 	GLib-2.0			\
 	GObject-2.0			\
 	$(NULL)
-LangTag_0_1_gir_CFLAGS =		\
+LangTag_0_2_gir_CFLAGS =		\
 	$(INCLUDES)			\
 	--symbol-prefix=lt		\
 	--identifier-prefix=Lt		\
 	-v				\
 	$(NULL)
-LangTag_0_1_gir_LIBS =			\
+LangTag_0_2_gir_LIBS =			\
 	liblangtag-gobject.la		\
 	$(NULL)
-LangTag_0_1_gir_FILES =			\
+LangTag_0_2_gir_FILES =			\
 	$(introspection_sources)	\
 	$(NULL)
 
-INTROSPECTION_GIRS += LangTag-0.1.gir
+INTROSPECTION_GIRS += LangTag-0.2.gir
 
 girdir = $(datadir)/gir-1.0
 gir_DATA = $(INTROSPECTION_GIRS)

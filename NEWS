@@ -1,0 +1,11 @@
+0.1 -> 0.2
+=============
+* Bug Fixes:
+  * Fix typos.
+  * Fix the behavior on canonicalizing a tag.
+* Enhancement:
+  * Support the redundant database.
+  * Modularize the Extension database.
+  * Support -u- Extension in LDML (http://unicode.org/reports/tr35/)
+  * Improve the performance.
+
