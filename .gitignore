@@ -31,6 +31,7 @@ data/*\.in
 !data/*\.in\.in
 data/*\.sh
 data/*\.conf
+data/common
 data/language-subtag-registry
 data/language-subtag-registry.xml
 data/reg2xml

@@ -7,6 +7,7 @@ INCLUDES =							\
 	-I$(top_srcdir)						\
 	-D__LANGTAG_COMPILATION					\
 	-DBUILDDIR="\"$(abs_top_builddir)\""			\
+	-DSRCDIR="\"$(abs_top_srcdir)\""			\
 	-DREGDATADIR="\"$(datadir)/liblangtag\""		\
 	-DLANGTAG_EXT_MODULE_PATH="\"$(LANGTAG_MODULEDIR)\""	\
 	$(GLIB_CFLAGS)						\

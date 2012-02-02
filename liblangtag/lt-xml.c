@@ -116,7 +116,7 @@ lt_xml_read_cldr_bcp47(lt_xml_t     *xml,
 	g_return_val_if_fail (xml != NULL, FALSE);
 
 #ifdef GNOME_ENABLE_DEBUG
-	regfile = g_build_filename(BUILDDIR, "data", "common", "bcp47", filename, NULL);
+	regfile = g_build_filename(SRCDIR, "data", "common", "bcp47", filename, NULL);
 	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
 		g_free(regfile);
 #endif
