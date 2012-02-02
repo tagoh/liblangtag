@@ -624,7 +624,8 @@ lt_tag_parse_state(lt_tag_t        *tag,
 						      token, error))
 				    *state = STATE_IN_EXTENSIONTOKEN;
 		    } else {
-			    if (*state == STATE_EXTENSIONTOKEN2) {
+			    if (*state == STATE_EXTENSIONTOKEN2 &&
+				lt_extension_validate(tag->extension)) {
 				    /* No need to destroy the previous tokens.
 				     * fallback to check the extension again.
 				     */

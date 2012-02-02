@@ -109,6 +109,15 @@ typedef gboolean               (* lt_ext_module_parse_func_t)     (lt_ext_module
  * Returns: a tag string.
  */
 typedef gchar                * (* lt_ext_module_get_tag_func_t)   (lt_ext_module_data_t *data);
+/**
+ * lt_ext_module_validate_func_t:
+ * @data: a #lt_ext_module_data_t.
+ *
+ * The type of the callback function used to validate the tags in @data.
+ *
+ * Returns: %TRUE if it's valid, otherwise %FALSE.
+ */
+typedef gboolean               (* lt_ext_module_validate_func_t)  (lt_ext_module_data_t *data);
 
 /**
  * lt_ext_module_funcs_t:
@@ -118,6 +127,7 @@ typedef gchar                * (* lt_ext_module_get_tag_func_t)   (lt_ext_module
  *               #lt_ext_module_data_t for the module.
  * @parse_tag: A callback function to parse a tag.
  * @get_tag: A callback function to obtain the tag string.
+ * @validate_tag: A callback function to validate the tag.
  *
  * The <structname>lt_ext_module_funcs_t</structname> struct is a callback
  * collection to provide an accessor between #lt_extension_t
@@ -128,6 +138,7 @@ struct _lt_ext_module_funcs_t {
 	const lt_ext_module_data_new_func_t  create_data;
 	const lt_ext_module_parse_func_t     parse_tag;
 	const lt_ext_module_get_tag_func_t   get_tag;
+	const lt_ext_module_validate_func_t  validate_tag;
 };
 
 

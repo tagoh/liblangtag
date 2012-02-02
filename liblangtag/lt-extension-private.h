@@ -38,6 +38,7 @@ gboolean        lt_extension_add_tag      (lt_extension_t  *extension,
                                            const gchar     *subtag,
                                            GError         **error);
 void            lt_extension_cancel_tag   (lt_extension_t  *extension);
+gboolean        lt_extension_validate     (lt_extension_t  *extension);
 
 G_END_DECLS
 

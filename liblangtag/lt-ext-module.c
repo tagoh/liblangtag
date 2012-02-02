@@ -53,16 +53,18 @@ typedef struct _lt_ext_default_data_t {
 	GString              *tags;
 } lt_ext_default_data_t;
 
-static lt_ext_module_data_t *_lt_ext_default_create_data(void);
-static gboolean              _lt_ext_default_parse_tag  (lt_ext_module_data_t  *data,
-                                                         const gchar           *subtag,
-                                                         GError               **error);
-static gchar                *_lt_ext_default_get_tag    (lt_ext_module_data_t  *data);
-static lt_ext_module_data_t *_lt_ext_eaw_create_data    (void);
-static gboolean              _lt_ext_eaw_parse_tag      (lt_ext_module_data_t  *data,
-							 const gchar           *subtag,
-							 GError               **error);
-static gchar                *_lt_ext_eaw_get_tag        (lt_ext_module_data_t  *data);
+static lt_ext_module_data_t *_lt_ext_default_create_data (void);
+static gboolean              _lt_ext_default_parse_tag   (lt_ext_module_data_t  *data,
+							  const gchar           *subtag,
+							  GError               **error);
+static gchar                *_lt_ext_default_get_tag     (lt_ext_module_data_t  *data);
+static gboolean              _lt_ext_default_validate_tag(lt_ext_module_data_t  *data);
+static lt_ext_module_data_t *_lt_ext_eaw_create_data     (void);
+static gboolean              _lt_ext_eaw_parse_tag       (lt_ext_module_data_t  *data,
+							  const gchar           *subtag,
+							  GError               **error);
+static gchar                *_lt_ext_eaw_get_tag         (lt_ext_module_data_t  *data);
+static gboolean              _lt_ext_eaw_validate_tag    (lt_ext_module_data_t  *data);
 
 
 static lt_ext_module_t *__lt_ext_modules[LT_MAX_EXT_MODULES + 1];
@@ -73,12 +75,14 @@ static const lt_ext_module_funcs_t __default_funcs = {
 	_lt_ext_default_create_data,
 	_lt_ext_default_parse_tag,
 	_lt_ext_default_get_tag,
+	_lt_ext_default_validate_tag,
 };
 static const lt_ext_module_funcs_t __empty_and_wildcard_funcs = {
 	NULL,
 	_lt_ext_eaw_create_data,
 	_lt_ext_eaw_parse_tag,
 	_lt_ext_eaw_get_tag,
+	_lt_ext_eaw_validate_tag,
 };
 
 /*< private >*/
@@ -128,6 +132,12 @@ _lt_ext_default_get_tag(lt_ext_module_data_t *data)
 	return g_strdup(d->tags->str);
 }
 
+static gboolean
+_lt_ext_default_validate_tag(lt_ext_module_data_t *data)
+{
+	return TRUE;
+}
+
 static void
 _lt_ext_eaw_destroy_data(gpointer data)
 {
@@ -156,6 +166,12 @@ static gchar *
 _lt_ext_eaw_get_tag(lt_ext_module_data_t *data)
 {
 	return g_strdup("");
+}
+
+static gboolean
+_lt_ext_eaw_validate_tag(lt_ext_module_data_t *data)
+{
+	return TRUE;
 }
 
 static gboolean
@@ -461,6 +477,18 @@ lt_ext_module_get_tag(lt_ext_module_t      *module,
 	g_return_val_if_fail (module->funcs->get_tag != NULL, NULL);
 
 	return module->funcs->get_tag(data);
+}
+
+gboolean
+lt_ext_module_validate_tag(lt_ext_module_t      *module,
+			   lt_ext_module_data_t *data)
+{
+	g_return_val_if_fail (module != NULL, FALSE);
+	g_return_val_if_fail (data != NULL, FALSE);
+	g_return_val_if_fail (module->funcs != NULL, FALSE);
+	g_return_val_if_fail (module->funcs->validate_tag != NULL, FALSE);
+
+	return module->funcs->validate_tag(data);
 }
 
 /*< public >*/

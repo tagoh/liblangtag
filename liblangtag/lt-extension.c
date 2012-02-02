@@ -211,6 +211,21 @@ lt_extension_copy(lt_extension_t *extension)
 	return retval;
 }
 
+gboolean
+lt_extension_validate(lt_extension_t *extension)
+{
+	gboolean retval = TRUE;
+
+	g_return_val_if_fail (extension != NULL, FALSE);
+
+	if (extension->module) {
+		retval = lt_ext_module_validate_tag(extension->module,
+						    extension->extensions[extension->singleton]);
+	}
+
+	return retval;
+}
+
 /*< public >*/
 /**
  * lt_extension_ref:
