@@ -1646,3 +1646,87 @@ lt_tag_lookup(const lt_tag_t  *tag,
 
 	return retval;
 }
+
+#define DEFUNC_GET_SUBTAG(__func__,__type__)			\
+	const __type__ *					\
+	lt_tag_get_ ##__func__ (const lt_tag_t *tag)		\
+	{							\
+		g_return_val_if_fail (tag != NULL, NULL);	\
+								\
+		return tag->__func__;				\
+	}
+
+/**
+ * lt_tag_get_language:
+ * @tag: a #lt_tag_t.
+ *
+ * Obtain a #lt_lang_t instance in @tag.
+ *
+ * Returns: (transfer none): a #lt_lang_t.
+ */
+DEFUNC_GET_SUBTAG (language, lt_lang_t)
+/**
+ * lt_tag_get_extlang:
+ * @tag: a #lt_tag_t.
+ *
+ * Obtain a #lt_extlang_t instance in @tag.
+ *
+ * Returns: (transfer none): a #lt_extlang_t.
+ */
+DEFUNC_GET_SUBTAG (extlang, lt_extlang_t)
+/**
+ * lt_tag_get_script:
+ * @tag: a #lt_tag_t.
+ *
+ * Obtain a #lt_script_t instance in @tag.
+ *
+ * Returns: (transfer none): a #lt_script_t.
+ */
+DEFUNC_GET_SUBTAG (script, lt_script_t)
+/**
+ * lt_tag_get_region:
+ * @tag: a #lt_tag_t.
+ *
+ * Obtain a #lt_region_t instance in @tag.
+ *
+ * Returns: (transfer none): a #lt_region_t.
+ */
+DEFUNC_GET_SUBTAG (region, lt_region_t)
+/**
+ * lt_tag_get_variants:
+ * @tag: a #lt_tag_t.
+ *
+ * Obtain a list of #lt_variant_t instance in @tag.
+ *
+ * Returns: (element-type lt_variant_t) (transfer none): a #GList containing #lt_variant_t.
+ */
+DEFUNC_GET_SUBTAG (variants, GList)
+/**
+ * lt_tag_get_extension:
+ * @tag: a #lt_tag_t.
+ *
+ * Obtain a #lt_extension_t instance in @tag.
+ *
+ * Returns: (transfer none): a #lt_extension_t.
+ */
+DEFUNC_GET_SUBTAG (extension, lt_extension_t)
+/**
+ * lt_tag_get_privateuse:
+ * @tag: a #lt_tag_t.
+ *
+ * Obtain a #GString instance in @tag.
+ *
+ * Returns: (transfer none): a #GString.
+ */
+DEFUNC_GET_SUBTAG (privateuse, GString)
+/**
+ * lt_tag_get_grandfathered:
+ * @tag: a #lt_tag_t.
+ *
+ * Obtain a #lt_grandfathered_t instance in @tag.
+ *
+ * Returns: (transfer none): a #lt_grandfathered_t.
+ */
+DEFUNC_GET_SUBTAG (grandfathered, lt_grandfathered_t)
+
+#undef DEFUNC_GET_SUBTAG
