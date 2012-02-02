@@ -147,7 +147,23 @@ void             lt_ext_modules_unload(void);
 lt_ext_module_t *lt_ext_module_ref    (lt_ext_module_t *module);
 void             lt_ext_module_unref  (lt_ext_module_t *module);
 
+/**
+ * module_get_version:
+ *
+ * Obtains the module version. this must be implemented in a module.
+ *
+ * Returns: a version number. this is the same to #LT_EXT_MODULE_VERSION
+ *          when the module was built.
+ */
 int                          module_get_version(void);
+/**
+ * module_get_funcs:
+ *
+ * Obtains a #lt_ext_module_funcs_t, callback collection structure that
+ * the module would process. this must be implemented in the external module.
+ *
+ * Returns: a #lt_ext_module_funcs_t.
+ */
 const lt_ext_module_funcs_t *module_get_funcs  (void);
 
 G_END_DECLS
