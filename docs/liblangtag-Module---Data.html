@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Module - Data</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="liblangtag Documentation">
+<link rel="up" href="Module.html" title="Module APIs">
+<link rel="prev" href="liblangtag-Module---Accessor.html" title="Module - Accessor">
+<link rel="next" href="liblangtag-Error.html" title="Error">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="liblangtag-Module---Accessor.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Module.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">liblangtag Documentation</th>
+<td><a accesskey="n" href="liblangtag-Error.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#liblangtag-Module---Data.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#liblangtag-Module---Data.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="liblangtag-Module---Data"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="liblangtag-Module---Data.top_of_page"></a>Module - Data</span></h2>
+<p>Module - Data — A container class for Extension module data.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="liblangtag-Module---Data.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-new" title="lt_ext_module_data_new ()">lt_ext_module_data_new</a>           (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gsize"><span class="type">gsize</span></a> size</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Datasets.html#GDestroyNotify"><span class="type">GDestroyNotify</span></a> finalizer</code></em>);
+<a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-ref" title="lt_ext_module_data_ref ()">lt_ext_module_data_ref</a>           (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);
+                    <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t">lt_ext_module_data_t</a>;
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-unref" title="lt_ext_module_data_unref ()">lt_ext_module_data_unref</a>            (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Module---Data.description"></a><h2>Description</h2>
+<p>
+This container class provides a data access for a specific data of
+extension subtag.
+</p>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Module---Data.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="lt-ext-module-data-new"></a><h3>lt_ext_module_data_new ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * lt_ext_module_data_new           (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gsize"><span class="type">gsize</span></a> size</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Datasets.html#GDestroyNotify"><span class="type">GDestroyNotify</span></a> finalizer</code></em>);</pre>
+<p>
+Create a new instance of <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a>. this function allows
+to create an inherited instance like:
+</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="keyword">struct</span><span class="normal"> </span><span class="classname">_my_module_data_t</span><span class="normal"> </span><span class="cbracket">{</span>
+<span class="usertype">lt_ext_module_data_t</span><span class="normal">  parent</span><span class="symbol">;</span>
+<span class="symbol">...</span><span class="usertype">own</span><span class="normal"> members</span><span class="symbol">...</span>
+<span class="cbracket">}</span><span class="symbol">;</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>size</code></em> :</span></p></td>
+<td>real size to allocate memory for the object.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>finalizer</code></em> :</span></p></td>
+<td>a callback function to destroy the content.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a>. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-ext-module-data-ref"></a><h3>lt_ext_module_data_ref ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * lt_ext_module_data_ref           (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);</pre>
+<p>
+Increases the reference count of <em class="parameter"><code>data</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>data</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>data</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-ext-module-data-t"></a><h3>lt_ext_module_data_t</h3>
+<pre class="programlisting">typedef struct {
+	gpointer dummy[8];
+} lt_ext_module_data_t;
+</pre>
+<p>
+All the fields in the <span class="structname">lt_ext_module_data_t</span>
+structure are private to the <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> implementation.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> <em class="structfield"><code><a name="lt-ext-module-data-t.dummy"></a>dummy</code></em>[8];</span></p></td>
+<td>a dummy pointer for alignment.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-ext-module-data-unref"></a><h3>lt_ext_module_data_unref ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_ext_module_data_unref            (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);</pre>
+<p>
+Decreases the reference count of <em class="parameter"><code>data</code></em>. when its reference count
+drops to 0, the object is finalized (i.e. its memory is freed).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>data</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -6,7 +6,7 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="liblangtag Documentation">
 <link rel="up" href="ch01.html" title="liblangtag API References">
-<link rel="prev" href="liblangtag-Container---Variant.html" title="Container - Variant">
+<link rel="prev" href="liblangtag-Module---Data.html" title="Module - Data">
 <link rel="next" href="object-tree.html" title="Object Hierarchy">
 <meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
@@ -14,7 +14,7 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
-<td><a accesskey="p" href="liblangtag-Container---Variant.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="p" href="liblangtag-Module---Data.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
 <td><a accesskey="u" href="ch01.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">liblangtag Documentation</th>
@@ -84,6 +84,7 @@ Obtains <a href="../glib/glib-Quarks.html#GQuark"><span class="type">GQuark</spa
 	LT_ERR_EOT,
 	LT_ERR_FAIL_ON_SCANNER,
 	LT_ERR_NO_TAG,
+	LT_ERR_INVALID,
 	LT_ERR_END
 };
 </pre>
@@ -126,6 +127,11 @@ Error code used in this library.
 <tr>
 <td><p><a name="LT-ERR-NO-TAG:CAPS"></a><span class="term"><code class="literal">LT_ERR_NO_TAG</code></span></p></td>
 <td>No tags to process.
+</td>
+</tr>
+<tr>
+<td><p><a name="LT-ERR-INVALID:CAPS"></a><span class="term"><code class="literal">LT_ERR_INVALID</code></span></p></td>
+<td>Invalid operation.
 </td>
 </tr>
 <tr>

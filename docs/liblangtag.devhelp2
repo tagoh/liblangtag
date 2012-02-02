@@ -8,18 +8,25 @@
         <sub name="Database - Extlang" link="liblangtag-Database---Extlang.html"/>
         <sub name="Database - Grandfathered" link="liblangtag-Database---Grandfathered.html"/>
         <sub name="Database - Language" link="liblangtag-Database---Language.html"/>
+        <sub name="Database - Redundant" link="liblangtag-Database---Redundant.html"/>
         <sub name="Database - Region" link="liblangtag-Database---Region.html"/>
         <sub name="Database - Script" link="liblangtag-Database---Script.html"/>
         <sub name="Database - Variant" link="liblangtag-Database---Variant.html"/>
       </sub>
       <sub name="Container APIs" link="Container.html">
+        <sub name="Container - Extension" link="liblangtag-Container---Extension.html"/>
         <sub name="Container - Extlang" link="liblangtag-Container---Extlang.html"/>
         <sub name="Container - Grandfathered" link="liblangtag-Container---Grandfathered.html"/>
         <sub name="Container - Language" link="liblangtag-Container---Language.html"/>
+        <sub name="Container - Redundant" link="liblangtag-Container---Redundant.html"/>
         <sub name="Container - Region" link="liblangtag-Container---Region.html"/>
         <sub name="Container - Script" link="liblangtag-Container---Script.html"/>
         <sub name="Container - Tag" link="liblangtag-Container---Tag.html"/>
         <sub name="Container - Variant" link="liblangtag-Container---Variant.html"/>
+      </sub>
+      <sub name="Module APIs" link="Module.html">
+        <sub name="Module - Accessor" link="liblangtag-Module---Accessor.html"/>
+        <sub name="Module - Data" link="liblangtag-Module---Data.html"/>
       </sub>
       <sub name="Error" link="liblangtag-Error.html"/>
     </sub>
@@ -33,6 +40,7 @@
     <keyword type="function" name="lt_db_get_extlang ()" link="liblangtag-Database.html#lt-db-get-extlang"/>
     <keyword type="function" name="lt_db_get_grandfathered ()" link="liblangtag-Database.html#lt-db-get-grandfathered"/>
     <keyword type="function" name="lt_db_get_lang ()" link="liblangtag-Database.html#lt-db-get-lang"/>
+    <keyword type="function" name="lt_db_get_redundant ()" link="liblangtag-Database.html#lt-db-get-redundant"/>
     <keyword type="function" name="lt_db_get_region ()" link="liblangtag-Database.html#lt-db-get-region"/>
     <keyword type="function" name="lt_db_get_script ()" link="liblangtag-Database.html#lt-db-get-script"/>
     <keyword type="function" name="lt_db_get_variant ()" link="liblangtag-Database.html#lt-db-get-variant"/>
@@ -52,6 +60,11 @@
     <keyword type="function" name="lt_lang_db_ref ()" link="liblangtag-Database---Language.html#lt-lang-db-ref"/>
     <keyword type="struct" name="lt_lang_db_t" link="liblangtag-Database---Language.html#lt-lang-db-t"/>
     <keyword type="function" name="lt_lang_db_unref ()" link="liblangtag-Database---Language.html#lt-lang-db-unref"/>
+    <keyword type="function" name="lt_redundant_db_lookup ()" link="liblangtag-Database---Redundant.html#lt-redundant-db-lookup"/>
+    <keyword type="function" name="lt_redundant_db_new ()" link="liblangtag-Database---Redundant.html#lt-redundant-db-new"/>
+    <keyword type="function" name="lt_redundant_db_ref ()" link="liblangtag-Database---Redundant.html#lt-redundant-db-ref"/>
+    <keyword type="struct" name="lt_redundant_db_t" link="liblangtag-Database---Redundant.html#lt-redundant-db-t"/>
+    <keyword type="function" name="lt_redundant_db_unref ()" link="liblangtag-Database---Redundant.html#lt-redundant-db-unref"/>
     <keyword type="function" name="lt_region_db_lookup ()" link="liblangtag-Database---Region.html#lt-region-db-lookup"/>
     <keyword type="function" name="lt_region_db_new ()" link="liblangtag-Database---Region.html#lt-region-db-new"/>
     <keyword type="function" name="lt_region_db_ref ()" link="liblangtag-Database---Region.html#lt-region-db-ref"/>
@@ -67,6 +80,14 @@
     <keyword type="function" name="lt_variant_db_ref ()" link="liblangtag-Database---Variant.html#lt-variant-db-ref"/>
     <keyword type="struct" name="lt_variant_db_t" link="liblangtag-Database---Variant.html#lt-variant-db-t"/>
     <keyword type="function" name="lt_variant_db_unref ()" link="liblangtag-Database---Variant.html#lt-variant-db-unref"/>
+    <keyword type="function" name="lt_extension_compare ()" link="liblangtag-Container---Extension.html#lt-extension-compare"/>
+    <keyword type="function" name="lt_extension_dump ()" link="liblangtag-Container---Extension.html#lt-extension-dump"/>
+    <keyword type="function" name="lt_extension_get_canonicalized_tag ()" link="liblangtag-Container---Extension.html#lt-extension-get-canonicalized-tag"/>
+    <keyword type="function" name="lt_extension_get_tag ()" link="liblangtag-Container---Extension.html#lt-extension-get-tag"/>
+    <keyword type="function" name="lt_extension_ref ()" link="liblangtag-Container---Extension.html#lt-extension-ref"/>
+    <keyword type="struct" name="lt_extension_t" link="liblangtag-Container---Extension.html#lt-extension-t"/>
+    <keyword type="function" name="lt_extension_truncate ()" link="liblangtag-Container---Extension.html#lt-extension-truncate"/>
+    <keyword type="function" name="lt_extension_unref ()" link="liblangtag-Container---Extension.html#lt-extension-unref"/>
     <keyword type="function" name="lt_extlang_compare ()" link="liblangtag-Container---Extlang.html#lt-extlang-compare"/>
     <keyword type="function" name="lt_extlang_dump ()" link="liblangtag-Container---Extlang.html#lt-extlang-dump"/>
     <keyword type="function" name="lt_extlang_get_macro_language ()" link="liblangtag-Container---Extlang.html#lt-extlang-get-macro-language"/>
@@ -98,6 +119,15 @@
     <keyword type="function" name="lt_lang_ref ()" link="liblangtag-Container---Language.html#lt-lang-ref"/>
     <keyword type="struct" name="lt_lang_t" link="liblangtag-Container---Language.html#lt-lang-t"/>
     <keyword type="function" name="lt_lang_unref ()" link="liblangtag-Container---Language.html#lt-lang-unref"/>
+    <keyword type="function" name="lt_redundant_compare ()" link="liblangtag-Container---Redundant.html#lt-redundant-compare"/>
+    <keyword type="function" name="lt_redundant_dump ()" link="liblangtag-Container---Redundant.html#lt-redundant-dump"/>
+    <keyword type="function" name="lt_redundant_get_better_tag ()" link="liblangtag-Container---Redundant.html#lt-redundant-get-better-tag"/>
+    <keyword type="function" name="lt_redundant_get_name ()" link="liblangtag-Container---Redundant.html#lt-redundant-get-name"/>
+    <keyword type="function" name="lt_redundant_get_preferred_tag ()" link="liblangtag-Container---Redundant.html#lt-redundant-get-preferred-tag"/>
+    <keyword type="function" name="lt_redundant_get_tag ()" link="liblangtag-Container---Redundant.html#lt-redundant-get-tag"/>
+    <keyword type="function" name="lt_redundant_ref ()" link="liblangtag-Container---Redundant.html#lt-redundant-ref"/>
+    <keyword type="struct" name="lt_redundant_t" link="liblangtag-Container---Redundant.html#lt-redundant-t"/>
+    <keyword type="function" name="lt_redundant_unref ()" link="liblangtag-Container---Redundant.html#lt-redundant-unref"/>
     <keyword type="function" name="lt_region_compare ()" link="liblangtag-Container---Region.html#lt-region-compare"/>
     <keyword type="function" name="lt_region_dump ()" link="liblangtag-Container---Region.html#lt-region-dump"/>
     <keyword type="function" name="lt_region_get_better_tag ()" link="liblangtag-Container---Region.html#lt-region-get-better-tag"/>
@@ -119,14 +149,24 @@
     <keyword type="function" name="lt_tag_clear ()" link="liblangtag-Container---Tag.html#lt-tag-clear"/>
     <keyword type="function" name="lt_tag_compare ()" link="liblangtag-Container---Tag.html#lt-tag-compare"/>
     <keyword type="function" name="lt_tag_convert_to_locale ()" link="liblangtag-Container---Tag.html#lt-tag-convert-to-locale"/>
+    <keyword type="function" name="lt_tag_copy ()" link="liblangtag-Container---Tag.html#lt-tag-copy"/>
     <keyword type="function" name="lt_tag_dump ()" link="liblangtag-Container---Tag.html#lt-tag-dump"/>
+    <keyword type="function" name="lt_tag_get_extension ()" link="liblangtag-Container---Tag.html#lt-tag-get-extension"/>
+    <keyword type="function" name="lt_tag_get_extlang ()" link="liblangtag-Container---Tag.html#lt-tag-get-extlang"/>
+    <keyword type="function" name="lt_tag_get_grandfathered ()" link="liblangtag-Container---Tag.html#lt-tag-get-grandfathered"/>
+    <keyword type="function" name="lt_tag_get_language ()" link="liblangtag-Container---Tag.html#lt-tag-get-language"/>
+    <keyword type="function" name="lt_tag_get_privateuse ()" link="liblangtag-Container---Tag.html#lt-tag-get-privateuse"/>
+    <keyword type="function" name="lt_tag_get_region ()" link="liblangtag-Container---Tag.html#lt-tag-get-region"/>
+    <keyword type="function" name="lt_tag_get_script ()" link="liblangtag-Container---Tag.html#lt-tag-get-script"/>
     <keyword type="function" name="lt_tag_get_string ()" link="liblangtag-Container---Tag.html#lt-tag-get-string"/>
+    <keyword type="function" name="lt_tag_get_variants ()" link="liblangtag-Container---Tag.html#lt-tag-get-variants"/>
     <keyword type="function" name="lt_tag_lookup ()" link="liblangtag-Container---Tag.html#lt-tag-lookup"/>
     <keyword type="function" name="lt_tag_match ()" link="liblangtag-Container---Tag.html#lt-tag-match"/>
     <keyword type="function" name="lt_tag_new ()" link="liblangtag-Container---Tag.html#lt-tag-new"/>
     <keyword type="function" name="lt_tag_parse ()" link="liblangtag-Container---Tag.html#lt-tag-parse"/>
     <keyword type="function" name="lt_tag_ref ()" link="liblangtag-Container---Tag.html#lt-tag-ref"/>
     <keyword type="struct" name="lt_tag_t" link="liblangtag-Container---Tag.html#lt-tag-t"/>
+    <keyword type="function" name="lt_tag_truncate ()" link="liblangtag-Container---Tag.html#lt-tag-truncate"/>
     <keyword type="function" name="lt_tag_unref ()" link="liblangtag-Container---Tag.html#lt-tag-unref"/>
     <keyword type="function" name="lt_variant_compare ()" link="liblangtag-Container---Variant.html#lt-variant-compare"/>
     <keyword type="function" name="lt_variant_dump ()" link="liblangtag-Container---Variant.html#lt-variant-dump"/>
@@ -138,6 +178,26 @@
     <keyword type="function" name="lt_variant_ref ()" link="liblangtag-Container---Variant.html#lt-variant-ref"/>
     <keyword type="struct" name="lt_variant_t" link="liblangtag-Container---Variant.html#lt-variant-t"/>
     <keyword type="function" name="lt_variant_unref ()" link="liblangtag-Container---Variant.html#lt-variant-unref"/>
+    <keyword type="macro" name="LT_EXT_MODULE_VERSION" link="liblangtag-Module---Accessor.html#LT-EXT-MODULE-VERSION:CAPS"/>
+    <keyword type="function" name="lt_ext_module_data_new_func_t ()" link="liblangtag-Module---Accessor.html#lt-ext-module-data-new-func-t"/>
+    <keyword type="struct" name="struct lt_ext_module_funcs_t" link="liblangtag-Module---Accessor.html#lt-ext-module-funcs-t"/>
+    <keyword type="function" name="lt_ext_module_get_funcs_func_t ()" link="liblangtag-Module---Accessor.html#lt-ext-module-get-funcs-func-t"/>
+    <keyword type="function" name="lt_ext_module_get_tag_func_t ()" link="liblangtag-Module---Accessor.html#lt-ext-module-get-tag-func-t"/>
+    <keyword type="function" name="lt_ext_module_parse_func_t ()" link="liblangtag-Module---Accessor.html#lt-ext-module-parse-func-t"/>
+    <keyword type="function" name="lt_ext_module_ref ()" link="liblangtag-Module---Accessor.html#lt-ext-module-ref"/>
+    <keyword type="function" name="lt_ext_module_singleton_func_t ()" link="liblangtag-Module---Accessor.html#lt-ext-module-singleton-func-t"/>
+    <keyword type="struct" name="lt_ext_module_t" link="liblangtag-Module---Accessor.html#lt-ext-module-t"/>
+    <keyword type="function" name="lt_ext_module_unref ()" link="liblangtag-Module---Accessor.html#lt-ext-module-unref"/>
+    <keyword type="function" name="lt_ext_module_validate_func_t ()" link="liblangtag-Module---Accessor.html#lt-ext-module-validate-func-t"/>
+    <keyword type="function" name="lt_ext_module_version_func_t ()" link="liblangtag-Module---Accessor.html#lt-ext-module-version-func-t"/>
+    <keyword type="function" name="lt_ext_modules_load ()" link="liblangtag-Module---Accessor.html#lt-ext-modules-load"/>
+    <keyword type="function" name="lt_ext_modules_unload ()" link="liblangtag-Module---Accessor.html#lt-ext-modules-unload"/>
+    <keyword type="function" name="module_get_funcs ()" link="liblangtag-Module---Accessor.html#module-get-funcs"/>
+    <keyword type="function" name="module_get_version ()" link="liblangtag-Module---Accessor.html#module-get-version"/>
+    <keyword type="function" name="lt_ext_module_data_new ()" link="liblangtag-Module---Data.html#lt-ext-module-data-new"/>
+    <keyword type="function" name="lt_ext_module_data_ref ()" link="liblangtag-Module---Data.html#lt-ext-module-data-ref"/>
+    <keyword type="struct" name="lt_ext_module_data_t" link="liblangtag-Module---Data.html#lt-ext-module-data-t"/>
+    <keyword type="function" name="lt_ext_module_data_unref ()" link="liblangtag-Module---Data.html#lt-ext-module-data-unref"/>
     <keyword type="macro" name="LT_ERROR" link="liblangtag-Error.html#LT-ERROR:CAPS"/>
     <keyword type="function" name="lt_error_get_quark ()" link="liblangtag-Error.html#lt-error-get-quark"/>
     <keyword type="enum" name="enum lt_error_t" link="liblangtag-Error.html#lt-error-t"/>
@@ -148,6 +208,7 @@
     <keyword type="constant" name="LT_ERR_EOT" link="liblangtag-Error.html#LT-ERR-EOT:CAPS"/>
     <keyword type="constant" name="LT_ERR_FAIL_ON_SCANNER" link="liblangtag-Error.html#LT-ERR-FAIL-ON-SCANNER:CAPS"/>
     <keyword type="constant" name="LT_ERR_NO_TAG" link="liblangtag-Error.html#LT-ERR-NO-TAG:CAPS"/>
+    <keyword type="constant" name="LT_ERR_INVALID" link="liblangtag-Error.html#LT-ERR-INVALID:CAPS"/>
     <keyword type="constant" name="LT_ERR_END" link="liblangtag-Error.html#LT-ERR-END:CAPS"/>
   </functions>
 </book>

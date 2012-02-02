@@ -41,6 +41,7 @@
 <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="returnvalue">lt_extlang_db_t</span></a> *   <a class="link" href="liblangtag-Database.html#lt-db-get-extlang" title="lt_db_get_extlang ()">lt_db_get_extlang</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-t" title="lt_grandfathered_db_t"><span class="returnvalue">lt_grandfathered_db_t</span></a> * <a class="link" href="liblangtag-Database.html#lt-db-get-grandfathered" title="lt_db_get_grandfathered ()">lt_db_get_grandfathered</a>         (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="liblangtag-Database---Language.html#lt-lang-db-t" title="lt_lang_db_t"><span class="returnvalue">lt_lang_db_t</span></a> *      <a class="link" href="liblangtag-Database.html#lt-db-get-lang" title="lt_db_get_lang ()">lt_db_get_lang</a>                      (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="liblangtag-Database---Redundant.html#lt-redundant-db-t" title="lt_redundant_db_t"><span class="returnvalue">lt_redundant_db_t</span></a> * <a class="link" href="liblangtag-Database.html#lt-db-get-redundant" title="lt_db_get_redundant ()">lt_db_get_redundant</a>                 (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="liblangtag-Database---Region.html#lt-region-db-t" title="lt_region_db_t"><span class="returnvalue">lt_region_db_t</span></a> *    <a class="link" href="liblangtag-Database.html#lt-db-get-region" title="lt_db_get_region ()">lt_db_get_region</a>                    (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="liblangtag-Database---Script.html#lt-script-db-t" title="lt_script_db_t"><span class="returnvalue">lt_script_db_t</span></a> *    <a class="link" href="liblangtag-Database.html#lt-db-get-script" title="lt_db_get_script ()">lt_db_get_script</a>                    (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="liblangtag-Database---Variant.html#lt-variant-db-t" title="lt_variant_db_t"><span class="returnvalue">lt_variant_db_t</span></a> *   <a class="link" href="liblangtag-Database.html#lt-db-get-variant" title="lt_db_get_variant ()">lt_db_get_variant</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
@@ -111,6 +112,23 @@ the memory every time.
 <tbody><tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>The instance of <a class="link" href="liblangtag-Database---Language.html#lt-lang-db-t" title="lt_lang_db_t"><span class="type">lt_lang_db_t</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-get-redundant"></a><h3>lt_db_get_redundant ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Database---Redundant.html#lt-redundant-db-t" title="lt_redundant_db_t"><span class="returnvalue">lt_redundant_db_t</span></a> * lt_db_get_redundant                 (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Obtains the instance of <a class="link" href="liblangtag-Database---Redundant.html#lt-redundant-db-t" title="lt_redundant_db_t"><span class="type">lt_redundant_db_t</span></a>. This still allows to use
+without <a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a>. but it will takes some time to load the database
+on the memory every time.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>The instance of <a class="link" href="liblangtag-Database---Redundant.html#lt-redundant-db-t" title="lt_redundant_db_t"><span class="type">lt_redundant_db_t</span></a>.</td>
 </tr></tbody>
 </table></div>
 </div>

@@ -44,8 +44,17 @@
                                                          <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *v2</code></em>);
 <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="liblangtag-Container---Tag.html#lt-tag-convert-to-locale" title="lt_tag_convert_to_locale ()">lt_tag_convert_to_locale</a>            (<em class="parameter"><code><a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>,
                                                          <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
+<a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="returnvalue">lt_tag_t</span></a> *          <a class="link" href="liblangtag-Container---Tag.html#lt-tag-copy" title="lt_tag_copy ()">lt_tag_copy</a>                         (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Tag.html#lt-tag-dump" title="lt_tag_dump ()">lt_tag_dump</a>                         (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
+const <a class="link" href="liblangtag-Container---Extension.html#lt-extension-t" title="lt_extension_t"><span class="returnvalue">lt_extension_t</span></a> * <a class="link" href="liblangtag-Container---Tag.html#lt-tag-get-extension" title="lt_tag_get_extension ()">lt_tag_get_extension</a>             (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
+const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="returnvalue">lt_extlang_t</span></a> * <a class="link" href="liblangtag-Container---Tag.html#lt-tag-get-extlang" title="lt_tag_get_extlang ()">lt_tag_get_extlang</a>                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
+const <a class="link" href="liblangtag-Container---Grandfathered.html#lt-grandfathered-t" title="lt_grandfathered_t"><span class="returnvalue">lt_grandfathered_t</span></a> * <a class="link" href="liblangtag-Container---Tag.html#lt-tag-get-grandfathered" title="lt_tag_get_grandfathered ()">lt_tag_get_grandfathered</a>     (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
+const <a class="link" href="liblangtag-Container---Language.html#lt-lang-t" title="lt_lang_t"><span class="returnvalue">lt_lang_t</span></a> *   <a class="link" href="liblangtag-Container---Tag.html#lt-tag-get-language" title="lt_tag_get_language ()">lt_tag_get_language</a>                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
+const <a href="../glib/glib-Strings.html#GString"><span class="returnvalue">GString</span></a> *     <a class="link" href="liblangtag-Container---Tag.html#lt-tag-get-privateuse" title="lt_tag_get_privateuse ()">lt_tag_get_privateuse</a>               (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
+const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="returnvalue">lt_region_t</span></a> * <a class="link" href="liblangtag-Container---Tag.html#lt-tag-get-region" title="lt_tag_get_region ()">lt_tag_get_region</a>                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
+const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="returnvalue">lt_script_t</span></a> * <a class="link" href="liblangtag-Container---Tag.html#lt-tag-get-script" title="lt_tag_get_script ()">lt_tag_get_script</a>                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
 const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *       <a class="link" href="liblangtag-Container---Tag.html#lt-tag-get-string" title="lt_tag_get_string ()">lt_tag_get_string</a>                   (<em class="parameter"><code><a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
+const <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *       <a class="link" href="liblangtag-Container---Tag.html#lt-tag-get-variants" title="lt_tag_get_variants ()">lt_tag_get_variants</a>                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
 <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="liblangtag-Container---Tag.html#lt-tag-lookup" title="lt_tag_lookup ()">lt_tag_lookup</a>                       (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>,
                                                          <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *pattern</code></em>,
                                                          <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
@@ -58,6 +67,8 @@ const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gc
                                                          <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
 <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="returnvalue">lt_tag_t</span></a> *          <a class="link" href="liblangtag-Container---Tag.html#lt-tag-ref" title="lt_tag_ref ()">lt_tag_ref</a>                          (<em class="parameter"><code><a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
                     <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t">lt_tag_t</a>;
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="liblangtag-Container---Tag.html#lt-tag-truncate" title="lt_tag_truncate ()">lt_tag_truncate</a>                     (<em class="parameter"><code><a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="liblangtag-Container---Tag.html#lt-tag-unref" title="lt_tag_unref ()">lt_tag_unref</a>                        (<em class="parameter"><code><a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);
 </pre>
 </div>
@@ -166,6 +177,28 @@ Convert the language tag to the locale.
 </div>
 <hr>
 <div class="refsect2">
+<a name="lt-tag-copy"></a><h3>lt_tag_copy ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="returnvalue">lt_tag_t</span></a> *          lt_tag_copy                         (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
+<p>
+Create a copy instance of <em class="parameter"><code>tag</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new instance of <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if fails. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
 <a name="lt-tag-dump"></a><h3>lt_tag_dump ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                lt_tag_dump                         (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
 <p>
@@ -177,6 +210,160 @@ Dumps the container information to the standard output.
 <td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
 <td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
 </tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-tag-get-extension"></a><h3>lt_tag_get_extension ()</h3>
+<pre class="programlisting">const <a class="link" href="liblangtag-Container---Extension.html#lt-extension-t" title="lt_extension_t"><span class="returnvalue">lt_extension_t</span></a> * lt_tag_get_extension             (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
+<p>
+Obtain a <a class="link" href="liblangtag-Container---Extension.html#lt-extension-t" title="lt_extension_t"><span class="type">lt_extension_t</span></a> instance in <em class="parameter"><code>tag</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extension.html#lt-extension-t" title="lt_extension_t"><span class="type">lt_extension_t</span></a>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-tag-get-extlang"></a><h3>lt_tag_get_extlang ()</h3>
+<pre class="programlisting">const <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="returnvalue">lt_extlang_t</span></a> * lt_tag_get_extlang                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
+<p>
+Obtain a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a> instance in <em class="parameter"><code>tag</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Extlang.html#lt-extlang-t" title="lt_extlang_t"><span class="type">lt_extlang_t</span></a>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-tag-get-grandfathered"></a><h3>lt_tag_get_grandfathered ()</h3>
+<pre class="programlisting">const <a class="link" href="liblangtag-Container---Grandfathered.html#lt-grandfathered-t" title="lt_grandfathered_t"><span class="returnvalue">lt_grandfathered_t</span></a> * lt_tag_get_grandfathered     (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
+<p>
+Obtain a <a class="link" href="liblangtag-Container---Grandfathered.html#lt-grandfathered-t" title="lt_grandfathered_t"><span class="type">lt_grandfathered_t</span></a> instance in <em class="parameter"><code>tag</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Grandfathered.html#lt-grandfathered-t" title="lt_grandfathered_t"><span class="type">lt_grandfathered_t</span></a>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-tag-get-language"></a><h3>lt_tag_get_language ()</h3>
+<pre class="programlisting">const <a class="link" href="liblangtag-Container---Language.html#lt-lang-t" title="lt_lang_t"><span class="returnvalue">lt_lang_t</span></a> *   lt_tag_get_language                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
+<p>
+Obtain a <a class="link" href="liblangtag-Container---Language.html#lt-lang-t" title="lt_lang_t"><span class="type">lt_lang_t</span></a> instance in <em class="parameter"><code>tag</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Language.html#lt-lang-t" title="lt_lang_t"><span class="type">lt_lang_t</span></a>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-tag-get-privateuse"></a><h3>lt_tag_get_privateuse ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Strings.html#GString"><span class="returnvalue">GString</span></a> *     lt_tag_get_privateuse               (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
+<p>
+Obtain a <a href="../glib/glib-Strings.html#GString"><span class="type">GString</span></a> instance in <em class="parameter"><code>tag</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a href="../glib/glib-Strings.html#GString"><span class="type">GString</span></a>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-tag-get-region"></a><h3>lt_tag_get_region ()</h3>
+<pre class="programlisting">const <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="returnvalue">lt_region_t</span></a> * lt_tag_get_region                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
+<p>
+Obtain a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a> instance in <em class="parameter"><code>tag</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Region.html#lt-region-t" title="lt_region_t"><span class="type">lt_region_t</span></a>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-tag-get-script"></a><h3>lt_tag_get_script ()</h3>
+<pre class="programlisting">const <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="returnvalue">lt_script_t</span></a> * lt_tag_get_script                   (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
+<p>
+Obtain a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a> instance in <em class="parameter"><code>tag</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Script.html#lt-script-t" title="lt_script_t"><span class="type">lt_script_t</span></a>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
 </table></div>
 </div>
 <hr>
@@ -196,6 +383,28 @@ Obtains a language tag in string.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>a language tag string.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-tag-get-variants"></a><h3>lt_tag_get_variants ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *       lt_tag_get_variants                 (<em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>);</pre>
+<p>
+Obtain a list of <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a> instance in <em class="parameter"><code>tag</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> containing <a class="link" href="liblangtag-Container---Variant.html#lt-variant-t" title="lt_variant_t"><span class="type">lt_variant_t</span></a>. <span class="annotation">[<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> lt_variant_t][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -343,6 +552,38 @@ Increases the reference count of <em class="parameter"><code>tag</code></em>.
 <div class="refsect2">
 <a name="lt-tag-t"></a><h3>lt_tag_t</h3>
 <pre class="programlisting">typedef struct _lt_tag_t lt_tag_t;</pre>
+<p>
+All the fields in the <span class="structname">lt_tag_t</span>
+structure are private to the <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> implementation.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-tag-truncate"></a><h3>lt_tag_truncate ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            lt_tag_truncate                     (<em class="parameter"><code><a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>,
+                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<p>
+Truncate the last subtag.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>error</code></em> :</span></p></td>
+<td>a <a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a>. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if a subtag was truncated, otherwise <a href="../glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
 </div>
 <hr>
 <div class="refsect2">
