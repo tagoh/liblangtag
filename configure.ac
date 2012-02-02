@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.62)
-AC_INIT([liblangtag], 0.1, [http://github.com/tagoh/liblangtag/issues])
+AC_INIT([liblangtag], 0.1.99, [http://github.com/tagoh/liblangtag/issues])
 
 . `dirname $0`/requires
 
@@ -37,22 +37,22 @@ dnl    last update, increment CURRENT, and set REVISION to 0.
 dnl 4. If any interfaces have been added since the last public release,
 dnl    then increment AGE.
 dnl 5. If any interfaces have been removed since the last public release,
-dnl    then set AGE to 0.
+dnl    then set CURRENT to the so number +1 and set AGE to 0.
 dnl
 
 dnl for liblangtag.la
-LT_CURRENT=0
+LT_CURRENT=1
 LT_REVISION=0
-LT_AGE=0
+LT_AGE=1
 
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
 dnl for liblangtag-gobject.la
-LT_G_CURRENT=0
+LT_G_CURRENT=1
 LT_G_REVISION=0
-LT_G_AGE=0
+LT_G_AGE=1
 
 AC_SUBST(LT_G_CURRENT)
 AC_SUBST(LT_G_REVISION)
@@ -61,6 +61,8 @@ AC_SUBST(LT_G_AGE)
 dnl ======================================================================
 dnl define variables
 dnl ======================================================================
+LANGTAG_MODULEDIR="${libdir}/liblangtag"
+AC_SUBST(LANGTAG_MODULEDIR)
 
 dnl ======================================================================
 dnl functions testing
@@ -80,10 +82,15 @@ dnl check pkg-config stuff
 dnl ======================================================================
 PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= $LIBXML2_REQUIRED)
 PKG_CHECK_MODULES(GOBJECT, gobject-2.0 >= $GOBJECT_REQUIRED, has_gobject=yes, has_gobject=no)
+PKG_CHECK_MODULES(GMODULE, gmodule-2.0, has_gmodule=yes, has_gmodule=no)
 PKG_CHECK_MODULES(CHECK, check >= $CHECK_REQUIRED,
 			 [use_check="yes"],
 			 [use_check="no"])
 
+if test x$has_gmodule != xno; then
+	AC_DEFINE(ENABLE_GMODULE,, [Using gmodule])
+fi
+AM_CONDITIONAL(ENABLE_GMODULE, test x$has_gmodule != xno)
 AM_CONDITIONAL(ENABLE_GOBJECT, test x$has_gobject != xno)
 AM_CONDITIONAL(ENABLE_UNIT_TEST, test x$use_check != xno)
 
@@ -112,6 +119,7 @@ AC_CONFIG_FILES([
 	docs/Makefile
 	docs/version.xml
 	liblangtag/Makefile
+	liblangtag/extensions/Makefile
 	liblangtag-gobject/Makefile
 	liblangtag.pc
 	liblangtag-uninstalled.pc
