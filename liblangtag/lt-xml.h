@@ -28,11 +28,23 @@
 G_BEGIN_DECLS
 
 typedef struct _lt_xml_t	lt_xml_t;
+typedef enum _lt_xml_cldr_t {
+	LT_XML_CLDR_BCP47_BEGIN = 0,
+	LT_XML_CLDR_BCP47_CALENDAR,
+	LT_XML_CLDR_BCP47_COLLATION,
+	LT_XML_CLDR_BCP47_CURRENCY,
+	LT_XML_CLDR_BCP47_NUMBER,
+	LT_XML_CLDR_BCP47_TIMEZONE,
+	LT_XML_CLDR_BCP47_VARIANT,
+	LT_XML_CLDR_BCP47_END
+} lt_xml_cldr_t;
 
 lt_xml_t        *lt_xml_new                (void);
-lt_xml_t        *lt_xml_ref                (lt_xml_t *xml);
-void             lt_xml_unref              (lt_xml_t *xml);
-const xmlDocPtr  lt_xml_get_subtag_registry(lt_xml_t *xml);
+lt_xml_t        *lt_xml_ref                (lt_xml_t      *xml);
+void             lt_xml_unref              (lt_xml_t      *xml);
+const xmlDocPtr  lt_xml_get_subtag_registry(lt_xml_t      *xml);
+const xmlDocPtr  lt_xml_get_cldr_bcp47     (lt_xml_t      *xml,
+                                            lt_xml_cldr_t  type);
 
 G_END_DECLS
 
