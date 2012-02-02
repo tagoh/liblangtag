@@ -212,7 +212,7 @@ lt_extension_copy(lt_extension_t *extension)
 }
 
 gboolean
-lt_extension_validate(lt_extension_t *extension)
+lt_extension_validate_state(lt_extension_t *extension)
 {
 	gboolean retval = TRUE;
 

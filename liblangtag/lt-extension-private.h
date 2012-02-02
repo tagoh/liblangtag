@@ -28,17 +28,17 @@
 
 G_BEGIN_DECLS
 
-lt_extension_t *lt_extension_create       (void);
-lt_extension_t *lt_extension_copy         (lt_extension_t  *extension);
-gboolean        lt_extension_has_singleton(lt_extension_t  *extension,
-                                           gchar            singleton_c);
-gboolean        lt_extension_add_singleton(lt_extension_t  *extension,
-                                           gchar            singleton_c);
-gboolean        lt_extension_add_tag      (lt_extension_t  *extension,
-                                           const gchar     *subtag,
-                                           GError         **error);
-void            lt_extension_cancel_tag   (lt_extension_t  *extension);
-gboolean        lt_extension_validate     (lt_extension_t  *extension);
+lt_extension_t *lt_extension_create        (void);
+lt_extension_t *lt_extension_copy          (lt_extension_t  *extension);
+gboolean        lt_extension_has_singleton (lt_extension_t  *extension,
+                                            gchar            singleton_c);
+gboolean        lt_extension_add_singleton (lt_extension_t  *extension,
+                                            gchar            singleton_c);
+gboolean        lt_extension_add_tag       (lt_extension_t  *extension,
+                                            const gchar     *subtag,
+                                            GError         **error);
+void            lt_extension_cancel_tag    (lt_extension_t  *extension);
+gboolean        lt_extension_validate_state(lt_extension_t  *extension);
 
 G_END_DECLS
 
