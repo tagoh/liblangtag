@@ -231,8 +231,11 @@ lt_extension_copy(lt_extension_t *extension)
 				       (lt_destroy_func_t)lt_ext_module_unref);
 			retval->singleton = extension->singleton;
 			for (i = 0; i < LT_MAX_EXT_MODULES; i++) {
-				if (extension->extensions[i])
+				if (extension->extensions[i]) {
 					retval->extensions[i] = lt_ext_module_data_ref(extension->extensions[i]);
+					lt_mem_add_ref(&retval->parent, retval->extensions[i],
+						       (lt_destroy_func_t)lt_ext_module_data_unref);
+				}
 			}
 		}
 	}
