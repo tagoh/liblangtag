@@ -23,6 +23,8 @@
 #include "config.h"
 #endif
 
+#include <langinfo.h>
+#include <locale.h>
 #include <string.h>
 #include "lt-database.h"
 #include "lt-error.h"
@@ -1350,6 +1352,83 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 	}
 
 	return retval;
+}
+
+/**
+ * lt_tag_convert_from_locale:
+ * @error: (allow-none): a #GError.
+ *
+ * Convert current locale to the language tag.
+ *
+ * Returns: (transfer full): a #lt_tag_t, %NULL if fails.
+ */
+lt_tag_t *
+lt_tag_convert_from_locale(GError **error)
+{
+	const gchar *locale;
+	gchar *s, *territory, *codeset, *modifier, *p;
+	lt_tag_t *tag;
+	GError *err = NULL;
+
+	locale = setlocale(LC_CTYPE, NULL);
+	if (!locale)
+		locale = setlocale(LC_ALL, NULL);
+	s = g_strdup(locale);
+	codeset = g_strdup(nl_langinfo(CODESET));
+	tag = lt_tag_new();
+	if (!s || s[0] == 0 ||
+	    g_strcmp0(s, "C") == 0) {
+		if (!lt_tag_parse(tag, "und", &err))
+			goto bail;
+	} else {
+		GString *tag_string = g_string_new(NULL);
+
+		modifier = strchr(s, '@');
+		if (modifier) {
+			*modifier = 0;
+			modifier++;
+		}
+		p = strchr(s, '.');
+		if (p)
+			*p = 0;
+		territory = strchr(s, '_');
+		if (territory) {
+			*territory = 0;
+			territory++;
+		}
+		if (codeset && g_ascii_strcasecmp(codeset, "utf-8") == 0) {
+			g_free(codeset);
+			codeset = NULL;
+		}
+		g_string_append_printf(tag_string, "%s-%s", s, territory);
+		if (codeset || modifier)
+			g_string_append(tag_string, "-x");
+		if (codeset)
+			g_string_append_printf(tag_string, "-codeset-%s", codeset);
+		if (modifier)
+			g_string_append_printf(tag_string, "-modifier-%s", modifier);
+		if (!lt_tag_parse(tag, tag_string->str, &err)) {
+			g_string_free(tag_string, TRUE);
+			goto bail;
+		}
+		g_string_free(tag_string, TRUE);
+	}
+
+  bail:
+	g_free(codeset);
+	g_free(s);
+
+	if (err) {
+		if (error)
+			*error = g_error_copy(err);
+		else
+			g_warning(err->message);
+		g_error_free(err);
+		lt_tag_unref(tag);
+		tag = NULL;
+	}
+
+	return tag;
 }
 
 /**
