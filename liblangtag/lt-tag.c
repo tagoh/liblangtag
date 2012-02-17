@@ -26,12 +26,14 @@
 #include <langinfo.h>
 #include <locale.h>
 #include <string.h>
+#include <libxml/xpath.h>
 #include "lt-database.h"
 #include "lt-error.h"
 #include "lt-ext-module-private.h"
 #include "lt-extension-private.h"
 #include "lt-mem.h"
 #include "lt-utils.h"
+#include "lt-xml.h"
 #include "lt-tag.h"
 #include "lt-tag-private.h"
 
@@ -1720,6 +1722,91 @@ lt_tag_lookup(const lt_tag_t  *tag,
 	}
 	if (t2)
 		lt_tag_unref(t2);
+
+	return retval;
+}
+
+/**
+ * lt_tag_transform:
+ * @tag: a #lt_tag_t.
+ *
+ * Transform @tag according to the likelySubtags database provided by CLDR.
+ *
+ * Returns: a string.
+ */
+gchar *
+lt_tag_transform(lt_tag_t  *tag,
+		 GError   **error)
+{
+	lt_xml_t *xml = NULL;
+	const gchar *tag_string;
+	gchar *retval = NULL;
+	GError *err = NULL;
+
+	g_return_val_if_fail (tag != NULL, NULL);
+
+	tag_string = lt_tag_get_string(tag);
+	if (tag_string) {
+		xmlDocPtr doc;
+		xmlXPathContextPtr xctxt = NULL;
+		xmlXPathObjectPtr xobj = NULL;
+		xmlNodePtr ent;
+		xmlChar *to;
+		gchar *xpath_string = NULL;
+		int n;
+		GString *s;
+		gint i;
+
+		xml = lt_xml_new();
+		doc = lt_xml_get_cldr(xml, LT_XML_CLDR_SUPPLEMENTAL_LIKELY_SUBTAGS);
+		xctxt = xmlXPathNewContext(doc);
+		if (!xctxt) {
+			g_set_error(&err, LT_ERROR, LT_ERR_OOM,
+				    "Unable to create an instance of xmlXPathContextPtr.");
+			goto bail;
+		}
+		xpath_string = g_strdup_printf("/supplementalData/likelySubtags/likelySubtag[@from = '%s']", tag_string);
+		xobj = xmlXPathEvalExpression((const xmlChar *)xpath_string, xctxt);
+		if (!xobj) {
+			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
+				    "No valid elements for %s",
+				    doc->name);
+			goto bail;
+		}
+		n = xmlXPathNodeSetGetLength(xobj->nodesetval);
+		if (n > 1)
+			g_warning("Multiple subtag data to be transformed for %s: %d",
+				  tag_string, n);
+
+		ent = xmlXPathNodeSetItem(xobj->nodesetval, 0);
+		if (!ent) {
+			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
+				    "Unable to obtain the xml node via XPath.");
+			goto bail;
+		}
+		to = xmlGetProp(ent, (const xmlChar *)"to");
+		s = g_string_new((const gchar *)to);
+		xmlFree(to);
+		for (i = 0; i < s->len; i++) {
+			if (s->str[i] == '_')
+				s->str[i] = '-';
+		}
+		retval = g_string_free(s, FALSE);
+	  bail:
+		g_free(xpath_string);
+		if (xobj)
+			xmlXPathFreeObject(xobj);
+		if (xctxt)
+			xmlXPathFreeContext(xctxt);
+		lt_xml_unref(xml);
+	}
+	if (err) {
+		if (error)
+			*error = g_error_copy(err);
+		else
+			g_warning(err->message);
+		g_error_free(err);
+	}
 
 	return retval;
 }

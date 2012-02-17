@@ -39,7 +39,7 @@ main(int    argc,
 	if (g_strcmp0(argv[1], "help") == 0) {
 	  help:
 		g_print("Usage: %s <command> ...\n"
-			"commands: canonicalize, dump, from_locale, lookup, match, to_locale\n",
+			"commands: canonicalize, dump, from_locale, lookup, match, to_locale, transform\n",
 			argv[0]);
 	} else if (g_strcmp0(argv[1], "canonicalize") == 0) {
 		gchar *s;
@@ -84,6 +84,14 @@ main(int    argc,
 			l = lt_tag_convert_to_locale(tag, NULL);
 			g_print("%s -> %s\n", argv[2], l);
 			g_free(l);
+		}
+	} else if (g_strcmp0(argv[1], "transform") == 0) {
+		gchar *r;
+
+		if (lt_tag_parse(tag, argv[2], NULL)) {
+			r = lt_tag_transform(tag, NULL);
+			g_print("%s -> %s\n", argv[2], r);
+			g_free(r);
 		}
 	} else {
 		goto help;

@@ -39,6 +39,7 @@ struct _lt_xml_t {
 	xmlDocPtr cldr_bcp47_number;
 	xmlDocPtr cldr_bcp47_timezone;
 	xmlDocPtr cldr_bcp47_variant;
+	xmlDocPtr cldr_supplemental_likelysubtags;
 };
 
 static lt_xml_t *__xml = NULL;
@@ -160,6 +161,63 @@ lt_xml_read_cldr_bcp47(lt_xml_t     *xml,
 	return TRUE;
 }
 
+static gboolean
+lt_xml_read_cldr_supplemental(lt_xml_t     *xml,
+			      const gchar  *filename,
+			      xmlDocPtr    *doc,
+			      GError      **error)
+{
+	gchar *regfile = NULL;
+	xmlParserCtxtPtr xmlparser;
+	GError *err = NULL;
+
+	g_return_val_if_fail (xml != NULL, FALSE);
+
+#ifdef GNOME_ENABLE_DEBUG
+	regfile = g_build_filename(SRCDIR, "data", "common", "supplemental", filename, NULL);
+	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
+		g_free(regfile);
+#endif
+	regfile = g_build_filename(REGDATADIR, "common", "supplemental", filename, NULL);
+#ifdef GNOME_ENABLE_DEBUG
+	}
+#endif
+	xmlparser = xmlNewParserCtxt();
+	if (!xmlparser) {
+		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
+			    "Unable to create an instance of xmlParserCtxt.");
+		goto bail;
+	}
+	*doc = xmlCtxtReadFile(xmlparser, regfile, "UTF-8", 0);
+	if (!*doc) {
+		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
+			    "Unable to read the xml file: %s",
+			    regfile);
+		goto bail;
+	}
+	lt_mem_add_ref(&xml->parent, *doc,
+		       (lt_destroy_func_t)xmlFreeDoc);
+
+  bail:
+	g_free(regfile);
+	if (xmlparser)
+		xmlFreeParserCtxt(xmlparser);
+
+	xmlCleanupParser();
+
+	if (err) {
+		if (error)
+			*error = g_error_copy(err);
+		else
+			g_warning(err->message);
+		g_error_free(err);
+
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 /*< public >*/
 lt_xml_t *
 lt_xml_new(void)
@@ -203,6 +261,10 @@ lt_xml_new(void)
 					    &__xml->cldr_bcp47_variant,
 					    &err))
 			goto bail;
+		if (!lt_xml_read_cldr_supplemental(__xml, "likelySubtags.xml",
+						   &__xml->cldr_supplemental_likelysubtags,
+						   &err))
+			goto bail;
 	}
 
   bail:
@@ -241,8 +303,8 @@ lt_xml_get_subtag_registry(lt_xml_t *xml)
 }
 
 const xmlDocPtr
-lt_xml_get_cldr_bcp47(lt_xml_t      *xml,
-		      lt_xml_cldr_t  type)
+lt_xml_get_cldr(lt_xml_t      *xml,
+		lt_xml_cldr_t  type)
 {
 	g_return_val_if_fail (xml != NULL, NULL);
 
@@ -259,6 +321,8 @@ lt_xml_get_cldr_bcp47(lt_xml_t      *xml,
 		    return xml->cldr_bcp47_timezone;
 	    case LT_XML_CLDR_BCP47_VARIANT:
 		    return xml->cldr_bcp47_variant;
+	    case LT_XML_CLDR_SUPPLEMENTAL_LIKELY_SUBTAGS:
+		    return xml->cldr_supplemental_likelysubtags;
 	    default:
 		    break;
 	}

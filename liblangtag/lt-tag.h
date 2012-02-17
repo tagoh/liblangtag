@@ -70,6 +70,8 @@ gboolean                  lt_tag_match              (const lt_tag_t  *v1,
 gchar                    *lt_tag_lookup             (const lt_tag_t  *tag,
                                                      const gchar     *pattern,
                                                      GError         **error);
+gchar                    *lt_tag_transform          (lt_tag_t        *tag,
+						     GError         **error);
 const lt_lang_t          *lt_tag_get_language       (const lt_tag_t  *tag);
 const lt_extlang_t       *lt_tag_get_extlang        (const lt_tag_t  *tag);
 const lt_script_t        *lt_tag_get_script         (const lt_tag_t  *tag);

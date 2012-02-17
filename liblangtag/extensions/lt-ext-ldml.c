@@ -91,7 +91,7 @@ _lt_ext_ldml_lookup_type(lt_ext_ldml_data_t  *data,
 	key[2] = 0;
 
 	xml = lt_xml_new();
-	doc = lt_xml_get_cldr_bcp47(xml, data->current_type);
+	doc = lt_xml_get_cldr(xml, data->current_type);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
 		g_set_error(error, LT_ERROR, LT_ERR_OOM,
@@ -177,8 +177,8 @@ _lt_ext_ldml_lookup_key(lt_ext_ldml_data_t  *data,
 	lt_xml_t *xml = lt_xml_new();
 	gboolean retval = FALSE;
 
-	for (i = LT_XML_CLDR_BCP47_BEGIN + 1; i < LT_XML_CLDR_BCP47_END; i++) {
-		xmlDocPtr doc = lt_xml_get_cldr_bcp47(xml, i);
+	for (i = LT_XML_CLDR_BCP47_BEGIN; i <= LT_XML_CLDR_BCP47_END; i++) {
+		xmlDocPtr doc = lt_xml_get_cldr(xml, i);
 		xmlXPathContextPtr xctxt = NULL;
 		xmlXPathObjectPtr xobj = NULL;
 
@@ -272,7 +272,7 @@ _lt_ext_ldml_create_data(void)
 		lt_ext_ldml_data_t *d = (lt_ext_ldml_data_t *)retval;
 
 		d->state = STATE_NONE;
-		d->current_type = LT_XML_CLDR_BCP47_BEGIN;
+		d->current_type = LT_XML_CLDR_BEGIN;
 	}
 
 	return retval;

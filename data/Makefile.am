@@ -3,15 +3,16 @@
 NULL =
 EXTRA_DIST =				\
 	language-subtag-registry	\
-	stamp-core-zip			\
+	$(stamp_files)			\
 	$(subtagregistry_DATA)		\
-	$(ldmldata_DATA)		\
+	$(ldmlbcp47_DATA)		\
+	$(ldmlsupplemental_DATA)	\
 	$(NULL)
 MAINTAINERCLEANFILES =			\
 	language-subtag-registry	\
-	$(bcp47_xml_files)		\
+	$(ldml_xml_files)		\
 	core.zip			\
-	stamp-core-zip			\
+	$(stamp_files)			\
 	$(NULL)
 CLEANFILES =				\
 	language-subtag-registry.xml	\
@@ -19,11 +20,15 @@ CLEANFILES =				\
 BUILT_FILES =				\
 	language-subtag-registry	\
 	language-subtag-registry.xml	\
-	$(bcp47_xml_files)		\
+	$(ldml_xml_files)		\
 	$(NULL)
 
 ##
 # Local definitions
+ldml_xml_files =			\
+	$(bcp47_xml_files)		\
+	$(supplemental_xml_files)	\
+	$(NULL)
 bcp47_xml_files =			\
 	common/bcp47/calendar.xml	\
 	common/bcp47/collation.xml	\
@@ -31,6 +36,13 @@ bcp47_xml_files =			\
 	common/bcp47/number.xml		\
 	common/bcp47/timezone.xml	\
 	common/bcp47/variant.xml	\
+	$(NULL)
+supplemental_xml_files =		\
+	common/supplemental/likelySubtags.xml	\
+	$(NULL)
+stamp_files =		\
+	stamp-core-zip	\
+	stamp-ldml-xml	\
 	$(NULL)
 
 ##
@@ -41,12 +53,15 @@ language-subtag-registry:
 language-subtag-registry.xml: language-subtag-registry reg2xml Makefile
 	$(builddir)/reg2xml $(srcdir)/language-subtag-registry > $@
 stamp-core-zip:
-	[ -f core.zip ] && rm core.zip
+	-rm core.zip
 	wget http://unicode.org/Public/cldr/latest/core.zip ||	\
 	curl http://unicode.org/Public/cldr/latest/core.zip;	\
-	unzip -o core.zip "common/bcp47/*";			\
 	touch $@
-$(bcp47_xml_files): stamp-core-zip
+stamp-ldml-xml: stamp-core-zip Makefile.am
+	unzip -o core.zip $(bcp47_xml_files) $(supplemental_xml_files);	\
+	touch $@
+$(bcp47_xml_files): stamp-ldml-xml
+$(supplemental_xml_files): stamp-ldml-xml
 
 ##
 # Target platform
@@ -54,9 +69,13 @@ subtagregistrydir = $(datadir)/liblangtag
 subtagregistry_DATA =			\
 	language-subtag-registry.xml	\
 	$(NULL)
-ldmldatadir = $(datadir)/liblangtag/common/bcp47
-ldmldata_DATA =			\
+ldmlbcp47dir = $(datadir)/liblangtag/common/bcp47
+ldmlbcp47_DATA =		\
 	$(bcp47_xml_files)	\
+	$(NULL)
+ldmlsupplementaldir = $(datadir)/liblangtag/common/supplemental
+ldmlsupplemental_DATA =			\
+	$(supplemental_xml_files)	\
 	$(NULL)
 #
 noinst_PROGRAMS =	\
@@ -79,3 +98,5 @@ reg2xml_LDFLAGS =					\
 reg2xml_DEPENDENCIES =					\
 	$(top_builddir)/liblangtag/liblangtag.la	\
 	$(NULL)
+
+-include $(top_srcdir)/git.mk
