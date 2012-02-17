@@ -150,3 +150,5 @@ liblangtag_la_LDFLAGS =						\
 	$(LDFLAGS)						\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)	\
 	$(NULL)
+
+-include $(top_srcdir)/git.mk

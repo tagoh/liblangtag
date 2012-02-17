@@ -49,3 +49,5 @@ liblangtag_ext_ldml_la_LDFLAGS =		\
 	-avoid-version				\
 	-module					\
 	$(NULL)
+
+-include $(top_srcdir)/git.mk

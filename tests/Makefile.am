@@ -125,3 +125,5 @@ check_variant_SOURCES =		\
 	$(common_sources)	\
 	$(NULL)
 endif
+
+-include $(top_srcdir)/git.mk
