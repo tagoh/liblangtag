@@ -5,6 +5,11 @@ AC_INIT([liblangtag], 0.2, [http://github.com/tagoh/liblangtag/issues])
 . `dirname $0`/requires
 
 AM_INIT_AUTOMAKE([1.11 -Wno-portability])
+dnl Support silent build rules, requires at least automake-1.11.
+dnl Enable by either passing --enable-silent-rules to configure or
+dnl passing V=0 to make.
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
 AM_MAINTAINER_MODE
 AM_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4macros])

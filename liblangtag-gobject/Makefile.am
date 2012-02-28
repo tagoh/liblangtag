@@ -150,9 +150,9 @@ introspection_sources =					\
 	$(NULL)
 
 %.gir.h: $(top_builddir)/liblangtag/liblangtag.la gengir.sh Makefile
-	$(srcdir)/gengir.sh $(top_srcdir)/liblangtag $@
+	$(AM_V_GEN) $(srcdir)/gengir.sh $(top_srcdir)/liblangtag $@
 %.gir.c: $(top_builddir)/liblangtag/liblangtag.la gengir.sh Makefile
-	$(srcdir)/gengir.sh $(top_srcdir)/liblangtag $@
+	$(AM_V_GEN) $(srcdir)/gengir.sh $(top_srcdir)/liblangtag $@
 
 LangTag-0.2.gir: liblangtag-gobject.la Makefile
 LangTag_0_2_gir_INCLUDES =		\
