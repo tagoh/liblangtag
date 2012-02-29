@@ -35,17 +35,17 @@ BUILT_FILES =					\
 ##
 # Target platform
 moduledir = $(LANGTAG_MODULEDIR)
-module_LTLIBRARIES =		\
-	liblangtag-ext-ldml.la	\
+module_LTLIBRARIES =			\
+	liblangtag-ext-ldml-u.la	\
 	$(NULL)
 #
-liblangtag_ext_ldml_la_SOURCES =	\
-	lt-ext-ldml.c			\
+liblangtag_ext_ldml_u_la_SOURCES =	\
+	lt-ext-ldml-u.c			\
 	$(NULL)
-liblangtag_ext_ldml_la_CFLAGS =			\
-	-DG_LOG_DOMAIN="\"LangTag-Ext-LDML\""	\
+liblangtag_ext_ldml_u_la_CFLAGS =		\
+	-DG_LOG_DOMAIN="\"LangTag-Ext-LDML-U\""	\
 	$(NULL)
-liblangtag_ext_ldml_la_LDFLAGS =		\
+liblangtag_ext_ldml_u_la_LDFLAGS =		\
 	-avoid-version				\
 	-module					\
 	$(NULL)

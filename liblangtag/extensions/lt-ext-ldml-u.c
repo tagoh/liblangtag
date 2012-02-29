@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * lt-ext-ldml.c
+ * lt-ext-ldml-u.c
  * Copyright (C) 2011-2012 Akira TAGOH
  * 
  * Authors:
@@ -31,32 +31,32 @@
 #include "lt-xml.h"
 
 
-typedef enum _lt_ext_ldml_state_t {
+typedef enum _lt_ext_ldml_u_state_t {
 	STATE_NONE = 0,
 	STATE_ATTRIBUTE,
 	STATE_KEY,
 	STATE_TYPE,
 	STATE_END
-} lt_ext_ldml_state_t;
-typedef struct _lt_ext_ldml_data_t {
-	lt_ext_module_data_t  parent;
-	lt_xml_cldr_t         current_type;
-	lt_ext_ldml_state_t   state;
-	GList                *attributes;
-	GList                *tags;
-} lt_ext_ldml_data_t;
+} lt_ext_ldml_u_state_t;
+typedef struct _lt_ext_ldml_u_data_t {
+	lt_ext_module_data_t   parent;
+	lt_xml_cldr_t          current_type;
+	lt_ext_ldml_u_state_t  state;
+	GList                 *attributes;
+	GList                 *tags;
+} lt_ext_ldml_u_data_t;
 
 /*< private >*/
 static gint
-_lt_ext_ldml_sort_attributes(gconstpointer a,
-			     gconstpointer b)
+_lt_ext_ldml_u_sort_attributes(gconstpointer a,
+			       gconstpointer b)
 {
 	return g_ascii_strcasecmp(a, b);
 }
 
 static gint
-_lt_ext_ldml_sort_tags(gconstpointer a,
-		       gconstpointer b)
+_lt_ext_ldml_u_sort_tags(gconstpointer a,
+			 gconstpointer b)
 {
 	const GString *s1 = a, *s2 = b;
 
@@ -64,9 +64,9 @@ _lt_ext_ldml_sort_tags(gconstpointer a,
 }
 
 static gboolean
-_lt_ext_ldml_lookup_type(lt_ext_ldml_data_t  *data,
-			 const gchar         *subtag,
-			 GError             **error)
+_lt_ext_ldml_u_lookup_type(lt_ext_ldml_u_data_t  *data,
+			   const gchar           *subtag,
+			   GError               **error)
 {
 	lt_xml_t *xml = NULL;
 	xmlDocPtr doc;
@@ -169,9 +169,9 @@ _lt_ext_ldml_lookup_type(lt_ext_ldml_data_t  *data,
 }
 
 static gboolean
-_lt_ext_ldml_lookup_key(lt_ext_ldml_data_t  *data,
-			const gchar         *subtag,
-			GError             **error)
+_lt_ext_ldml_u_lookup_key(lt_ext_ldml_u_data_t  *data,
+			  const gchar           *subtag,
+			  GError               **error)
 {
 	gint i, j, n;
 	lt_xml_t *xml = lt_xml_new();
@@ -234,9 +234,9 @@ _lt_ext_ldml_lookup_key(lt_ext_ldml_data_t  *data,
 }
 
 static void
-_lt_ext_ldml_destroy_data(gpointer data)
+_lt_ext_ldml_u_destroy_data(gpointer data)
 {
-	lt_ext_ldml_data_t *d = (lt_ext_ldml_data_t *)data;
+	lt_ext_ldml_u_data_t *d = (lt_ext_ldml_u_data_t *)data;
 
 	if (d->attributes) {
 		GList *l;
@@ -257,19 +257,19 @@ _lt_ext_ldml_destroy_data(gpointer data)
 }
 
 static gchar
-_lt_ext_ldml_get_singleton(void)
+_lt_ext_ldml_u_get_singleton(void)
 {
 	return 'u';
 }
 
 static lt_ext_module_data_t *
-_lt_ext_ldml_create_data(void)
+_lt_ext_ldml_u_create_data(void)
 {
-	lt_ext_module_data_t *retval = lt_ext_module_data_new(sizeof (lt_ext_ldml_data_t),
-							      _lt_ext_ldml_destroy_data);
+	lt_ext_module_data_t *retval = lt_ext_module_data_new(sizeof (lt_ext_ldml_u_data_t),
+							      _lt_ext_ldml_u_destroy_data);
 
 	if (retval) {
-		lt_ext_ldml_data_t *d = (lt_ext_ldml_data_t *)retval;
+		lt_ext_ldml_u_data_t *d = (lt_ext_ldml_u_data_t *)retval;
 
 		d->state = STATE_NONE;
 		d->current_type = LT_XML_CLDR_BEGIN;
@@ -279,9 +279,9 @@ _lt_ext_ldml_create_data(void)
 }
 
 static gboolean
-_lt_ext_ldml_precheck_tag(lt_ext_module_data_t  *data,
-			  const lt_tag_t        *tag,
-			  GError               **error)
+_lt_ext_ldml_u_precheck_tag(lt_ext_module_data_t  *data,
+			    const lt_tag_t        *tag,
+			    GError               **error)
 {
 	if (lt_tag_get_grandfathered(tag)) {
 		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
@@ -298,11 +298,11 @@ _lt_ext_ldml_precheck_tag(lt_ext_module_data_t  *data,
 }
 
 static gboolean
-_lt_ext_ldml_parse_tag(lt_ext_module_data_t  *data,
-		       const gchar           *subtag,
-		       GError               **error)
+_lt_ext_ldml_u_parse_tag(lt_ext_module_data_t  *data,
+			 const gchar           *subtag,
+			 GError               **error)
 {
-	lt_ext_ldml_data_t *d = (lt_ext_ldml_data_t *)data;
+	lt_ext_ldml_u_data_t *d = (lt_ext_ldml_u_data_t *)data;
 	GError *err = NULL;
 	gboolean retval = TRUE;
 	gsize len = strlen(subtag);
@@ -337,7 +337,7 @@ _lt_ext_ldml_parse_tag(lt_ext_module_data_t  *data,
 					"Invalid syntax: expected to see a key, but `%s'", subtag);
 			    break;
 		    }
-		    _lt_ext_ldml_lookup_key(d, subtag, &err);
+		    _lt_ext_ldml_u_lookup_key(d, subtag, &err);
 		    d->tags = g_list_append(d->tags, g_string_new(subtag));
 		    break;
 	    case STATE_TYPE:
@@ -345,7 +345,7 @@ _lt_ext_ldml_parse_tag(lt_ext_module_data_t  *data,
 			    GList *l;
 			    GString *s;
 
-			    if (!_lt_ext_ldml_lookup_type(d, subtag, &err)) {
+			    if (!_lt_ext_ldml_u_lookup_type(d, subtag, &err)) {
 				    if (!err) {
 					    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 							"Unknown -u- extension type: %s", subtag);
@@ -387,14 +387,14 @@ _lt_ext_ldml_parse_tag(lt_ext_module_data_t  *data,
 }
 
 static gchar *
-_lt_ext_ldml_get_tag(lt_ext_module_data_t *data)
+_lt_ext_ldml_u_get_tag(lt_ext_module_data_t *data)
 {
-	lt_ext_ldml_data_t *d = (lt_ext_ldml_data_t *)data;
+	lt_ext_ldml_u_data_t *d = (lt_ext_ldml_u_data_t *)data;
 	GString *s = g_string_new(NULL);
 	GList *l;
 
 	if (d->attributes) {
-		d->attributes = g_list_sort(d->attributes, _lt_ext_ldml_sort_attributes);
+		d->attributes = g_list_sort(d->attributes, _lt_ext_ldml_u_sort_attributes);
 		for (l = d->attributes; l != NULL; l = g_list_next(l)) {
 			const gchar *a = l->data;
 
@@ -404,7 +404,7 @@ _lt_ext_ldml_get_tag(lt_ext_module_data_t *data)
 		}
 	}
 	if (d->tags) {
-		d->tags = g_list_sort(d->tags, _lt_ext_ldml_sort_tags);
+		d->tags = g_list_sort(d->tags, _lt_ext_ldml_u_sort_tags);
 		for (l = d->tags; l != NULL; l = g_list_next(l)) {
 			const GString *t = l->data;
 			gchar *ts = g_strdup(t->str);
@@ -423,18 +423,18 @@ _lt_ext_ldml_get_tag(lt_ext_module_data_t *data)
 }
 
 static gboolean
-_lt_ext_ldml_validate_tag(lt_ext_module_data_t *data)
+_lt_ext_ldml_u_validate_tag(lt_ext_module_data_t *data)
 {
 	return TRUE;
 }
 
 static const lt_ext_module_funcs_t __funcs = {
-	_lt_ext_ldml_get_singleton,
-	_lt_ext_ldml_create_data,
-	_lt_ext_ldml_precheck_tag,
-	_lt_ext_ldml_parse_tag,
-	_lt_ext_ldml_get_tag,
-	_lt_ext_ldml_validate_tag,
+	_lt_ext_ldml_u_get_singleton,
+	_lt_ext_ldml_u_create_data,
+	_lt_ext_ldml_u_precheck_tag,
+	_lt_ext_ldml_u_parse_tag,
+	_lt_ext_ldml_u_get_tag,
+	_lt_ext_ldml_u_validate_tag,
 };
 
 /*< public >*/
