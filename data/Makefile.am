@@ -47,7 +47,7 @@ stamp_files =		\
 #
 AM_V_DL = $(am__v_DL_$(V))
 am__v_DL_ = $(am__v_DL_$(AM_DEFAULT_VERBOSITY))
-am__v_DL_0 = @echo "  DL   " $@;
+am__v_DL_0 = @echo "  DL    " $@;
 
 ##
 # Local Rules
