@@ -44,19 +44,24 @@ stamp_files =		\
 	stamp-core-zip	\
 	stamp-ldml-xml	\
 	$(NULL)
+#
+AM_V_DL = $(am__v_DL_$(V))
+am__v_DL_ = $(am__v_DL_$(AM_DEFAULT_VERBOSITY))
+am__v_DL_0 = @echo "  DL   " $@;
 
 ##
 # Local Rules
 language-subtag-registry:
-	wget -O $@ http://www.iana.org/assignments/language-subtag-registry || \
+	$(AM_V_DL) wget -O $@ http://www.iana.org/assignments/language-subtag-registry || \
 	curl -o $@ http://www.iana.org/assignments/language-subtag-registry
 language-subtag-registry.xml: language-subtag-registry reg2xml Makefile
-	$(builddir)/reg2xml $(srcdir)/language-subtag-registry > $@
+	$(AM_V_GEN) $(builddir)/reg2xml $(srcdir)/language-subtag-registry > $@.tmp;	\
+	head -1 $@.tmp | grep -E '^<\?xml version'>/dev/null 2>&1 && mv $@.tmp $@ || (echo "E: $@ isn't an expected result"; rm $@.tmp)
 stamp-core-zip:
 	-rm core.zip
-	wget http://unicode.org/Public/cldr/latest/core.zip ||	\
+	$(AM_V_DL) wget http://unicode.org/Public/cldr/latest/core.zip ||	\
 	curl http://unicode.org/Public/cldr/latest/core.zip;	\
-	touch $@
+	[ -f core.zip ] && touch $@
 stamp-ldml-xml: stamp-core-zip Makefile.am
 	unzip -o core.zip $(bcp47_xml_files) $(supplemental_xml_files);	\
 	touch $@
