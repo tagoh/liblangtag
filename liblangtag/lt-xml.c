@@ -38,6 +38,7 @@ struct _lt_xml_t {
 	xmlDocPtr cldr_bcp47_currency;
 	xmlDocPtr cldr_bcp47_number;
 	xmlDocPtr cldr_bcp47_timezone;
+	xmlDocPtr cldr_bcp47_transform;
 	xmlDocPtr cldr_bcp47_variant;
 	xmlDocPtr cldr_supplemental_likelysubtags;
 };
@@ -257,6 +258,10 @@ lt_xml_new(void)
 					    &__xml->cldr_bcp47_timezone,
 					    &err))
 			goto bail;
+		if (!lt_xml_read_cldr_bcp47(__xml, "transform.xml",
+					    &__xml->cldr_bcp47_transform,
+					    &err))
+			goto bail;
 		if (!lt_xml_read_cldr_bcp47(__xml, "variant.xml",
 					    &__xml->cldr_bcp47_variant,
 					    &err))
@@ -319,6 +324,8 @@ lt_xml_get_cldr(lt_xml_t      *xml,
 		    return xml->cldr_bcp47_number;
 	    case LT_XML_CLDR_BCP47_TIMEZONE:
 		    return xml->cldr_bcp47_timezone;
+	    case LT_XML_CLDR_BCP47_TRANSFORM:
+		    return xml->cldr_bcp47_transform;
 	    case LT_XML_CLDR_BCP47_VARIANT:
 		    return xml->cldr_bcp47_variant;
 	    case LT_XML_CLDR_SUPPLEMENTAL_LIKELY_SUBTAGS:

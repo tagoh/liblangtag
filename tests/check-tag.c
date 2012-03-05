@@ -99,6 +99,17 @@ TDEF (lt_tag_parse) {
 	lt_tag_unref(t1);
 } TEND
 
+TDEF (lt_tag_parse_with_extra_token) {
+	lt_tag_t *t1;
+
+	t1 = lt_tag_new();
+	fail_unless(t1 != NULL, "OOM");
+	fail_unless(lt_tag_parse(t1, "ja", NULL), "should be valid entry");
+	fail_unless(lt_tag_parse_with_extra_token(t1, "jp", NULL), "should be valid entry");
+
+	lt_tag_unref(t1);
+} TEND
+
 TDEF (lt_tag_canonicalize) {
 	lt_tag_t *t1;
 	gchar *s;
@@ -239,6 +250,7 @@ tester_suite(void)
 	tcase_add_checked_fixture(tc, setup, teardown);
 
 	T (lt_tag_parse);
+	T (lt_tag_parse_with_extra_token);
 	T (lt_tag_canonicalize);
 	T (lt_tag_match);
 

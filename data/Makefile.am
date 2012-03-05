@@ -35,6 +35,7 @@ bcp47_xml_files =			\
 	common/bcp47/currency.xml	\
 	common/bcp47/number.xml		\
 	common/bcp47/timezone.xml	\
+	common/bcp47/transform.xml	\
 	common/bcp47/variant.xml	\
 	$(NULL)
 supplemental_xml_files =		\

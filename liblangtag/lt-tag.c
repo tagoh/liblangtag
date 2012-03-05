@@ -55,7 +55,8 @@ typedef struct _lt_tag_scanner_t {
 struct _lt_tag_t {
 	lt_mem_t            parent;
 	gint32              wildcard_map;
-	gchar              *tag_string;
+	lt_tag_state_t      state;
+	GString            *tag_string;
 	lt_lang_t          *language;
 	lt_extlang_t       *extlang;
 	lt_script_t        *script;
@@ -254,7 +255,6 @@ DEFUNC_TAG_SET (script, lt_script_unref)
 DEFUNC_TAG_SET (region, lt_region_unref)
 DEFUNC_TAG_SET (extension, lt_extension_unref)
 DEFUNC_TAG_SET (grandfathered, lt_grandfathered_unref)
-DEFUNC_TAG_SET (tag_string, g_free)
 
 G_INLINE_FUNC void
 lt_tag_set_variant(lt_tag_t *tag,
@@ -273,6 +273,24 @@ lt_tag_set_variant(lt_tag_t *tag,
 }
 
 #undef DEFUNC_TAG_SET
+
+G_INLINE_FUNC void
+lt_tag_add_tag_string(lt_tag_t    *tag,
+		      const gchar *s)
+{
+	if (!tag->tag_string) {
+		tag->tag_string = g_string_new(NULL);
+		lt_mem_add_ref(&tag->parent, tag->tag_string,
+			       (lt_destroy_func_t)lt_mem_gstring_free);
+	}
+	if (s) {
+		if (tag->tag_string->len > 0)
+			g_string_append_c(tag->tag_string, '-');
+		g_string_append(tag->tag_string, s);
+	} else {
+		g_warn_if_reached();
+	}
+}
 
 static void
 lt_tag_fill_wildcard(lt_tag_t       *tag,
@@ -330,46 +348,52 @@ lt_tag_fill_wildcard(lt_tag_t       *tag,
 	}
 }
 
+static void
+lt_tag_parser_init(lt_tag_t *tag)
+{
+	lt_tag_clear(tag);
+	tag->state = STATE_NONE;
+}
+
 static gboolean
-lt_tag_parse_prestate(lt_tag_t        *tag,
-		      const gchar     *token,
-		      gsize            length,
-		      lt_tag_state_t  *state,
-		      GError         **error)
+lt_tag_parse_prestate(lt_tag_t     *tag,
+		      const gchar  *token,
+		      gsize         length,
+		      GError      **error)
 {
 	gboolean retval = TRUE;
 
 	if (g_strcmp0(token, "-") == 0) {
-		switch (*state) {
+		switch (tag->state) {
 		    case STATE_PRE_EXTLANG:
-			    *state = STATE_EXTLANG;
+			    tag->state = STATE_EXTLANG;
 			    break;
 		    case STATE_PRE_SCRIPT:
-			    *state = STATE_SCRIPT;
+			    tag->state = STATE_SCRIPT;
 			    break;
 		    case STATE_PRE_REGION:
-			    *state = STATE_REGION;
+			    tag->state = STATE_REGION;
 			    break;
 		    case STATE_PRE_VARIANT:
-			    *state = STATE_VARIANT;
+			    tag->state = STATE_VARIANT;
 			    break;
 		    case STATE_PRE_EXTENSION:
-			    *state = STATE_EXTENSION;
+			    tag->state = STATE_EXTENSION;
 			    break;
 		    case STATE_IN_EXTENSION:
-			    *state = STATE_EXTENSIONTOKEN;
+			    tag->state = STATE_EXTENSIONTOKEN;
 			    break;
 		    case STATE_IN_EXTENSIONTOKEN:
-			    *state = STATE_EXTENSIONTOKEN2;
+			    tag->state = STATE_EXTENSIONTOKEN2;
 			    break;
 		    case STATE_PRE_PRIVATEUSE:
-			    *state = STATE_PRIVATEUSE;
+			    tag->state = STATE_PRIVATEUSE;
 			    break;
 		    case STATE_IN_PRIVATEUSE:
-			    *state = STATE_PRIVATEUSETOKEN;
+			    tag->state = STATE_PRIVATEUSETOKEN;
 			    break;
 		    case STATE_IN_PRIVATEUSETOKEN:
-			    *state = STATE_PRIVATEUSETOKEN2;
+			    tag->state = STATE_PRIVATEUSETOKEN2;
 			    break;
 		    default:
 			    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
@@ -386,21 +410,20 @@ lt_tag_parse_prestate(lt_tag_t        *tag,
 }
 
 static gboolean
-lt_tag_parse_state(lt_tag_t        *tag,
-		   const gchar     *token,
-		   gsize            length,
-		   lt_tag_state_t  *state,
-		   GError         **error)
+lt_tag_parse_state(lt_tag_t     *tag,
+		   const gchar  *token,
+		   gsize         length,
+		   GError      **error)
 {
 	gboolean retval = TRUE;
 	const gchar *p;
 
-	switch (*state) {
+	switch (tag->state) {
 	    case STATE_LANG:
 		    if (length == 1) {
 			    if (g_ascii_strcasecmp(token, "x") == 0) {
 				    g_string_append(tag->privateuse, token);
-				    *state = STATE_IN_PRIVATEUSE;
+				    tag->state = STATE_IN_PRIVATEUSE;
 				    break;
 			    } else {
 			      invalid_tag:
@@ -432,7 +455,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    }
 			    lt_mem_add_ref(&tag->parent, tag->language,
 					   (lt_destroy_func_t)lt_lang_unref);
-			    *state = STATE_PRE_EXTLANG;
+			    tag->state = STATE_PRE_EXTLANG;
 		    } else if (length == 4) {
 			    /* reserved for future use */
 			    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
@@ -468,7 +491,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 				    } else {
 					    lt_mem_add_ref(&tag->parent, tag->extlang,
 							   (lt_destroy_func_t)lt_extlang_unref);
-					    *state = STATE_PRE_SCRIPT;
+					    tag->state = STATE_PRE_SCRIPT;
 				    }
 				    break;
 			    }
@@ -483,7 +506,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    lt_tag_set_script(tag, lt_script_db_lookup(scriptdb, token));
 			    lt_script_db_unref(scriptdb);
 			    if (tag->script) {
-				    *state = STATE_PRE_REGION;
+				    tag->state = STATE_PRE_REGION;
 				    break;
 			    }
 			    /* try to check something else */
@@ -501,7 +524,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 			    lt_tag_set_region(tag, lt_region_db_lookup(regiondb, token));
 			    lt_region_db_unref(regiondb);
 			    if (tag->region) {
-				    *state = STATE_PRE_VARIANT;
+				    tag->state = STATE_PRE_VARIANT;
 				    break;
 			    }
 			    /* try to check something else */
@@ -526,7 +549,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 					    /* ignore it and fallback to the original tag string */
 					    g_error_free(*error);
 					    *error = NULL;
-					    langtag = g_strdup(tag->tag_string);
+					    langtag = g_strdup(tag->tag_string->str);
 				    }
 				    for (l = prefixes; l != NULL; l = g_list_next(l)) {
 					    const gchar *s = l->data;
@@ -571,7 +594,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 						    }
 					    }
 					    /* multiple variants are allowed. */
-					    *state = STATE_PRE_VARIANT;
+					    tag->state = STATE_PRE_VARIANT;
 				    }
 				    g_free(langtag);
 				    g_string_free(str_prefixes, TRUE);
@@ -597,7 +620,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 				    if (lt_extension_add_singleton(tag->extension,
 								    token[0],
 								    tag, error)) {
-					    *state = STATE_IN_EXTENSION;
+					    tag->state = STATE_IN_EXTENSION;
 				    }
 			    }
 			    break;
@@ -607,7 +630,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 	    case STATE_PRIVATEUSE:
 		    if (length == 1 && (token[0] == 'x' || token[0] == 'X')) {
 			    g_string_append(tag->privateuse, token);
-			    *state = STATE_IN_PRIVATEUSE;
+			    tag->state = STATE_IN_PRIVATEUSE;
 		    } else {
 			    /* No state to try */
 			    retval = FALSE;
@@ -618,9 +641,9 @@ lt_tag_parse_state(lt_tag_t        *tag,
 		    if (length >= 2 && length <= 8) {
 			    if (lt_extension_add_tag(tag->extension,
 						      token, error))
-				    *state = STATE_IN_EXTENSIONTOKEN;
+				    tag->state = STATE_IN_EXTENSIONTOKEN;
 		    } else {
-			    if (*state == STATE_EXTENSIONTOKEN2 &&
+			    if (tag->state == STATE_EXTENSIONTOKEN2 &&
 				lt_extension_validate_state(tag->extension)) {
 				    /* No need to destroy the previous tokens.
 				     * fallback to check the extension again.
@@ -636,7 +659,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 	    case STATE_PRIVATEUSETOKEN2:
 		    if (length <= 8) {
 			    g_string_append_printf(tag->privateuse, "-%s", token);
-			    *state = STATE_IN_PRIVATEUSETOKEN;
+			    tag->state = STATE_IN_PRIVATEUSETOKEN;
 		    } else {
 			    /* 'x'/'X' is reserved singleton for the private use subtag.
 			     * so nothing to fallback to anything else.
@@ -649,7 +672,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 	    default:
 		    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 				"Unable to parse tag: %s, token = '%s' state = %d",
-				tag->tag_string, token, *state);
+				tag->tag_string->str, token, tag->state);
 		    break;
 	}
 	if (*error)
@@ -659,11 +682,10 @@ lt_tag_parse_state(lt_tag_t        *tag,
 }
 
 static gboolean
-_lt_tag_parse(lt_tag_t        *tag,
-	      const gchar     *langtag,
-	      gboolean         allow_wildcard,
-	      lt_tag_state_t  *state,
-	      GError         **error)
+_lt_tag_parse(lt_tag_t     *tag,
+	      const gchar  *langtag,
+	      gboolean      allow_wildcard,
+	      GError      **error)
 {
 	lt_tag_scanner_t *scanner = NULL;
 	lt_grandfathered_db_t *grandfathereddb;
@@ -677,18 +699,26 @@ _lt_tag_parse(lt_tag_t        *tag,
 	g_return_val_if_fail (tag != NULL, FALSE);
 	g_return_val_if_fail (langtag != NULL, FALSE);
 
-	lt_tag_clear(tag);
-
-	grandfathereddb = lt_db_get_grandfathered();
-	lt_tag_set_grandfathered(tag, lt_grandfathered_db_lookup(grandfathereddb, langtag));
-	lt_grandfathered_db_unref(grandfathereddb);
-	if (tag->grandfathered) {
-		/* no need to lookup anymore. */
-		goto bail;
+	if (tag->state == STATE_NONE) {
+		grandfathereddb = lt_db_get_grandfathered();
+		lt_tag_set_grandfathered(tag, lt_grandfathered_db_lookup(grandfathereddb, langtag));
+		lt_grandfathered_db_unref(grandfathereddb);
+		if (tag->grandfathered) {
+			/* no need to lookup anymore. */
+			goto bail;
+		}
+		tag->state = STATE_LANG;
+	} else {
+		if (tag->state == STATE_PRE_EXTLANG ||
+		    tag->state == STATE_PRE_SCRIPT ||
+		    tag->state == STATE_PRE_REGION ||
+		    tag->state == STATE_PRE_VARIANT ||
+		    tag->state == STATE_PRE_EXTENSION ||
+		    tag->state == STATE_PRE_PRIVATEUSE)
+			tag->state++;
 	}
 
 	scanner = lt_tag_scanner_new(langtag);
-	*state = STATE_LANG;
 	while (!lt_tag_scanner_is_eof(scanner)) {
 		if (token) {
 			g_free(token);
@@ -707,20 +737,20 @@ _lt_tag_parse(lt_tag_t        *tag,
 				    "No valid tokens found");
 			break;
 		}
-		if (!lt_tag_parse_prestate(tag, token, len, state, &err)) {
+		if (!lt_tag_parse_prestate(tag, token, len, &err)) {
 			if (err)
 				break;
 			if (allow_wildcard && g_strcmp0(token, "*") == 0) {
-				wildcard = *state;
-				if (*state == STATE_LANG)
-					*state += 1;
+				wildcard = tag->state;
+				if (tag->state == STATE_LANG)
+					tag->state += 1;
 				else
-					*state -= 1;
+					tag->state -= 1;
 			} else {
-				if (!lt_tag_parse_state(tag, token, len, state, &err))
+				if (!lt_tag_parse_state(tag, token, len, &err))
 					break;
 				if (wildcard != STATE_NONE) {
-					lt_tag_fill_wildcard(tag, wildcard, *state - 1);
+					lt_tag_fill_wildcard(tag, wildcard, tag->state - 1);
 					wildcard = STATE_NONE;
 				}
 			}
@@ -730,21 +760,21 @@ _lt_tag_parse(lt_tag_t        *tag,
 		lt_tag_fill_wildcard(tag, wildcard, STATE_END);
 	}
 	if (!err &&
-	    *state != STATE_PRE_EXTLANG &&
-	    *state != STATE_PRE_SCRIPT &&
-	    *state != STATE_PRE_REGION &&
-	    *state != STATE_PRE_VARIANT &&
-	    *state != STATE_PRE_EXTENSION &&
-	    *state != STATE_PRE_PRIVATEUSE &&
-	    *state != STATE_IN_EXTENSIONTOKEN &&
-	    *state != STATE_IN_PRIVATEUSETOKEN &&
-	    *state != STATE_NONE) {
+	    tag->state != STATE_PRE_EXTLANG &&
+	    tag->state != STATE_PRE_SCRIPT &&
+	    tag->state != STATE_PRE_REGION &&
+	    tag->state != STATE_PRE_VARIANT &&
+	    tag->state != STATE_PRE_EXTENSION &&
+	    tag->state != STATE_PRE_PRIVATEUSE &&
+	    tag->state != STATE_IN_EXTENSIONTOKEN &&
+	    tag->state != STATE_IN_PRIVATEUSETOKEN &&
+	    tag->state != STATE_NONE) {
 		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 			    "Invalid tag: %s, last token = '%s', state = %d, parsed count = %d",
-			    langtag, token, *state, count);
+			    langtag, token, tag->state, count);
 	}
   bail:
-	lt_tag_set_tag_string(tag, g_strdup(langtag));
+	lt_tag_add_tag_string(tag, langtag);
 	lt_tag_scanner_unref(scanner);
 	if (err) {
 		if (error)
@@ -877,8 +907,10 @@ lt_tag_parse_wildcard(lt_tag_t     *tag,
 		      GError      **error)
 {
 	GError *err = NULL;
-	lt_tag_state_t retval = STATE_NONE;
-	gboolean ret = _lt_tag_parse(tag, tag_string, TRUE, &retval, &err);
+	gboolean ret;
+
+	lt_tag_parser_init(tag);
+	ret = _lt_tag_parse(tag, tag_string, TRUE, &err);
 
 	if (!ret && !err) {
 		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
@@ -892,7 +924,7 @@ lt_tag_parse_wildcard(lt_tag_t     *tag,
 		g_error_free(err);
 	}
 
-	return retval;
+	return tag->state;
 }
 
 /*< public >*/
@@ -909,6 +941,7 @@ lt_tag_new(void)
 	lt_tag_t *retval = lt_mem_alloc_object(sizeof (lt_tag_t));
 
 	if (retval) {
+		retval->state = STATE_NONE;
 		retval->privateuse = g_string_new(NULL);
 		lt_mem_add_ref(&retval->parent, retval->privateuse,
 			       (lt_destroy_func_t)lt_mem_gstring_free);
@@ -986,9 +1019,31 @@ lt_tag_parse(lt_tag_t     *tag,
 	     const gchar  *tag_string,
 	     GError      **error)
 {
-	lt_tag_state_t state = STATE_NONE;
+	lt_tag_parser_init(tag);
 
-	return _lt_tag_parse(tag, tag_string, FALSE, &state, error);
+	return _lt_tag_parse(tag, tag_string, FALSE, error);
+}
+
+/**
+ * lt_tag_parse_with_extra_token:
+ * @tag: a #lt_tag_t.
+ * @tag_string: a language tag to be parsed much more.
+ * @error: (allow-none): a #GError or %NULL.
+ *
+ * Continue to parse a language tag with @tag_string. please use lt_tag_parse()
+ * at first.
+ *
+ * Returns: %TRUE if it's successfully completed, otherwise %FALSE.
+ */
+gboolean
+lt_tag_parse_with_extra_token(lt_tag_t     *tag,
+			      const gchar  *tag_string,
+			      GError      **error)
+{
+	g_return_val_if_fail (tag != NULL, FALSE);
+	g_return_val_if_fail (tag->state != STATE_NONE, FALSE);
+
+	return _lt_tag_parse(tag, tag_string, FALSE, error);
 }
 
 /**
@@ -1009,6 +1064,7 @@ lt_tag_copy(const lt_tag_t *tag)
 
 	retval = lt_tag_new();
 	retval->wildcard_map = tag->wildcard_map;
+	retval->state = tag->state;
 	if (tag->language) {
 		lt_tag_set_language(retval, lt_lang_ref(tag->language));
 	}
@@ -1148,44 +1204,37 @@ lt_tag_truncate(lt_tag_t  *tag,
 const gchar *
 lt_tag_get_string(lt_tag_t *tag)
 {
-	GString *string;
 	GList *l;
 
 	if (tag->tag_string)
-		return tag->tag_string;
+		return tag->tag_string->str;
 
-	string = g_string_new(NULL);
 	if (tag->grandfathered)
-		g_string_append(string, lt_grandfathered_get_tag(tag->grandfathered));
+		lt_tag_add_tag_string(tag, lt_grandfathered_get_tag(tag->grandfathered));
 	else if (tag->language) {
-		g_string_append(string, lt_lang_get_tag(tag->language));
+		lt_tag_add_tag_string(tag, lt_lang_get_tag(tag->language));
 		if (tag->extlang)
-			g_string_append_printf(string, "-%s",
-					       lt_extlang_get_tag(tag->extlang));
+			lt_tag_add_tag_string(tag, lt_extlang_get_tag(tag->extlang));
 		if (tag->script)
-			g_string_append_printf(string, "-%s",
-					       lt_script_get_tag(tag->script));
+			lt_tag_add_tag_string(tag, lt_script_get_tag(tag->script));
 		if (tag->region)
-			g_string_append_printf(string, "-%s",
-					       lt_region_get_tag(tag->region));
+			lt_tag_add_tag_string(tag, lt_region_get_tag(tag->region));
 		l = tag->variants;
 		while (l != NULL) {
-			g_string_append_printf(string, "-%s",
-					       lt_variant_get_tag(l->data));
+			lt_tag_add_tag_string(tag, lt_variant_get_tag(l->data));
 			l = g_list_next(l);
 		}
 		if (tag->extension)
-			g_string_append_printf(string, "-%s",
-					       lt_extension_get_tag(tag->extension));
+			lt_tag_add_tag_string(tag, lt_extension_get_tag(tag->extension));
 		if (tag->privateuse && tag->privateuse->len > 0)
-			g_string_append_printf(string, "-%s", tag->privateuse->str);
+			lt_tag_add_tag_string(tag, tag->privateuse->str);
 	} else if (tag->privateuse && tag->privateuse->len > 0) {
-		g_string_append(string, tag->privateuse->str);
+		lt_tag_add_tag_string(tag, tag->privateuse->str);
+	} else {
+		return NULL;
 	}
 
-	lt_tag_set_tag_string(tag, g_string_free(string, FALSE));
-
-	return tag->tag_string;
+	return tag->tag_string->str;
 }
 
 /**
@@ -1222,7 +1271,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 	while (1) {
 		const gchar *tag_string = lt_tag_get_string(ctag);
 
-		if (tag_string[0] == 0)
+		if (tag_string == NULL || tag_string[0] == 0)
 			break;
 		if (r)
 			lt_redundant_unref(r);
@@ -1723,6 +1772,7 @@ lt_tag_lookup(const lt_tag_t  *tag,
 /**
  * lt_tag_transform:
  * @tag: a #lt_tag_t.
+ * @error: (allow-none): a #GError or %NULL.
  *
  * Transform @tag according to the likelySubtags database provided by CLDR.
  *
