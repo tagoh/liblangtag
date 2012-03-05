@@ -28,6 +28,14 @@
 
 /*< private >*/
 
+/*< protected >*/
+void
+lt_mem_gstring_free(GString *string)
+{
+	if (string)
+		g_string_free(string, TRUE);
+}
+
 /*< public >*/
 gpointer
 lt_mem_alloc_object(gsize size)
