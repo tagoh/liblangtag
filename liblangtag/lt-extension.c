@@ -46,11 +46,6 @@ struct _lt_extension_t {
 };
 
 /*< private >*/
-static void
-_lt_extension_gstring_free(GString *string)
-{
-	g_string_free(string, TRUE);
-}
 
 /*< protected >*/
 lt_extension_t *
@@ -61,7 +56,7 @@ lt_extension_create(void)
 	if (retval) {
 		retval->cached_tag = g_string_new(NULL);
 		lt_mem_add_ref(&retval->parent, retval->cached_tag,
-			       (lt_destroy_func_t)_lt_extension_gstring_free);
+			       (lt_destroy_func_t)lt_mem_gstring_free);
 	}
 
 	return retval;

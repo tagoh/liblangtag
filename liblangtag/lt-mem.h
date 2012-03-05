@@ -52,6 +52,9 @@ void     lt_mem_add_weak_pointer   (lt_mem_t          *object,
 void     lt_mem_remove_weak_pointer(lt_mem_t          *object,
                                     gpointer          *p);
 
+/* utility functions */
+void lt_mem_gstring_free(GString *string);
+
 G_END_DECLS
 
 #endif /* __LT_MEM_H__ */

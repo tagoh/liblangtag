@@ -67,12 +67,6 @@ struct _lt_tag_t {
 };
 
 /*< private >*/
-static void
-_lt_tag_gstring_free(GString *string)
-{
-	g_string_free(string, TRUE);
-}
-
 static gboolean
 _lt_tag_gstring_compare(const GString *v1,
 			const GString *v2)
@@ -917,7 +911,7 @@ lt_tag_new(void)
 	if (retval) {
 		retval->privateuse = g_string_new(NULL);
 		lt_mem_add_ref(&retval->parent, retval->privateuse,
-			       (lt_destroy_func_t)_lt_tag_gstring_free);
+			       (lt_destroy_func_t)lt_mem_gstring_free);
 	}
 
 	return retval;
