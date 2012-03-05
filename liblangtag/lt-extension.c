@@ -196,6 +196,8 @@ lt_extension_cancel_tag(lt_extension_t *extension)
 				if (ll->prev)
 					ll->prev->next = NULL;
 				ll->prev = NULL;
+				if (ll == l)
+					l = NULL;
 				g_list_free(ll);
 				break;
 			}
@@ -204,7 +206,8 @@ lt_extension_cancel_tag(lt_extension_t *extension)
 			else
 				g_string_append(extension->cached_tag, ll->data);
 		}
-		g_list_free(l);
+		if (l)
+			g_list_free(l);
 		g_strfreev(tags);
 	}
 }
