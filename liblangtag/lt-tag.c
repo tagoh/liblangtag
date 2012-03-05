@@ -543,7 +543,7 @@ lt_tag_parse_state(lt_tag_t        *tag,
 				    if (prefixes && !matched) {
 					    g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
 							"variant '%s' is supposed to be used with %s, but %s",
-							token, str_prefixes->str, tag->tag_string);
+							token, str_prefixes->str, langtag);
 					    lt_variant_unref(variant);
 				    } else {
 					    if (!tag->variants) {
