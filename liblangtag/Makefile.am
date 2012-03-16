@@ -5,6 +5,8 @@ SUBDIRS =
 INCLUDES =							\
 	-I$(top_srcdir)/liblangtag/				\
 	-I$(top_srcdir)						\
+	-I$(top_builddir)/liblangtag/				\
+	-I$(top_builddir)					\
 	-D__LANGTAG_COMPILATION					\
 	-DBUILDDIR="\"$(abs_top_builddir)\""			\
 	-DSRCDIR="\"$(abs_top_srcdir)\""			\
@@ -21,6 +23,7 @@ LIBS =						\
 	$(LIBXML2_LIBS)				\
 	$(NULL)
 EXTRA_DIST =					\
+	buildaliastbl.sh			\
 	$(NULL)
 MAINTAINERCLEANFILES =				\
 	$(liblangtag_built_public_headers)	\
@@ -32,7 +35,7 @@ CLEANFILES =					\
 	xgen-h					\
 	xgen-c					\
 	$(NULL)
-BUILT_FILES =					\
+BUILT_SOURCES =					\
 	$(liblangtag_built_public_headers)	\
 	$(liblangtag_built_private_headers)	\
 	$(liblangtag_built_sources)		\
@@ -80,6 +83,7 @@ liblangtag_private_headers =			\
 liblangtag_built_public_headers =		\
 	$(NULL)
 liblangtag_built_private_headers =		\
+	lt-localealias.h			\
 	$(NULL)
 #
 liblangtag_built_sources =			\
@@ -120,7 +124,12 @@ stamp_files =					\
 
 ##
 # Local Rules
-
+lt-localealias.h: @BUILD_LOCALEALIAS@ Makefile
+	$(AM_V_GEN) $(srcdir)/buildaliastbl.sh @LOCALE_ALIAS@ > $@
+	@if [ ! -f $(builddir)/$@ ]; then			\
+		echo "Failed to generate $@.";			\
+		exit 1;						\
+	fi
 
 ##
 # Target platform

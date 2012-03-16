@@ -31,6 +31,7 @@
 #include "lt-error.h"
 #include "lt-ext-module-private.h"
 #include "lt-extension-private.h"
+#include "lt-localealias.h"
 #include "lt-mem.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
@@ -290,6 +291,21 @@ lt_tag_add_tag_string(lt_tag_t    *tag,
 	} else {
 		g_warn_if_reached();
 	}
+}
+
+static const gchar *
+lt_tag_get_locale_from_locale_alias(const gchar *alias)
+{
+	gint i;
+
+	g_return_val_if_fail (alias != NULL, NULL);
+
+	for (i = 0; __lt_localealias_tables[i].alias != NULL; i++) {
+		if (g_ascii_strcasecmp(alias, __lt_localealias_tables[i].alias) == 0)
+			return __lt_localealias_tables[i].locale;
+	}
+
+	return NULL;
 }
 
 static void
@@ -900,6 +916,90 @@ _lt_tag_replace(lt_tag_t       *tag,
 	}
 }
 
+static lt_tag_t *
+_lt_tag_convert_from_locale_string(const gchar  *locale,
+				   GError      **error)
+{
+	gchar *s, *territory, *codeset, *modifier;
+	lt_tag_t *tag;
+	GError *err = NULL;
+
+	s = g_strdup(locale);
+	tag = lt_tag_new();
+	g_print("%s\n", s);
+	if (!s || s[0] == 0 ||
+	    g_strcmp0(s, "C") == 0 ||
+	    g_strcmp0(s, "POSIX") == 0) {
+		if (!lt_tag_parse(tag, "en-US-u-va-posix", &err))
+			goto bail;
+	} else {
+		GString *tag_string;
+
+		modifier = strchr(s, '@');
+		if (modifier) {
+			*modifier = 0;
+			modifier++;
+		}
+		codeset = strchr(s, '.');
+		if (codeset) {
+			*codeset = 0;
+			codeset++;
+		}
+		territory = strchr(s, '_');
+		if (territory) {
+			*territory = 0;
+			territory++;
+		}
+		if (codeset &&
+		    (g_ascii_strcasecmp(codeset, "utf-8") == 0 ||
+		     g_ascii_strcasecmp(codeset, "utf8") == 0)) {
+			codeset = NULL;
+		}
+		/* check if the language is a locale alias */
+		if (strlen(s) > 3 &&
+		    !territory &&
+		    !codeset &&
+		    !modifier) {
+			const gchar *loc = lt_tag_get_locale_from_locale_alias(s);
+			lt_tag_t *t;
+
+			if (loc && (t = _lt_tag_convert_from_locale_string(loc, &err)) != NULL) {
+				lt_tag_unref(tag);
+				tag = t;
+				goto bail;
+			}
+		}
+		tag_string = g_string_new(NULL);
+		g_string_append_printf(tag_string, "%s-%s", s, territory);
+		if (codeset || modifier)
+			g_string_append(tag_string, "-x");
+		if (codeset)
+			g_string_append_printf(tag_string, "-codeset-%s", codeset);
+		if (modifier)
+			g_string_append_printf(tag_string, "-modifier-%s", modifier);
+		if (!lt_tag_parse(tag, tag_string->str, &err)) {
+			g_string_free(tag_string, TRUE);
+			goto bail;
+		}
+		g_string_free(tag_string, TRUE);
+	}
+
+  bail:
+	g_free(s);
+
+	if (err) {
+		if (error)
+			*error = g_error_copy(err);
+		else
+			g_warning(err->message);
+		g_error_free(err);
+		lt_tag_unref(tag);
+		tag = NULL;
+	}
+
+	return tag;
+}
+
 /*< protected >*/
 lt_tag_state_t
 lt_tag_parse_wildcard(lt_tag_t     *tag,
@@ -1411,69 +1511,11 @@ lt_tag_t *
 lt_tag_convert_from_locale(GError **error)
 {
 	const gchar *locale;
-	gchar *s, *territory, *codeset, *modifier, *p;
-	lt_tag_t *tag;
-	GError *err = NULL;
 
 	locale = setlocale(LC_CTYPE, NULL);
 	if (!locale)
 		locale = setlocale(LC_ALL, NULL);
-	s = g_strdup(locale);
-	codeset = g_strdup(nl_langinfo(CODESET));
-	tag = lt_tag_new();
-	if (!s || s[0] == 0 ||
-	    g_strcmp0(s, "C") == 0) {
-		if (!lt_tag_parse(tag, "und", &err))
-			goto bail;
-	} else {
-		GString *tag_string = g_string_new(NULL);
-
-		modifier = strchr(s, '@');
-		if (modifier) {
-			*modifier = 0;
-			modifier++;
-		}
-		p = strchr(s, '.');
-		if (p)
-			*p = 0;
-		territory = strchr(s, '_');
-		if (territory) {
-			*territory = 0;
-			territory++;
-		}
-		if (codeset && g_ascii_strcasecmp(codeset, "utf-8") == 0) {
-			g_free(codeset);
-			codeset = NULL;
-		}
-		g_string_append_printf(tag_string, "%s-%s", s, territory);
-		if (codeset || modifier)
-			g_string_append(tag_string, "-x");
-		if (codeset)
-			g_string_append_printf(tag_string, "-codeset-%s", codeset);
-		if (modifier)
-			g_string_append_printf(tag_string, "-modifier-%s", modifier);
-		if (!lt_tag_parse(tag, tag_string->str, &err)) {
-			g_string_free(tag_string, TRUE);
-			goto bail;
-		}
-		g_string_free(tag_string, TRUE);
-	}
-
-  bail:
-	g_free(codeset);
-	g_free(s);
-
-	if (err) {
-		if (error)
-			*error = g_error_copy(err);
-		else
-			g_warning(err->message);
-		g_error_free(err);
-		lt_tag_unref(tag);
-		tag = NULL;
-	}
-
-	return tag;
+	return _lt_tag_convert_from_locale_string(locale, error);
 }
 
 /**

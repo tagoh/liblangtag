@@ -114,6 +114,39 @@ GTK_DOC_CHECK(1.0)
 dnl ======================================================================
 dnl options
 dnl ======================================================================
+AC_ARG_WITH(locale-alias,
+	AC_HELP_STRING([--with-locale-alias], [set the path to licale.alias])
+	,,
+	with_locale_alias="${localedir}/locale.alias")
+AC_ARG_ENABLE(rebuild-locale-alias,
+	AC_HELP_STRING([--disable-rebuild-locale-alias],
+		[disable rebuilding the locale.alias mapping table])
+	,,
+	enable_rebuild_locale_alias=yes)
+
+dnl ======================================================================
+dnl options - locale-alias
+dnl ======================================================================
+AC_MSG_CHECKING(existence of locale.alias)
+if test "x$with_locale_alias" = xno; then
+	with_locale_alias="${localedir}/locale.alias"
+fi
+if [[ -f $with_locale_alias ]]; then
+	AC_MSG_RESULT($with_locale_alias)
+	LOCALE_ALIAS=$with_locale_alias
+	AC_SUBST(LOCALE_ALIAS)
+else
+	AC_MSG_RESULT([Using the prebuilt table])
+fi
+
+dnl ======================================================================
+dnl options - rebuild-locale-alias
+dnl ======================================================================
+BUILD_LOCALEALIAS=\#
+if test "x$enable_rebuild_locale_alias" = "xyes"; then
+	BUILD_LOCALEALIAS=
+fi
+AC_SUBST(BUILD_LOCALEALIAS)
 
 dnl ======================================================================
 dnl output
