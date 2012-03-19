@@ -916,6 +916,223 @@ _lt_tag_replace(lt_tag_t       *tag,
 	}
 }
 
+/* borrowed the modifier related code from localehelper:
+ * http://people.redhat.com/caolanm/BCP47/localehelper-1.0.0.tar.gz
+ */
+/*
+ * glibc typically uses these modifiers to indicate particular
+ * scripts that the language is written in
+ * See ISO-15924 http://unicode.org/iso15924/iso15924-codes.html
+ */
+static gboolean
+_lt_tag_convert_script_from_locale_modifier(const gchar  *modifier,
+					    const gchar **ret)
+{
+	/* XXX: think about how to get rid of the hardcoded mapping table */
+	static const gchar * const maps[][2] = {
+		{ "Arabic", "Arab" },
+		{ "Imperial_Aramaic", "Armi" },
+		{ "Armenian", "Armn" },
+		{ "Avestan", "Avst" },
+		{ "Balinese", "Bali" },
+		{ "Bamum", "Bamu" },
+		{ "Bengali", "Beng" },
+		{ "Bopomofo", "Bopo" },
+		{ "Braille", "Brai" },
+		{ "Buginese", "Bugi" },
+		{ "Buhid", "Buhd" },
+		{ "Canadian_Aboriginal", "Cans" },
+		{ "Carian", "Cari" },
+		{ "Cham", "Cham" },
+		{ "Cherokee", "Cher" },
+		{ "Coptic", "Copt" },
+		{ "Cypriot", "Cprt" },
+		{ "Cyrillic", "Cyrl" },
+		{ "Devanagari", "Deva" },
+		{ "Deseret", "Dsrt" },
+		{ "Egyptian_Hierogyphs", "Egyp" },
+		{ "Ethiopic", "Ethi" },
+		{ "Georgian", "Geor" },
+		{ "Glagolitic", "Glag" },
+		{ "Gothic", "Goth" },
+		{ "Greek", "Grek" },
+		{ "Gujarati", "Gujr" },
+		{ "Gurmukhi", "Guru" },
+		{ "Hangul", "Hang" },
+		{ "Han", "Hani" },
+		{ "Hanunoo", "Hano" },
+		{ "Hebrew", "Hebr" },
+		{ "Hiragana", "Hira" },
+		{ "Katakana_Or_Hiragana", "Hrkt" },
+		{ "Old_Italic", "Ital" },
+		{ "Javanese", "Java" },
+		{ "Kayah_Li", "Kali" },
+		{ "Katakana", "Kana" },
+		{ "Kharoshthi", "Khar" },
+		{ "Khmer", "Khmr" },
+		{ "Kannada", "Knda" },
+		{ "Kaithi", "Kthi" },
+		{ "Tai_Tham", "Lana" },
+		{ "Lao", "Laoo" },
+		{ "Latin", "Latn" },
+		{ "Lepcha", "Lepc" },
+		{ "Limbu", "Limb" },
+		{ "Linear_B", "Linb" },
+		{ "Lisu", "Lisu" },
+		{ "Lycian", "Lyci" },
+		{ "Lydian", "Lydi" },
+		{ "Malayalam", "Mlym" },
+		{ "Mongolian", "Mong" },
+		{ "Meetei_Mayek", "Mtei" },
+		{ "Myanmar", "Mymr" },
+		{ "Nko", "Nkoo" },
+		{ "Ogham", "Ogam" },
+		{ "Ol_Chiki", "Olck" },
+		{ "Old_Turkic", "Orkh" },
+		{ "Oriya", "Orya" },
+		{ "Osmanya", "Osma" },
+		{ "Phags_Pa", "Phag" },
+		{ "Inscriptional_Pahlavi", "Phli" },
+		{ "Phoenician", "Phnx" },
+		{ "Inscriptional_Parthian", "Prti" },
+		{ "Rejang", "Rjng" },
+		{ "Runic", "Runr" },
+		{ "Samaritan", "Samr" },
+		{ "Old_South_Arabian", "Sarb" },
+		{ "Saurashtra", "Saur" },
+		{ "Shavian", "Shaw" },
+		{ "Sinhala", "Sinh" },
+		{ "Sundanese", "Sund" },
+		{ "Syloti_Nagri", "Sylo" },
+		{ "Syriac", "Syrc" },
+		{ "Tagbanwa", "Tagb" },
+		{ "Tai_Le", "Tale" },
+		{ "New_Tai_Lue", "Talu" },
+		{ "Tamil", "Taml" },
+		{ "Tai_Viet", "Tavt" },
+		{ "Telugu", "Telu" },
+		{ "Tifinagh", "Tfng" },
+		{ "Tagalog", "Tglg" },
+		{ "Thaana", "Thaa" },
+		{ "Thai", "Thai" },
+		{ "Tibetan", "Tibt" },
+		{ "Ugaritic", "Ugar" },
+		{ "Vai", "Vaii" },
+		{ "Old_Persian", "Xpeo" },
+		{ "Cuneiform", "Xsux" },
+		{ "Yi", "Yiii" },
+		{ "Inherited", "Zinh" },
+		{ "Common", "Zyyy" },
+		{ "Unknown", "Zzzz" },
+	};
+	gsize i;
+
+	if (modifier) {
+		/*
+		 * Special case this one. The script is definitely Latin
+		 * and not Cyrillic. But lets bubble the transliteration scheme
+		 * through another layer with return 0
+		 */
+		if (g_ascii_strcasecmp(modifier, "iqtelif") == 0) {
+			_lt_tag_convert_script_from_locale_modifier("Latin", ret);
+			return FALSE;
+		}
+		for (i = 0; i < sizeof (maps) / sizeof (gchar *[2]); i++) {
+			if (g_ascii_strcasecmp(modifier, maps[i][0]) == 0) {
+				*ret = maps[i][1];
+				return TRUE;
+			}
+		}
+	}
+
+	return FALSE;
+}
+
+/*
+ * Occasionally (ca_ES@valencia) some modifiers indicate a language variant
+ * See http://www.iana.org/assignments/language-subtag-registry
+ * for IANA language subtag assignments output codes
+ */
+static gboolean
+_lt_tag_convert_variant_from_locale_modifier(const gchar  *modifier,
+					     const gchar **ret)
+{
+	/* XXx: think about how to get rid of the hardcoded mapping table */
+	static const gchar * const maps[][2] = {
+            { "valencia", "valencia" }
+	};
+	gsize i;
+
+	if (modifier) {
+		for (i = 0; i < sizeof (maps) / sizeof (gchar *[2]); i++) {
+			if (g_ascii_strcasecmp(modifier, maps[i][0]) == 0) {
+				*ret = maps[i][1];
+				return TRUE;
+			}
+		}
+	}
+
+	return FALSE;
+}
+
+static const gchar * const
+_lt_tag_convert_privaseuse_from_locale_modifier(const gchar *modifier)
+{
+	/* XXX: think about how to get rid of the hardcoded mapping table */
+	static const gchar * const maps[][2] = {
+		/*
+		 * Old mechanism to denote that the euro currency is in use, 
+		 * ignore it.
+		 */
+		{ "euro", NULL },
+		/*
+		 * http://www.mail-archive.com/cygwin@cygwin.com/msg97848.html
+		 * 
+		 * A modifier that indicates what width to assign to an
+		 * ambiguous width char, ignore it.
+		 *
+		 * http://unicode.org/reports/tr11/
+		 */
+		{ "cjknarrow", NULL },
+		/*
+		 * http://www.geez.org/Collation/
+		 * 
+		 * Abegede Collation for Ge'ez (as opposed to Halehame, I believe)
+		 *
+		 * http://www.iana.org/assignments/language-subtag-registry has
+		 * nothing to describe it, so using a private code
+		 *
+		 * http://tools.ietf.org/html/draft-davis-u-langtag-ext-01
+		 * http://www.unicode.org/reports/tr35/ maybe u-co-something some day
+		 */
+		{ "abegede", "abegede" },
+		/*
+		 * http://www.alvestrand.no/pipermail/ietf-languages/2006-September/005017.html
+		 * 
+		 * "iqtelif" Latin orthography
+		 *
+		 * Bit of a mess really. Unsure if tt-Latn is sufficient, i.e. if this is
+		 * the default latin orghography in practice but a private code
+		 * doesn't hurt I guess
+		 */
+		{ "iqtelif", "iqtel" }
+	};
+	gsize i;
+
+	if (modifier) {
+		for (i = 0; i < sizeof (maps) / sizeof (gchar *[2]); i++) {
+			if (g_ascii_strcasecmp(modifier, maps[i][0]) == 0)
+				return maps[i][1];
+		}
+
+		g_warning("Unknown modifiers: %s", modifier);
+
+		return modifier;
+	}
+
+	return NULL;
+}
+
 static lt_tag_t *
 _lt_tag_convert_from_locale_string(const gchar  *locale,
 				   GError      **error)
@@ -934,6 +1151,7 @@ _lt_tag_convert_from_locale_string(const gchar  *locale,
 			goto bail;
 	} else {
 		GString *tag_string;
+		const gchar *script = NULL, *variant = NULL, *privateuse = NULL;
 
 		modifier = strchr(s, '@');
 		if (modifier) {
@@ -969,14 +1187,24 @@ _lt_tag_convert_from_locale_string(const gchar  *locale,
 				goto bail;
 			}
 		}
-		tag_string = g_string_new(NULL);
-		g_string_append_printf(tag_string, "%s-%s", s, territory);
-		if (codeset || modifier)
+		if (!_lt_tag_convert_script_from_locale_modifier(modifier, &script))
+			if (!_lt_tag_convert_variant_from_locale_modifier(modifier, &variant))
+				privateuse = _lt_tag_convert_privaseuse_from_locale_modifier(modifier);
+
+		tag_string = g_string_new(s);
+		if (script)
+			g_string_append_printf(tag_string, "-%s", script);
+		if (territory)
+			g_string_append_printf(tag_string, "-%s", territory);
+		if (variant)
+			g_string_append_printf(tag_string, "-%s", variant);
+		if (codeset || privateuse) {
 			g_string_append(tag_string, "-x");
-		if (codeset)
-			g_string_append_printf(tag_string, "-codeset-%s", codeset);
-		if (modifier)
-			g_string_append_printf(tag_string, "-modifier-%s", modifier);
+			if (codeset)
+				g_string_append_printf(tag_string, "-codeset-%s", codeset);
+			if (privateuse)
+				g_string_append_printf(tag_string, "-%s", privateuse);
+		}
 		if (!lt_tag_parse(tag, tag_string->str, &err)) {
 			g_string_free(tag_string, TRUE);
 			goto bail;
