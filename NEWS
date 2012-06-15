@@ -1,3 +1,13 @@
+0.2 -> 0.3
+=============
+* Bug Fix:
+  * Fix a memory leak on copy.
+* Enhancements:
+  * Add a support to generate the language tag from current locale.
+  * Add a likelySubtags transformation support.
+  * Add -t- extension support.
+  * Allow to override the database directory.
+
 0.1 -> 0.2
 =============
 * Bug Fixes:
