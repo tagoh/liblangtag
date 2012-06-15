@@ -143,7 +143,7 @@ dnl ======================================================================
 dnl options - rebuild-locale-alias
 dnl ======================================================================
 BUILD_LOCALEALIAS=\#
-if test "x$enable_rebuild_locale_alias" = "xyes"; then
+if test "x$enable_rebuild_locale_alias" = "xyes" -a "x$LOCALE_ALIAS" != "x"; then
 	BUILD_LOCALEALIAS=
 fi
 AC_SUBST(BUILD_LOCALEALIAS)
