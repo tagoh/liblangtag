@@ -27,6 +27,7 @@
 #include <libxml/parser.h>
 #include "lt-error.h"
 #include "lt-mem.h"
+#include "lt-database.h"
 #include "lt-xml.h"
 
 
@@ -64,7 +65,7 @@ lt_xml_read_subtag_registry(lt_xml_t  *xml,
 	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
 		g_free(regfile);
 #endif
-	regfile = g_build_filename(REGDATADIR, "language-subtag-registry.xml", NULL);
+	regfile = g_build_filename(lt_db_get_datadir(), "language-subtag-registry.xml", NULL);
 #ifdef GNOME_ENABLE_DEBUG
 	}
 #endif
@@ -122,7 +123,7 @@ lt_xml_read_cldr_bcp47(lt_xml_t     *xml,
 	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
 		g_free(regfile);
 #endif
-	regfile = g_build_filename(REGDATADIR, "common", "bcp47", filename, NULL);
+	regfile = g_build_filename(lt_db_get_datadir(), "common", "bcp47", filename, NULL);
 #ifdef GNOME_ENABLE_DEBUG
 	}
 #endif
@@ -179,7 +180,7 @@ lt_xml_read_cldr_supplemental(lt_xml_t     *xml,
 	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
 		g_free(regfile);
 #endif
-	regfile = g_build_filename(REGDATADIR, "common", "supplemental", filename, NULL);
+	regfile = g_build_filename(lt_db_get_datadir(), "common", "supplemental", filename, NULL);
 #ifdef GNOME_ENABLE_DEBUG
 	}
 #endif

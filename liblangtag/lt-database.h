@@ -37,6 +37,8 @@
 
 G_BEGIN_DECLS
 
+void                   lt_db_set_datadir      (const gchar *path);
+const gchar           *lt_db_get_datadir      (void);
 void                   lt_db_initialize       (void);
 void                   lt_db_finalize         (void);
 lt_lang_db_t          *lt_db_get_lang         (void);

@@ -23,8 +23,11 @@
 #include "config.h"
 #endif
 
+#include <string.h>
+
 #include "lt-mem.h"
 #include "lt-ext-module.h"
+#include "lt-utils.h"
 #include "lt-database.h"
 
 
@@ -44,10 +47,48 @@ static lt_variant_db_t       *__db_variant = NULL;
 static lt_grandfathered_db_t *__db_grandfathered = NULL;
 static lt_redundant_db_t     *__db_redundant = NULL;
 
+static gchar __lt_db_datadir[LT_PATH_MAX] = { 0 };
+
 
 /*< private >*/
 
 /*< public >*/
+/**
+ * lt_db_set_datadir:
+ * @path: the directory where database files are installed.
+ *
+ * Set @path as the default location of the database files.
+ * This has to be called before lt_db_initialize() or any
+ * initialization for each databases.
+ */
+void
+lt_db_set_datadir(const gchar *path)
+{
+	if (path) {
+		strncpy(__lt_db_datadir, path, LT_PATH_MAX - 1);
+		__lt_db_datadir[LT_PATH_MAX - 1] = 0;
+	} else {
+		__lt_db_datadir[0] = 0;
+	}
+}
+
+/**
+ * lt_db_get_datadir:
+ *
+ * Obtain the directory where database files are installed.
+ *
+ * Returns: the directory name.
+ */
+const gchar *
+lt_db_get_datadir(void)
+{
+	static const gchar *__builtin_datadir = REGDATADIR;
+
+	if (*__lt_db_datadir != 0)
+		return __lt_db_datadir;
+	return __builtin_datadir;
+}
+
 /**
  * lt_db_initialize:
  *

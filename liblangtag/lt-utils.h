@@ -26,6 +26,9 @@
 
 G_BEGIN_DECLS
 
+/* maybe 512 should be enough */
+#define LT_PATH_MAX	512
+
 gchar *lt_strlower(gchar *string);
 
 G_END_DECLS
