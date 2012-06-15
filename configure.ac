@@ -46,18 +46,18 @@ dnl    then set CURRENT to the so number +1 and set AGE to 0.
 dnl
 
 dnl for liblangtag.la
-LT_CURRENT=1
+LT_CURRENT=2
 LT_REVISION=0
-LT_AGE=1
+LT_AGE=2
 
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
 dnl for liblangtag-gobject.la
-LT_G_CURRENT=1
+LT_G_CURRENT=2
 LT_G_REVISION=0
-LT_G_AGE=1
+LT_G_AGE=2
 
 AC_SUBST(LT_G_CURRENT)
 AC_SUBST(LT_G_REVISION)
