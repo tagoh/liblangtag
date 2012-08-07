@@ -1,6 +1,6 @@
 #! /bin/sh
 
-function type_capitalize() {
+type_capitalize() {
     __type=`echo $1|sed -e 's/_t$//'`
     __Type=''
     old_IFS=$IFS
@@ -11,11 +11,11 @@ function type_capitalize() {
     echo $__Type
 }
 
-function guess_type() {
+guess_type() {
     echo "`echo $1|sed -e 's/-/_/g'`_t"
 }
 
-function capitalize() {
+capitalize() {
     __in=$1
     __out=$2
     __cl=$3
@@ -42,15 +42,15 @@ capitalize "$srcdir/$target" $_tmpgen $_cl
 sed -i -e 's,^\(#include[ \t]<\)liblangtag\(/lt-.*\)\(\.h>\),\1liblangtag-gobject\2.gir\3,' $_tmpgen
 
 while [ 1 ]; do
-    if [ "x$type" == "xh" ]; then
+    if [ "x$type" = "xh" ]; then
 	line=`grep -E "${_ns}_.*_t[ \t].*" $_tmpgen | grep -v -E "(struct|func)" | grep -v -E "enum.*{"`
-    elif [ "x$type" == "xc" ]; then
+    elif [ "x$type" = "xc" ]; then
 	line=`sed -n -e '/\/\*< public >\*\//{:a p;n;b a};{d}' $_tmpgen|grep "[^#]${_ns}_.*_t[^a-z]"|grep -v -E "(func)"`
     else
 	echo "Unknown source type: $2"
 	exit 1
     fi
-    if [ "x$line" == "x" ]; then
+    if [ "x$line" = "x" ]; then
 	break;
     fi
     _tmpsed=`mktemp gengir.XXXXXXXX`
