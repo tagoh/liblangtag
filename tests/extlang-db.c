@@ -34,6 +34,7 @@ main(int    argc,
 
 	setlocale(LC_ALL, "");
 
+	lt_db_set_datadir(TEST_DATADIR);
 	extlangdb = lt_extlang_db_new();
 
 	if (g_strcmp0(argv[1], "list") == 0) {

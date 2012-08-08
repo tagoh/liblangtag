@@ -36,6 +36,7 @@ static lt_region_db_t *db;
 void
 setup(void)
 {
+	lt_db_set_datadir(TEST_DATADIR);
 	db = lt_db_get_region();
 }
 

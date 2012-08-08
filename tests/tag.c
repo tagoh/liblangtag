@@ -34,6 +34,7 @@ main(int    argc,
 
 	setlocale(LC_ALL, "");
 
+	lt_db_set_datadir(TEST_DATADIR);
 	lt_db_initialize();
 	tag = lt_tag_new();
 	if (g_strcmp0(argv[1], "help") == 0) {

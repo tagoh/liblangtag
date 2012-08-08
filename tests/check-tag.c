@@ -34,6 +34,7 @@
 void
 setup(void)
 {
+	lt_db_set_datadir(TEST_DATADIR);
 	lt_db_initialize();
 }
 

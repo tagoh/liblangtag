@@ -2,11 +2,12 @@
 # Global definitions
 NULL =
 SUBDIRS =
-INCLUDES =					\
-	-I$(top_srcdir)/liblangtag		\
-	-I$(top_srcdir)				\
-	$(GLIB_CFLAGS)				\
-	$(CHECK_CFLAGS)				\
+INCLUDES =						\
+	-I$(top_srcdir)/liblangtag			\
+	-I$(top_srcdir)					\
+	-DTEST_DATADIR="\"$(top_builddir)/data\""	\
+	$(GLIB_CFLAGS)					\
+	$(CHECK_CFLAGS)					\
 	$(NULL)
 DEPS =							\
 	$(top_builddir)/liblangtag/liblangtag.la	\
