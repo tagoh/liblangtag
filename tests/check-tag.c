@@ -34,6 +34,7 @@
 void
 setup(void)
 {
+	g_setenv("LANGTAG_EXT_MODULE_PATH", TEST_MODDIR, TRUE);
 	lt_db_set_datadir(TEST_DATADIR);
 	lt_db_initialize();
 }
