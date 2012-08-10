@@ -21,11 +21,11 @@ capitalize() {
     __cl=$3
     __Cl=`type_capitalize $__cl`
     __tmpsed=`mktemp gengir.XXXXXXXX`
-    echo "s/^${__cl}/${__Cl}/g
-s/\(const[ \t].*\)${__cl}/\1${__Cl}/g
-s/\([ \t].*\)_${__cl}/\1_${__Cl}/g
-s/\([\t(].*\)${__cl}/\1${__Cl}/g
-s/^\([ \t].*\)${__cl}/\1${__Cl}/g" > $__tmpsed
+    printf "s/^${__cl}/${__Cl}/g
+s/\(const[ \t].*\)${__cl}/\\\1${__Cl}/g
+s/\([ \t].*\)_${__cl}/\\\1_${__Cl}/g
+s/\([\t(].*\)${__cl}/\\\1${__Cl}/g
+s/^\([ \t].*\)${__cl}/\\\1${__Cl}/g" > $__tmpsed
     sed -f $__tmpsed $__in > $__out
     rm $__tmpsed
 }
@@ -54,7 +54,7 @@ while [ 1 ]; do
 	break;
     fi
     _tmpsed=`mktemp gengir.XXXXXXXX`
-    echo "/${_ns}_[a-z].*_t/{s/.*\(${_ns}_[a-z].*_t\)[^a-z]*/\1/;p}" > $_tmpsed
+    printf "/${_ns}_[a-z].*_t/{s/.*\(${_ns}_[a-z].*_t\)[^a-z]*/\\\1/;p}\n" > $_tmpsed
     _n=1
     while [ 1 ]; do
 	_ll=`echo $line|sed -e 's/[ \t]*//'|cut -d' ' -f$_n`
