@@ -135,9 +135,8 @@ _parse(const gchar *filename,
 }
 
 static gboolean
-_output_xml(const gchar  *filename,
-	    xmlChar     **output,
-	    int          *size)
+_output_xml(const gchar *filename,
+	    const gchar *out_filename)
 {
 	xmlDocPtr doc;
 	xmlNodePtr root;
@@ -153,7 +152,8 @@ _output_xml(const gchar  *filename,
 	if (!(retval = _parse(filename, root)))
 		goto bail;
 
-	xmlDocDumpFormatMemory(doc, output, size, 1);
+	xmlSaveFormatFileEnc(out_filename && out_filename[0] != '-' ? out_filename : "-",
+			     doc, "UTF-8", 1);
   bail:
 	xmlFreeDoc(doc);
 
@@ -165,16 +165,11 @@ int
 main(int    argc,
      char **argv)
 {
-	xmlChar *xml;
-	int size;
-
-	if (argc < 2)
+	if (argc < 3)
 		return 1;
 
-	if (!_output_xml(argv[1], &xml, &size))
+	if (!_output_xml(argv[1], argv[2]))
 		return 1;
-
-	g_print("%s\n", xml);
 
 	return 0;
 }

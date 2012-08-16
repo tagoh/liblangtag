@@ -56,7 +56,7 @@ language-subtag-registry:
 	$(AM_V_DL) wget -O $@ http://www.iana.org/assignments/language-subtag-registry || \
 	curl -o $@ http://www.iana.org/assignments/language-subtag-registry
 language-subtag-registry.xml: language-subtag-registry reg2xml Makefile
-	$(AM_V_GEN) $(builddir)/reg2xml $(srcdir)/language-subtag-registry > $@.tmp;	\
+	$(AM_V_GEN) $(builddir)/reg2xml $(srcdir)/language-subtag-registry $@.tmp;	\
 	head -1 $@.tmp | grep -E '^<\?xml version'>/dev/null 2>&1 && mv $@.tmp $@ || (echo "E: $@ isn't an expected result"; rm $@.tmp)
 stamp-core-zip:
 	-rm core.zip
