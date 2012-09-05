@@ -83,46 +83,21 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Gettext package])
 AM_GLIB_GNU_GETTEXT
 
 dnl ======================================================================
-dnl check pkg-config stuff
-dnl ======================================================================
-PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= $LIBXML2_REQUIRED)
-PKG_CHECK_MODULES(GOBJECT, gobject-2.0 >= $GOBJECT_REQUIRED, has_gobject=yes, has_gobject=no)
-PKG_CHECK_MODULES(GMODULE, gmodule-2.0, has_gmodule=yes, has_gmodule=no)
-PKG_CHECK_MODULES(CHECK, check >= $CHECK_REQUIRED,
-			 [use_check="yes"],
-			 [use_check="no"])
-
-if test x$has_gmodule != xno; then
-	AC_DEFINE(ENABLE_GMODULE,, [Using gmodule])
-fi
-AM_CONDITIONAL(ENABLE_GMODULE, test x$has_gmodule != xno)
-AM_CONDITIONAL(ENABLE_GOBJECT, test x$has_gobject != xno)
-AM_CONDITIONAL(ENABLE_UNIT_TEST, test x$use_check != xno)
-
-dnl ======================================================================
-dnl check another libraries
-dnl ======================================================================
-AM_PATH_GLIB_2_0($GLIB_REQUIRED, :,
-	AC_MSG_ERROR([
-*** GLIB $GLIB_REQUIRED_VERSION or better is required. The latest version of
-*** GLIB is always available from ftp://ftp.gtk.org/.]),
-    glib)
-
-GOBJECT_INTROSPECTION_CHECK([1.30.0])
-GTK_DOC_CHECK(1.0)
-
-dnl ======================================================================
 dnl options
 dnl ======================================================================
-AC_ARG_WITH(locale-alias,
-	AC_HELP_STRING([--with-locale-alias], [set the path to licale.alias])
-	,,
-	with_locale_alias="${localedir}/locale.alias")
-AC_ARG_ENABLE(rebuild-locale-alias,
-	AC_HELP_STRING([--disable-rebuild-locale-alias],
-		[disable rebuilding the locale.alias mapping table])
-	,,
-	enable_rebuild_locale_alias=yes)
+AC_ARG_WITH([locale-alias],
+	[AC_HELP_STRING([--with-locale-alias], [set the path to licale.alias])],
+	[with_locale_alias="$withval"],
+	[with_locale_alias="${localedir}/locale.alias"])
+AC_ARG_ENABLE([rebuild-locale-alias],
+	[AC_HELP_STRING([--disable-rebuild-locale-alias],
+		[disable rebuilding the locale.alias mapping table])],
+	[enable_rebuild_locale_alias="$enableval"],
+	[enable_rebuild_locale_alias=yes])
+AC_ARG_ENABLE([test],
+	[AC_HELP_STRING([--disable-test], [Disable tests])],
+	[enable_test="$enableval"],
+	[enable_test=yes])
 
 dnl ======================================================================
 dnl options - locale-alias
@@ -147,6 +122,40 @@ if test "x$enable_rebuild_locale_alias" = "xyes" -a "x$LOCALE_ALIAS" != "x"; the
 	BUILD_LOCALEALIAS=
 fi
 AC_SUBST(BUILD_LOCALEALIAS)
+
+dnl ======================================================================
+dnl check pkg-config stuff
+dnl ======================================================================
+PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= $LIBXML2_REQUIRED)
+PKG_CHECK_MODULES(GOBJECT, gobject-2.0 >= $GOBJECT_REQUIRED, has_gobject=yes, has_gobject=no)
+PKG_CHECK_MODULES(GMODULE, gmodule-2.0, has_gmodule=yes, has_gmodule=no)
+
+if test x$enable_test != xno; then
+	PKG_CHECK_MODULES(CHECK, check >= $CHECK_REQUIRED,
+				 [use_check="yes"],
+				 [use_check="no"])
+else
+	use_check=no
+fi
+
+if test x$has_gmodule != xno; then
+	AC_DEFINE(ENABLE_GMODULE,, [Using gmodule])
+fi
+AM_CONDITIONAL(ENABLE_GMODULE, test x$has_gmodule != xno)
+AM_CONDITIONAL(ENABLE_GOBJECT, test x$has_gobject != xno)
+AM_CONDITIONAL(ENABLE_UNIT_TEST, test x$use_check != xno)
+
+dnl ======================================================================
+dnl check another libraries
+dnl ======================================================================
+AM_PATH_GLIB_2_0($GLIB_REQUIRED, :,
+	AC_MSG_ERROR([
+*** GLIB $GLIB_REQUIRED_VERSION or better is required. The latest version of
+*** GLIB is always available from ftp://ftp.gtk.org/.]),
+    glib)
+
+GOBJECT_INTROSPECTION_CHECK([1.30.0])
+GTK_DOC_CHECK(1.0)
 
 dnl ======================================================================
 dnl output
