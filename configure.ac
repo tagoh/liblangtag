@@ -103,10 +103,17 @@ dnl ======================================================================
 dnl options - locale-alias
 dnl ======================================================================
 AC_MSG_CHECKING(existence of locale.alias)
-if test "x$with_locale_alias" = xno; then
+if test "x$with_locale_alias" = xyes; then
 	with_locale_alias="${localedir}/locale.alias"
 fi
-if [[ -f $with_locale_alias ]]; then
+ac_lt_file="$with_locale_alias"
+ac_lt_file_old=""
+
+while test "$ac_lt_file_old" != "$ac_lt_file"; do
+	ac_lt_file_old="$ac_lt_file"
+	eval ac_lt_file="\"$ac_lt_file\""
+done
+if [[ -f "$ac_lt_file" ]]; then
 	AC_MSG_RESULT($with_locale_alias)
 	LOCALE_ALIAS=$with_locale_alias
 	AC_SUBST(LOCALE_ALIAS)
