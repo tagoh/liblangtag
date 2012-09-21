@@ -17,9 +17,9 @@
 #ifndef __LT_LANG_H__
 #define __LT_LANG_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_lang_t:
@@ -30,19 +30,19 @@ G_BEGIN_DECLS
 typedef struct _lt_lang_t	lt_lang_t;
 
 
-lt_lang_t   *lt_lang_ref                (lt_lang_t       *lang);
-void         lt_lang_unref              (lt_lang_t       *lang);
-const gchar *lt_lang_get_name           (const lt_lang_t *lang);
-const gchar *lt_lang_get_better_tag     (const lt_lang_t *lang);
-const gchar *lt_lang_get_tag            (const lt_lang_t *lang);
-const gchar *lt_lang_get_preferred_tag  (const lt_lang_t *lang);
-const gchar *lt_lang_get_suppress_script(const lt_lang_t *lang);
-const gchar *lt_lang_get_macro_language (const lt_lang_t *lang);
-const gchar *lt_lang_get_scope          (const lt_lang_t *lang);
-void         lt_lang_dump               (const lt_lang_t *lang);
-gboolean     lt_lang_compare            (const lt_lang_t *v1,
-					 const lt_lang_t *v2);
+lt_lang_t  *lt_lang_ref                (lt_lang_t       *lang);
+void        lt_lang_unref              (lt_lang_t       *lang);
+const char *lt_lang_get_name           (const lt_lang_t *lang);
+const char *lt_lang_get_better_tag     (const lt_lang_t *lang);
+const char *lt_lang_get_tag            (const lt_lang_t *lang);
+const char *lt_lang_get_preferred_tag  (const lt_lang_t *lang);
+const char *lt_lang_get_suppress_script(const lt_lang_t *lang);
+const char *lt_lang_get_macro_language (const lt_lang_t *lang);
+const char *lt_lang_get_scope          (const lt_lang_t *lang);
+void        lt_lang_dump               (const lt_lang_t *lang);
+lt_bool_t   lt_lang_compare            (const lt_lang_t *v1,
+					const lt_lang_t *v2);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_LANG_H__ */

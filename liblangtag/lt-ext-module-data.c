@@ -29,7 +29,7 @@
 typedef struct _lt_ext_module_data_private_t {
 	lt_mem_t          parent;
 	lt_destroy_func_t finalizer;
-	gpointer          dummy[3];
+	lt_pointer_t      dummy[3];
 } lt_ext_module_data_private_t;
 
 /*< private >*/
@@ -52,7 +52,7 @@ typedef struct _lt_ext_module_data_private_t {
  * Returns: (transfer full): a #lt_ext_module_data_t.
  */
 lt_ext_module_data_t *
-lt_ext_module_data_new(gsize             size,
+lt_ext_module_data_new(size_t            size,
 		       lt_destroy_func_t finalizer)
 {
 	lt_ext_module_data_private_t *retval;

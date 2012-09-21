@@ -95,6 +95,7 @@ reg2xml_CFLAGS =			\
 	$(LIBXML2_CFLAGS)		\
 	$(GLIB_CFLAGS)			\
 	-I$(top_srcdir)/liblangtag	\
+	-D__LANGTAG_COMPILATION		\
 	$(NULL)
 reg2xml_LDFLAGS =					\
 	$(LIBXML2_LIBS)					\

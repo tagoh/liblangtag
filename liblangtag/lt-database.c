@@ -38,7 +38,7 @@ static lt_variant_db_t       *__db_variant = NULL;
 static lt_grandfathered_db_t *__db_grandfathered = NULL;
 static lt_redundant_db_t     *__db_redundant = NULL;
 
-static gchar __lt_db_datadir[LT_PATH_MAX] = { 0 };
+static char __lt_db_datadir[LT_PATH_MAX] = { 0 };
 
 
 /*< private >*/
@@ -53,7 +53,7 @@ static gchar __lt_db_datadir[LT_PATH_MAX] = { 0 };
  * initialization for each databases.
  */
 void
-lt_db_set_datadir(const gchar *path)
+lt_db_set_datadir(const char *path)
 {
 	if (path) {
 		strncpy(__lt_db_datadir, path, LT_PATH_MAX - 1);
@@ -70,10 +70,10 @@ lt_db_set_datadir(const gchar *path)
  *
  * Returns: the directory name.
  */
-const gchar *
+const char *
 lt_db_get_datadir(void)
 {
-	static const gchar *__builtin_datadir = REGDATADIR;
+	static const char *__builtin_datadir = REGDATADIR;
 
 	if (*__lt_db_datadir != 0)
 		return __lt_db_datadir;
@@ -124,7 +124,7 @@ lt_db_finalize(void)
 		if (!__db_ ##__type__) {				\
 			__db_ ##__type__ = lt_ ##__type__## _db_new();	\
 			lt_mem_add_weak_pointer((lt_mem_t *)__db_ ##__type__, \
-						(gpointer *)&__db_ ##__type__);	\
+						(lt_pointer_t *)&__db_ ##__type__); \
 		} else {						\
 			lt_ ##__type__## _db_ref(__db_ ##__type__);	\
 		}							\

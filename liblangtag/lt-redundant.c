@@ -28,9 +28,9 @@
  */
 struct _lt_redundant_t {
 	lt_mem_t  parent;
-	gchar    *tag;
-	gchar    *description;
-	gchar    *preferred_tag;
+	char     *tag;
+	char     *description;
+	char     *preferred_tag;
 };
 
 /*< private >*/
@@ -48,7 +48,7 @@ lt_redundant_create(void)
 
 void
 lt_redundant_set_tag(lt_redundant_t *redundant,
-		     const gchar    *tag)
+		     const char     *tag)
 {
 	g_return_if_fail (redundant != NULL);
 	g_return_if_fail (tag != NULL);
@@ -62,7 +62,7 @@ lt_redundant_set_tag(lt_redundant_t *redundant,
 
 void
 lt_redundant_set_name(lt_redundant_t *redundant,
-		      const gchar    *description)
+		      const char     *description)
 {
 	g_return_if_fail (redundant != NULL);
 	g_return_if_fail (description != NULL);
@@ -76,7 +76,7 @@ lt_redundant_set_name(lt_redundant_t *redundant,
 
 void
 lt_redundant_set_preferred_tag(lt_redundant_t *redundant,
-			       const gchar    *subtag)
+			       const char     *subtag)
 {
 	g_return_if_fail (redundant != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -128,10 +128,10 @@ lt_redundant_unref(lt_redundant_t *redundant)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_redundant_get_better_tag(const lt_redundant_t *redundant)
 {
-	const gchar *retval = lt_redundant_get_preferred_tag(redundant);
+	const char *retval = lt_redundant_get_preferred_tag(redundant);
 
 	if (!retval)
 		retval = lt_redundant_get_tag(redundant);
@@ -147,7 +147,7 @@ lt_redundant_get_better_tag(const lt_redundant_t *redundant)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_redundant_get_tag(const lt_redundant_t *redundant)
 {
 	g_return_val_if_fail (redundant != NULL, NULL);
@@ -163,7 +163,7 @@ lt_redundant_get_tag(const lt_redundant_t *redundant)
  *
  * Returns: a description string.
  */
-const gchar *
+const char *
 lt_redundant_get_name(const lt_redundant_t *redundant)
 {
 	g_return_val_if_fail (redundant != NULL, NULL);
@@ -180,7 +180,7 @@ lt_redundant_get_name(const lt_redundant_t *redundant)
  *
  * Returns: a preferred-value for the tag or %NULL.
  */
-const gchar *
+const char *
 lt_redundant_get_preferred_tag(const lt_redundant_t *redundant)
 {
 	g_return_val_if_fail (redundant != NULL, NULL);
@@ -197,7 +197,7 @@ lt_redundant_get_preferred_tag(const lt_redundant_t *redundant)
 void
 lt_redundant_dump(const lt_redundant_t *redundant)
 {
-	const gchar *preferred = lt_redundant_get_preferred_tag(redundant);
+	const char *preferred = lt_redundant_get_preferred_tag(redundant);
 	GString *string = g_string_new(NULL);
 
 	if (preferred) {
@@ -225,7 +225,7 @@ lt_redundant_dump(const lt_redundant_t *redundant)
  *
  * Returns: %TRUE if it's the same. otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_redundant_compare(const lt_redundant_t *v1,
 		     const lt_redundant_t *v2)
 {

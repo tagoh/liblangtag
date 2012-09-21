@@ -16,6 +16,7 @@
 
 #include <langinfo.h>
 #include <locale.h>
+#include <stdint.h>
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-database.h"
@@ -39,14 +40,14 @@
  */
 typedef struct _lt_tag_scanner_t {
 	lt_mem_t  parent;
-	gchar    *string;
-	gsize     length;
-	gsize     position;
+	char     *string;
+	size_t    length;
+	size_t    position;
 } lt_tag_scanner_t;
 
 struct _lt_tag_t {
 	lt_mem_t            parent;
-	gint32              wildcard_map;
+	int32_t             wildcard_map;
 	lt_tag_state_t      state;
 	GString            *tag_string;
 	lt_lang_t          *language;
@@ -60,12 +61,12 @@ struct _lt_tag_t {
 };
 
 /*< private >*/
-static gboolean
+static lt_bool_t
 _lt_tag_gstring_compare(const GString *v1,
 			const GString *v2)
 {
-	gboolean retval = FALSE;
-	gchar *s1, *s2;
+	lt_bool_t retval = FALSE;
+	char *s1, *s2;
 
 	if (v1 == v2)
 		return TRUE;
@@ -99,7 +100,7 @@ _lt_tag_variants_list_free(GList *list)
 }
 
 static lt_tag_scanner_t *
-lt_tag_scanner_new(const gchar *tag)
+lt_tag_scanner_new(const char *tag)
 {
 	lt_tag_scanner_t *retval = lt_mem_alloc_object(sizeof (lt_tag_scanner_t));
 
@@ -120,14 +121,14 @@ lt_tag_scanner_unref(lt_tag_scanner_t *scanner)
 		lt_mem_unref(&scanner->parent);
 }
 
-static gboolean
+static lt_bool_t
 lt_tag_scanner_get_token(lt_tag_scanner_t  *scanner,
-			 gchar            **retval,
-			 gsize             *length,
+			 char             **retval,
+			 size_t            *length,
 			 GError           **error)
 {
 	GString *string = NULL;
-	gchar c;
+	char c;
 	GError *err = NULL;
 
 	g_return_val_if_fail (scanner != NULL, FALSE);
@@ -191,7 +192,7 @@ lt_tag_scanner_get_token(lt_tag_scanner_t  *scanner,
 	return TRUE;
 }
 
-static gboolean
+static lt_bool_t
 lt_tag_scanner_is_eof(lt_tag_scanner_t *scanner)
 {
 	g_return_val_if_fail (scanner != NULL, TRUE);
@@ -201,7 +202,7 @@ lt_tag_scanner_is_eof(lt_tag_scanner_t *scanner)
 		scanner->position >= scanner->length;
 }
 
-static gint
+static int
 _lt_tag_variant_compare(gconstpointer a,
 			gconstpointer b)
 {
@@ -252,7 +253,7 @@ G_INLINE_FUNC void
 lt_tag_set_variant(lt_tag_t *tag,
 		   gpointer  p)
 {
-	gboolean no_variants = (tag->variants == NULL);
+	lt_bool_t no_variants = (tag->variants == NULL);
 
 	if (p) {
 		tag->variants = g_list_append(tag->variants, p);
@@ -267,8 +268,8 @@ lt_tag_set_variant(lt_tag_t *tag,
 #undef DEFUNC_TAG_SET
 
 G_INLINE_FUNC void
-lt_tag_add_tag_string(lt_tag_t    *tag,
-		      const gchar *s)
+lt_tag_add_tag_string(lt_tag_t   *tag,
+		      const char *s)
 {
 	if (!tag->tag_string) {
 		tag->tag_string = g_string_new(NULL);
@@ -284,10 +285,10 @@ lt_tag_add_tag_string(lt_tag_t    *tag,
 	}
 }
 
-static const gchar *
-lt_tag_get_locale_from_locale_alias(const gchar *alias)
+static const char *
+lt_tag_get_locale_from_locale_alias(const char *alias)
 {
-	gint i;
+	int i;
 
 	g_return_val_if_fail (alias != NULL, NULL);
 
@@ -362,13 +363,13 @@ lt_tag_parser_init(lt_tag_t *tag)
 	tag->state = STATE_NONE;
 }
 
-static gboolean
-lt_tag_parse_prestate(lt_tag_t     *tag,
-		      const gchar  *token,
-		      gsize         length,
-		      GError      **error)
+static lt_bool_t
+lt_tag_parse_prestate(lt_tag_t    *tag,
+		      const char  *token,
+		      size_t       length,
+		      GError     **error)
 {
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 
 	if (g_strcmp0(token, "-") == 0) {
 		switch (tag->state) {
@@ -416,14 +417,14 @@ lt_tag_parse_prestate(lt_tag_t     *tag,
 	return retval;
 }
 
-static gboolean
-lt_tag_parse_state(lt_tag_t     *tag,
-		   const gchar  *token,
-		   gsize         length,
-		   GError      **error)
+static lt_bool_t
+lt_tag_parse_state(lt_tag_t    *tag,
+		   const char  *token,
+		   size_t       length,
+		   GError     **error)
 {
-	gboolean retval = TRUE;
-	const gchar *p;
+	lt_bool_t retval = TRUE;
+	const char *p;
 
 	switch (tag->state) {
 	    case STATE_LANG:
@@ -484,9 +485,9 @@ lt_tag_parse_state(lt_tag_t     *tag,
 			    tag->extlang = lt_extlang_db_lookup(extlangdb, token);
 			    lt_extlang_db_unref(extlangdb);
 			    if (tag->extlang) {
-				    const gchar *prefix = lt_extlang_get_prefix(tag->extlang);
-				    const gchar *subtag = lt_extlang_get_tag(tag->extlang);
-				    const gchar *lang = lt_lang_get_better_tag(tag->language);
+				    const char *prefix = lt_extlang_get_prefix(tag->extlang);
+				    const char *subtag = lt_extlang_get_tag(tag->extlang);
+				    const char *lang = lt_lang_get_better_tag(tag->language);
 
 				    if (prefix &&
 					g_ascii_strcasecmp(prefix, lang) != 0) {
@@ -548,9 +549,9 @@ lt_tag_parse_state(lt_tag_t     *tag,
 			    lt_variant_db_unref(variantdb);
 			    if (variant) {
 				    const GList *prefixes = lt_variant_get_prefix(variant), *l;
-				    gchar *langtag = lt_tag_canonicalize(tag, error);
+				    char *langtag = lt_tag_canonicalize(tag, error);
 				    GString *str_prefixes = g_string_new(NULL);
-				    gboolean matched = FALSE;
+				    lt_bool_t matched = FALSE;
 
 				    if (error && *error) {
 					    /* ignore it and fallback to the original tag string */
@@ -559,7 +560,7 @@ lt_tag_parse_state(lt_tag_t     *tag,
 					    langtag = g_strdup(tag->tag_string->str);
 				    }
 				    for (l = prefixes; l != NULL; l = g_list_next(l)) {
-					    const gchar *s = l->data;
+					    const char *s = l->data;
 
 					    if (str_prefixes->len > 0)
 						    g_string_append(str_prefixes, ",");
@@ -580,7 +581,7 @@ lt_tag_parse_state(lt_tag_t     *tag,
 						    lt_tag_set_variant(tag, variant);
 					    } else {
 						    GList *prefixes = (GList *)lt_variant_get_prefix(variant);
-						    const gchar *tstr;
+						    const char *tstr;
 
 						    lt_tag_free_tag_string(tag);
 						    tstr = lt_tag_get_string(tag);
@@ -688,20 +689,20 @@ lt_tag_parse_state(lt_tag_t     *tag,
 	return retval;
 }
 
-static gboolean
-_lt_tag_parse(lt_tag_t     *tag,
-	      const gchar  *langtag,
-	      gboolean      allow_wildcard,
-	      GError      **error)
+static lt_bool_t
+_lt_tag_parse(lt_tag_t    *tag,
+	      const char  *langtag,
+	      lt_bool_t    allow_wildcard,
+	      GError     **error)
 {
 	lt_tag_scanner_t *scanner = NULL;
 	lt_grandfathered_db_t *grandfathereddb;
-	gchar *token = NULL;
-	gsize len = 0;
+	char *token = NULL;
+	size_t len = 0;
 	GError *err = NULL;
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 	lt_tag_state_t wildcard = STATE_NONE;
-	gint count = 0;
+	int count = 0;
 
 	g_return_val_if_fail (tag != NULL, FALSE);
 	g_return_val_if_fail (langtag != NULL, FALSE);
@@ -796,7 +797,7 @@ _lt_tag_parse(lt_tag_t     *tag,
 	return retval;
 }
 
-static gboolean
+static lt_bool_t
 _lt_tag_match(const lt_tag_t *v1,
 	      lt_tag_t       *v2,
 	      lt_tag_state_t  state)
@@ -915,12 +916,12 @@ _lt_tag_replace(lt_tag_t       *tag,
  * scripts that the language is written in
  * See ISO-15924 http://unicode.org/iso15924/iso15924-codes.html
  */
-static gboolean
-_lt_tag_convert_script_from_locale_modifier(const gchar  *modifier,
-					    const gchar **ret)
+static lt_bool_t
+_lt_tag_convert_script_from_locale_modifier(const char  *modifier,
+					    const char **ret)
 {
 	/* XXX: think about how to get rid of the hardcoded mapping table */
-	static const gchar * const maps[][2] = {
+	static const char * const maps[][2] = {
 		{ "Arabic", "Arab" },
 		{ "Imperial_Aramaic", "Armi" },
 		{ "Armenian", "Armn" },
@@ -1016,7 +1017,7 @@ _lt_tag_convert_script_from_locale_modifier(const gchar  *modifier,
 		{ "Common", "Zyyy" },
 		{ "Unknown", "Zzzz" },
 	};
-	gsize i;
+	size_t i;
 
 	if (modifier) {
 		/*
@@ -1028,7 +1029,7 @@ _lt_tag_convert_script_from_locale_modifier(const gchar  *modifier,
 			_lt_tag_convert_script_from_locale_modifier("Latin", ret);
 			return FALSE;
 		}
-		for (i = 0; i < sizeof (maps) / sizeof (gchar *[2]); i++) {
+		for (i = 0; i < sizeof (maps) / sizeof (char *[2]); i++) {
 			if (g_ascii_strcasecmp(modifier, maps[i][0]) == 0) {
 				*ret = maps[i][1];
 				return TRUE;
@@ -1044,18 +1045,18 @@ _lt_tag_convert_script_from_locale_modifier(const gchar  *modifier,
  * See http://www.iana.org/assignments/language-subtag-registry
  * for IANA language subtag assignments output codes
  */
-static gboolean
-_lt_tag_convert_variant_from_locale_modifier(const gchar  *modifier,
-					     const gchar **ret)
+static lt_bool_t
+_lt_tag_convert_variant_from_locale_modifier(const char  *modifier,
+					     const char **ret)
 {
 	/* XXx: think about how to get rid of the hardcoded mapping table */
-	static const gchar * const maps[][2] = {
+	static const char * const maps[][2] = {
             { "valencia", "valencia" }
 	};
-	gsize i;
+	size_t i;
 
 	if (modifier) {
-		for (i = 0; i < sizeof (maps) / sizeof (gchar *[2]); i++) {
+		for (i = 0; i < sizeof (maps) / sizeof (char *[2]); i++) {
 			if (g_ascii_strcasecmp(modifier, maps[i][0]) == 0) {
 				*ret = maps[i][1];
 				return TRUE;
@@ -1066,11 +1067,11 @@ _lt_tag_convert_variant_from_locale_modifier(const gchar  *modifier,
 	return FALSE;
 }
 
-static const gchar * const
-_lt_tag_convert_privaseuse_from_locale_modifier(const gchar *modifier)
+static const char * const
+_lt_tag_convert_privaseuse_from_locale_modifier(const char *modifier)
 {
 	/* XXX: think about how to get rid of the hardcoded mapping table */
-	static const gchar * const maps[][2] = {
+	static const char * const maps[][2] = {
 		/*
 		 * Old mechanism to denote that the euro currency is in use, 
 		 * ignore it.
@@ -1108,10 +1109,10 @@ _lt_tag_convert_privaseuse_from_locale_modifier(const gchar *modifier)
 		 */
 		{ "iqtelif", "iqtel" }
 	};
-	gsize i;
+	size_t i;
 
 	if (modifier) {
-		for (i = 0; i < sizeof (maps) / sizeof (gchar *[2]); i++) {
+		for (i = 0; i < sizeof (maps) / sizeof (char *[2]); i++) {
 			if (g_ascii_strcasecmp(modifier, maps[i][0]) == 0)
 				return maps[i][1];
 		}
@@ -1125,10 +1126,10 @@ _lt_tag_convert_privaseuse_from_locale_modifier(const gchar *modifier)
 }
 
 static lt_tag_t *
-_lt_tag_convert_from_locale_string(const gchar  *locale,
-				   GError      **error)
+_lt_tag_convert_from_locale_string(const char  *locale,
+				   GError     **error)
 {
-	gchar *s, *territory, *codeset, *modifier;
+	char *s, *territory, *codeset, *modifier;
 	lt_tag_t *tag;
 	GError *err = NULL;
 
@@ -1142,7 +1143,7 @@ _lt_tag_convert_from_locale_string(const gchar  *locale,
 			goto bail;
 	} else {
 		GString *tag_string;
-		const gchar *script = NULL, *variant = NULL, *privateuse = NULL;
+		const char *script = NULL, *variant = NULL, *privateuse = NULL;
 
 		modifier = strchr(s, '@');
 		if (modifier) {
@@ -1169,7 +1170,7 @@ _lt_tag_convert_from_locale_string(const gchar  *locale,
 		    !territory &&
 		    !codeset &&
 		    !modifier) {
-			const gchar *loc = lt_tag_get_locale_from_locale_alias(s);
+			const char *loc = lt_tag_get_locale_from_locale_alias(s);
 			lt_tag_t *t;
 
 			if (loc && (t = _lt_tag_convert_from_locale_string(loc, &err)) != NULL) {
@@ -1221,12 +1222,12 @@ _lt_tag_convert_from_locale_string(const gchar  *locale,
 
 /*< protected >*/
 lt_tag_state_t
-lt_tag_parse_wildcard(lt_tag_t     *tag,
-		      const gchar  *tag_string,
-		      GError      **error)
+lt_tag_parse_wildcard(lt_tag_t    *tag,
+		      const char  *tag_string,
+		      GError     **error)
 {
 	GError *err = NULL;
-	gboolean ret;
+	lt_bool_t ret;
 
 	lt_tag_parser_init(tag);
 	ret = _lt_tag_parse(tag, tag_string, TRUE, &err);
@@ -1333,10 +1334,10 @@ lt_tag_clear(lt_tag_t *tag)
  *
  * Returns: %TRUE if it's successfully completed, otherwise %FALSE.
  */
-gboolean
-lt_tag_parse(lt_tag_t     *tag,
-	     const gchar  *tag_string,
-	     GError      **error)
+lt_bool_t
+lt_tag_parse(lt_tag_t    *tag,
+	     const char  *tag_string,
+	     GError     **error)
 {
 	lt_tag_parser_init(tag);
 
@@ -1354,10 +1355,10 @@ lt_tag_parse(lt_tag_t     *tag,
  *
  * Returns: %TRUE if it's successfully completed, otherwise %FALSE.
  */
-gboolean
-lt_tag_parse_with_extra_token(lt_tag_t     *tag,
-			      const gchar  *tag_string,
-			      GError      **error)
+lt_bool_t
+lt_tag_parse_with_extra_token(lt_tag_t    *tag,
+			      const char  *tag_string,
+			      GError     **error)
 {
 	g_return_val_if_fail (tag != NULL, FALSE);
 	g_return_val_if_fail (tag->state != STATE_NONE, FALSE);
@@ -1423,12 +1424,12 @@ lt_tag_copy(const lt_tag_t *tag)
  *
  * Returns: %TRUE if a subtag was truncated, otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_tag_truncate(lt_tag_t  *tag,
 		GError   **error)
 {
 	GError *err = NULL;
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 
 	g_return_val_if_fail (tag != NULL, FALSE);
 
@@ -1443,9 +1444,9 @@ lt_tag_truncate(lt_tag_t  *tag,
 			break;
 		}
 		if (tag->extension) {
-			gint i;
-			gchar c;
-			gboolean has_tag = FALSE;
+			int i;
+			char c;
+			lt_bool_t has_tag = FALSE;
 
 			lt_extension_truncate(tag->extension);
 			for (i = 0; i < LT_MAX_EXT_MODULES; i++) {
@@ -1520,7 +1521,7 @@ lt_tag_truncate(lt_tag_t  *tag,
  *
  * Returns: a language tag string.
  */
-const gchar *
+const char *
 lt_tag_get_string(lt_tag_t *tag)
 {
 	GList *l;
@@ -1565,11 +1566,11 @@ lt_tag_get_string(lt_tag_t *tag)
  *
  * Returns: a language tag string.
  */
-gchar *
+char *
 lt_tag_canonicalize(lt_tag_t  *tag,
 		    GError   **error)
 {
-	gchar *retval = NULL;
+	char *retval = NULL;
 	GString *string = NULL;
 	GError *err = NULL;
 	GList *l;
@@ -1588,7 +1589,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 	ctag = lt_tag_copy(tag);
 	rdb = lt_db_get_redundant();
 	while (1) {
-		const gchar *tag_string = lt_tag_get_string(ctag);
+		const char *tag_string = lt_tag_get_string(ctag);
 
 		if (tag_string == NULL || tag_string[0] == 0)
 			break;
@@ -1596,7 +1597,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 			lt_redundant_unref(r);
 		r = lt_redundant_db_lookup(rdb, tag_string);
 		if (r) {
-			const gchar *preferred = lt_redundant_get_preferred_tag(r);
+			const char *preferred = lt_redundant_get_preferred_tag(r);
 
 			if (preferred) {
 				lt_tag_t *rtag = lt_tag_new();
@@ -1625,7 +1626,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 	}
 
 	if (tag->language) {
-		gsize len;
+		size_t len;
 		lt_extlang_db_t *edb = lt_db_get_extlang();
 		lt_extlang_t *e;
 
@@ -1635,7 +1636,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 		 */
 		e = lt_extlang_db_lookup(edb, lt_lang_get_better_tag(tag->language));
 		if (e) {
-			const gchar *prefix = lt_extlang_get_prefix(e);
+			const char *prefix = lt_extlang_get_prefix(e);
 
 			if (prefix)
 				g_string_append_printf(string, "%s-", prefix);
@@ -1645,7 +1646,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 
 		g_string_append(string, lt_lang_get_better_tag(tag->language));
 		if (tag->extlang) {
-			const gchar *preferred = lt_extlang_get_preferred_tag(tag->extlang);
+			const char *preferred = lt_extlang_get_preferred_tag(tag->extlang);
 
 			if (preferred) {
 				g_string_truncate(string, 0);
@@ -1656,8 +1657,8 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 			}
 		}
 		if (tag->script) {
-			const gchar *script = lt_script_get_tag(tag->script);
-			const gchar *suppress = lt_lang_get_suppress_script(tag->language);
+			const char *script = lt_script_get_tag(tag->script);
+			const char *suppress = lt_lang_get_suppress_script(tag->language);
 
 			if (!suppress ||
 			    g_ascii_strcasecmp(suppress, script))
@@ -1670,8 +1671,8 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 		len = string->len;
 		while (l != NULL) {
 			lt_variant_t *variant = l->data;
-			const gchar *better = lt_variant_get_better_tag(variant);
-			const gchar *s = lt_variant_get_tag(variant);
+			const char *better = lt_variant_get_better_tag(variant);
+			const char *s = lt_variant_get_tag(variant);
 
 			if (better && g_ascii_strcasecmp(s, better) != 0) {
 				/* ignore all of variants prior to this one */
@@ -1681,7 +1682,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 			l = g_list_next(l);
 		}
 		if (tag->extension) {
-			gchar *s = lt_extension_get_canonicalized_tag(tag->extension);
+			char *s = lt_extension_get_canonicalized_tag(tag->extension);
 
 			g_string_append_printf(string, "-%s", s);
 			g_free(s);
@@ -1729,7 +1730,7 @@ lt_tag_canonicalize(lt_tag_t  *tag,
 lt_tag_t *
 lt_tag_convert_from_locale(GError **error)
 {
-	const gchar *locale;
+	const char *locale;
 
 	locale = setlocale(LC_CTYPE, NULL);
 	if (!locale)
@@ -1746,15 +1747,15 @@ lt_tag_convert_from_locale(GError **error)
  *
  * Returns: a locale string or %NULL if fails
  */
-gchar *
+char *
 lt_tag_convert_to_locale(lt_tag_t  *tag,
 			 GError   **error)
 {
-	gchar *retval = NULL;
+	char *retval = NULL;
 	GString *string = NULL;
 	GError *err = NULL;
-	const gchar *mod = NULL;
-	gchar *canonical_tag = NULL;
+	const char *mod = NULL;
+	char *canonical_tag = NULL;
 	lt_tag_t *ctag;
 
 	g_return_val_if_fail (tag != NULL, NULL);
@@ -1843,11 +1844,11 @@ lt_tag_dump(const lt_tag_t *tag)
  *
  * Returns: %TRUE if it's the same, otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_tag_compare(const lt_tag_t *v1,
 	       const lt_tag_t *v2)
 {
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 	const GList *l1, *l2;
 
 	g_return_val_if_fail (v1 != NULL, FALSE);
@@ -1892,12 +1893,12 @@ lt_tag_compare(const lt_tag_t *v1,
  *
  * Returns: %TRUE if it matches, otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_tag_match(const lt_tag_t  *v1,
-	     const gchar     *v2,
+	     const char      *v2,
 	     GError         **error)
 {
-	gboolean retval = FALSE;
+	lt_bool_t retval = FALSE;
 	lt_tag_t *t2 = NULL;
 	lt_tag_state_t state = STATE_NONE;
 	GError *err = NULL;
@@ -1937,16 +1938,16 @@ lt_tag_match(const lt_tag_t  *v1,
  *
  * Returns: a language tag string if any matches, otherwise %NULL.
  */
-gchar *
+char *
 lt_tag_lookup(const lt_tag_t  *tag,
-	      const gchar     *pattern,
+	      const char      *pattern,
 	      GError         **error)
 {
 	lt_tag_t *t2 = NULL;
 	lt_tag_state_t state = STATE_NONE;
 	GError *err = NULL;
 	GList *l;
-	gchar *retval = NULL;
+	char *retval = NULL;
 
 	g_return_val_if_fail (tag != NULL, NULL);
 	g_return_val_if_fail (pattern != NULL, NULL);
@@ -1956,7 +1957,7 @@ lt_tag_lookup(const lt_tag_t  *tag,
 	if (err)
 		goto bail;
 	if (_lt_tag_match(tag, t2, state)) {
-		gint32 i;
+		int32_t i;
 
 		for (i = 0; i < (STATE_END - 1); i++) {
 			if (t2->wildcard_map & (1 << i)) {
@@ -2039,13 +2040,13 @@ lt_tag_lookup(const lt_tag_t  *tag,
  *
  * Returns: a string.
  */
-gchar *
+char *
 lt_tag_transform(lt_tag_t  *tag,
 		 GError   **error)
 {
 	lt_xml_t *xml = NULL;
-	const gchar *tag_string;
-	gchar *retval = NULL;
+	const char *tag_string;
+	char *retval = NULL;
 	GError *err = NULL;
 
 	g_return_val_if_fail (tag != NULL, NULL);
@@ -2057,10 +2058,10 @@ lt_tag_transform(lt_tag_t  *tag,
 		xmlXPathObjectPtr xobj = NULL;
 		xmlNodePtr ent;
 		xmlChar *to;
-		gchar *xpath_string = NULL;
+		char *xpath_string = NULL;
 		int n;
 		GString *s;
-		gint i;
+		int i;
 
 		xml = lt_xml_new();
 		doc = lt_xml_get_cldr(xml, LT_XML_CLDR_SUPPLEMENTAL_LIKELY_SUBTAGS);
@@ -2090,7 +2091,7 @@ lt_tag_transform(lt_tag_t  *tag,
 			goto bail;
 		}
 		to = xmlGetProp(ent, (const xmlChar *)"to");
-		s = g_string_new((const gchar *)to);
+		s = g_string_new((const char *)to);
 		xmlFree(to);
 		for (i = 0; i < s->len; i++) {
 			if (s->str[i] == '_')

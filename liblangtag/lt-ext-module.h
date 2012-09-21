@@ -18,10 +18,11 @@
 #define __LT_EXT_MODULE_H__
 
 #include <glib.h>
+#include <liblangtag/lt-macros.h>
 #include <liblangtag/lt-ext-module-data.h>
 #include <liblangtag/lt-tag.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * LT_EXT_MODULE_VERSION:
@@ -49,7 +50,7 @@ typedef struct _lt_ext_module_funcs_t	lt_ext_module_funcs_t;
  * Returns: a version number. this is the same to #LT_EXT_MODULE_VERSION
  *          when the module was built.
  */
-typedef gint                          (* lt_ext_module_version_func_t)   (void);
+typedef int                          (* lt_ext_module_version_func_t)   (void);
 /**
  * lt_ext_module_get_funcs_func_t:
  *
@@ -68,7 +69,7 @@ typedef const lt_ext_module_funcs_t * (* lt_ext_module_get_funcs_func_t) (void);
  *
  * Returns: a singleton character.
  */
-typedef gchar                  (* lt_ext_module_singleton_func_t) (void);
+typedef char                  (* lt_ext_module_singleton_func_t) (void);
 /**
  * lt_ext_module_data_new_func_t:
  *
@@ -91,9 +92,9 @@ typedef lt_ext_module_data_t * (* lt_ext_module_data_new_func_t)  (void);
  * Returns: %TRUE if @tag is valid to process parsing subtags for the extension.
  *          otherwise %FALSE.
  */
-typedef gboolean               (* lt_ext_module_precheck_func_t)  (lt_ext_module_data_t  *data,
-								   const lt_tag_t        *tag,
-								   GError               **error);
+typedef lt_bool_t (* lt_ext_module_precheck_func_t)  (lt_ext_module_data_t  *data,
+						      const lt_tag_t        *tag,
+						      GError               **error);
 /**
  * lt_ext_module_parse_func_t:
  * @data: a #lt_ext_module_data_t.
@@ -104,9 +105,9 @@ typedef gboolean               (* lt_ext_module_precheck_func_t)  (lt_ext_module
  *
  * Returns: %TRUE if the @subtag is valid for Extension. otherwise %FALSE.
  */
-typedef gboolean               (* lt_ext_module_parse_func_t)     (lt_ext_module_data_t  *data,
-								   const gchar           *subtag,
-								   GError               **error);
+typedef lt_bool_t (* lt_ext_module_parse_func_t)     (lt_ext_module_data_t  *data,
+						      const char            *subtag,
+						      GError               **error);
 /**
  * lt_ext_module_get_tag_func_t:
  * @data: a #lt_ext_module_data_t.
@@ -115,7 +116,7 @@ typedef gboolean               (* lt_ext_module_parse_func_t)     (lt_ext_module
  *
  * Returns: a tag string.
  */
-typedef gchar                * (* lt_ext_module_get_tag_func_t)   (lt_ext_module_data_t *data);
+typedef char * (* lt_ext_module_get_tag_func_t)   (lt_ext_module_data_t *data);
 /**
  * lt_ext_module_validate_func_t:
  * @data: a #lt_ext_module_data_t.
@@ -124,7 +125,7 @@ typedef gchar                * (* lt_ext_module_get_tag_func_t)   (lt_ext_module
  *
  * Returns: %TRUE if it's valid, otherwise %FALSE.
  */
-typedef gboolean               (* lt_ext_module_validate_func_t)  (lt_ext_module_data_t *data);
+typedef lt_bool_t (* lt_ext_module_validate_func_t)  (lt_ext_module_data_t *data);
 
 /**
  * lt_ext_module_funcs_t:
@@ -175,6 +176,6 @@ int                          module_get_version(void);
  */
 const lt_ext_module_funcs_t *module_get_funcs  (void);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_EXT_MODULE_H__ */

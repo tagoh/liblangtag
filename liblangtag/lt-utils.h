@@ -13,16 +13,16 @@
 #ifndef __LT_UTILS_H__
 #define __LT_UTILS_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /* maybe 512 should be enough */
 #define LT_PATH_MAX	512
 
-gchar *lt_strlower(gchar *string);
+char *lt_strlower(char *string);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_UTILS_H__ */
 

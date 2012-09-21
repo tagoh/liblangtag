@@ -17,7 +17,7 @@
 #ifndef __LT_TAG_H__
 #define __LT_TAG_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 #include <liblangtag/lt-lang.h>
 #include <liblangtag/lt-extlang.h>
 #include <liblangtag/lt-script.h>
@@ -25,7 +25,7 @@
 #include <liblangtag/lt-extension.h>
 #include <liblangtag/lt-grandfathered.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_tag_t:
@@ -39,32 +39,32 @@ typedef struct _lt_tag_t	lt_tag_t;
 lt_tag_t                 *lt_tag_new                   (void);
 lt_tag_t                 *lt_tag_ref                   (lt_tag_t        *tag);
 void                      lt_tag_unref                 (lt_tag_t        *tag);
-gboolean                  lt_tag_parse                 (lt_tag_t        *tag,
-                                                        const gchar     *tag_string,
+lt_bool_t                 lt_tag_parse                 (lt_tag_t        *tag,
+                                                        const char      *tag_string,
                                                         GError         **error);
-gboolean                  lt_tag_parse_with_extra_token(lt_tag_t        *tag,
-                                                        const gchar     *tag_string,
+lt_bool_t                 lt_tag_parse_with_extra_token(lt_tag_t        *tag,
+                                                        const char      *tag_string,
                                                         GError         **error);
 void                      lt_tag_clear                 (lt_tag_t        *tag);
 lt_tag_t                 *lt_tag_copy                  (const lt_tag_t  *tag);
-gboolean                  lt_tag_truncate              (lt_tag_t        *tag,
+lt_bool_t                 lt_tag_truncate              (lt_tag_t        *tag,
                                                         GError         **error);
-const gchar              *lt_tag_get_string            (lt_tag_t        *tag);
-gchar                    *lt_tag_canonicalize          (lt_tag_t        *tag,
+const char               *lt_tag_get_string            (lt_tag_t        *tag);
+char                     *lt_tag_canonicalize          (lt_tag_t        *tag,
                                                         GError         **error);
-gchar                    *lt_tag_convert_to_locale     (lt_tag_t        *tag,
+char                     *lt_tag_convert_to_locale     (lt_tag_t        *tag,
                                                         GError         **error);
 lt_tag_t                 *lt_tag_convert_from_locale   (GError         **error);
 void                      lt_tag_dump                  (const lt_tag_t  *tag);
-gboolean                  lt_tag_compare               (const lt_tag_t  *v1,
+lt_bool_t                 lt_tag_compare               (const lt_tag_t  *v1,
                                                         const lt_tag_t  *v2);
-gboolean                  lt_tag_match                 (const lt_tag_t  *v1,
-                                                        const gchar     *v2,
+lt_bool_t                 lt_tag_match                 (const lt_tag_t  *v1,
+                                                        const char      *v2,
                                                         GError         **error);
-gchar                    *lt_tag_lookup                (const lt_tag_t  *tag,
-                                                        const gchar     *pattern,
+char                     *lt_tag_lookup                (const lt_tag_t  *tag,
+                                                        const char      *pattern,
                                                         GError         **error);
-gchar                    *lt_tag_transform             (lt_tag_t        *tag,
+char                     *lt_tag_transform             (lt_tag_t        *tag,
                                                         GError         **error);
 const lt_lang_t          *lt_tag_get_language          (const lt_tag_t  *tag);
 const lt_extlang_t       *lt_tag_get_extlang           (const lt_tag_t  *tag);
@@ -75,6 +75,6 @@ const lt_extension_t     *lt_tag_get_extension         (const lt_tag_t  *tag);
 const GString            *lt_tag_get_privateuse        (const lt_tag_t  *tag);
 const lt_grandfathered_t *lt_tag_get_grandfathered     (const lt_tag_t  *tag);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_TAG_H__ */

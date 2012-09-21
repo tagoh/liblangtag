@@ -14,6 +14,7 @@
 #include "config.h"
 #endif
 
+#include "lt-macros.h"
 #include "lt-mem.h"
 #include "lt-extlang.h"
 #include "lt-extlang-private.h"
@@ -28,11 +29,11 @@
  */
 struct _lt_extlang_t {
 	lt_mem_t  parent;
-	gchar    *tag;
-	gchar    *description;
-	gchar    *macrolanguage;
-	gchar    *preferred_tag;
-	gchar    *prefix;
+	char     *tag;
+	char     *description;
+	char     *macrolanguage;
+	char     *preferred_tag;
+	char     *prefix;
 };
 
 /*< private >*/
@@ -50,7 +51,7 @@ lt_extlang_create(void)
 
 void
 lt_extlang_set_tag(lt_extlang_t *extlang,
-		   const gchar  *subtag)
+		   const char   *subtag)
 {
 	g_return_if_fail (extlang != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -64,7 +65,7 @@ lt_extlang_set_tag(lt_extlang_t *extlang,
 
 void
 lt_extlang_set_preferred_tag(lt_extlang_t *extlang,
-			     const gchar  *subtag)
+			     const char   *subtag)
 {
 	g_return_if_fail (extlang != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -78,7 +79,7 @@ lt_extlang_set_preferred_tag(lt_extlang_t *extlang,
 
 void
 lt_extlang_set_name(lt_extlang_t *extlang,
-		    const gchar  *description)
+		    const char   *description)
 {
 	g_return_if_fail (extlang != NULL);
 	g_return_if_fail (description != NULL);
@@ -92,7 +93,7 @@ lt_extlang_set_name(lt_extlang_t *extlang,
 
 void
 lt_extlang_set_macro_language(lt_extlang_t *extlang,
-			      const gchar  *macrolanguage)
+			      const char   *macrolanguage)
 {
 	g_return_if_fail (extlang != NULL);
 	g_return_if_fail (macrolanguage != NULL);
@@ -106,7 +107,7 @@ lt_extlang_set_macro_language(lt_extlang_t *extlang,
 
 void
 lt_extlang_add_prefix(lt_extlang_t *extlang,
-		      const gchar  *prefix)
+		      const char   *prefix)
 {
 	g_return_if_fail (extlang != NULL);
 	g_return_if_fail (prefix != NULL);
@@ -157,7 +158,7 @@ lt_extlang_unref(lt_extlang_t *extlang)
  *
  * Returns: a subtag name.
  */
-const gchar *
+const char *
 lt_extlang_get_tag(const lt_extlang_t *extlang)
 {
 	g_return_val_if_fail (extlang != NULL, NULL);
@@ -174,7 +175,7 @@ lt_extlang_get_tag(const lt_extlang_t *extlang)
  *
  * Returns: a preferred-value for the subtag or %NULL.
  */
-const gchar *
+const char *
 lt_extlang_get_preferred_tag(const lt_extlang_t *extlang)
 {
 	g_return_val_if_fail (extlang != NULL, NULL);
@@ -190,7 +191,7 @@ lt_extlang_get_preferred_tag(const lt_extlang_t *extlang)
  *
  * Returns: a description string.
  */
-const gchar *
+const char *
 lt_extlang_get_name(const lt_extlang_t *extlang)
 {
 	g_return_val_if_fail (extlang != NULL, NULL);
@@ -208,7 +209,7 @@ lt_extlang_get_name(const lt_extlang_t *extlang)
  *
  * Returns: a macrolanguage string or %NULL.
  */
-const gchar *
+const char *
 lt_extlang_get_macro_language(const lt_extlang_t *extlang)
 {
 	g_return_val_if_fail (extlang != NULL, NULL);
@@ -226,7 +227,7 @@ lt_extlang_get_macro_language(const lt_extlang_t *extlang)
  *
  * Returns: a prefix string or %NULL.
  */
-const gchar *
+const char *
 lt_extlang_get_prefix(const lt_extlang_t *extlang)
 {
 	g_return_val_if_fail (extlang != NULL, NULL);
@@ -243,9 +244,9 @@ lt_extlang_get_prefix(const lt_extlang_t *extlang)
 void
 lt_extlang_dump(const lt_extlang_t *extlang)
 {
-	const gchar *macrolang = lt_extlang_get_macro_language(extlang);
-	const gchar *preferred = lt_extlang_get_preferred_tag(extlang);
-	const gchar *prefix = lt_extlang_get_prefix(extlang);
+	const char *macrolang = lt_extlang_get_macro_language(extlang);
+	const char *preferred = lt_extlang_get_preferred_tag(extlang);
+	const char *prefix = lt_extlang_get_prefix(extlang);
 	GString *string = g_string_new(NULL);
 
 	if (macrolang) {
@@ -288,11 +289,11 @@ lt_extlang_dump(const lt_extlang_t *extlang)
  *
  * Returns: %TRUE if it's the same, otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_extlang_compare(const lt_extlang_t *v1,
 		   const lt_extlang_t *v2)
 {
-	const gchar *s1, *s2;
+	const char *s1, *s2;
 
 	if (v1 == v2)
 		return TRUE;

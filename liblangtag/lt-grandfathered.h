@@ -17,9 +17,9 @@
 #ifndef __LT_GRANDFATHERED_H__
 #define __LT_GRANDFATHERED_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_grandfathered_t:
@@ -32,14 +32,14 @@ typedef struct _lt_grandfathered_t	lt_grandfathered_t;
 
 lt_grandfathered_t *lt_grandfathered_ref              (lt_grandfathered_t       *grandfathered);
 void                lt_grandfathered_unref            (lt_grandfathered_t       *grandfathered);
-const gchar        *lt_grandfathered_get_better_tag   (const lt_grandfathered_t *grandfathered);
-const gchar        *lt_grandfathered_get_tag          (const lt_grandfathered_t *grandfathered);
-const gchar        *lt_grandfathered_get_preferred_tag(const lt_grandfathered_t *grandfathered);
-const gchar        *lt_grandfathered_get_name         (const lt_grandfathered_t *grandfathered);
+const char         *lt_grandfathered_get_better_tag   (const lt_grandfathered_t *grandfathered);
+const char         *lt_grandfathered_get_tag          (const lt_grandfathered_t *grandfathered);
+const char         *lt_grandfathered_get_preferred_tag(const lt_grandfathered_t *grandfathered);
+const char         *lt_grandfathered_get_name         (const lt_grandfathered_t *grandfathered);
 void                lt_grandfathered_dump             (const lt_grandfathered_t *grandfathered);
-gboolean            lt_grandfathered_compare          (const lt_grandfathered_t *v1,
+lt_bool_t           lt_grandfathered_compare          (const lt_grandfathered_t *v1,
 						       const lt_grandfathered_t *v2);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_GRANDFATHERED_H__ */

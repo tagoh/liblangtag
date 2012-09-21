@@ -13,10 +13,10 @@
 #ifndef __LT_TAG_PRIVATE_H__
 #define __LT_TAG_PRIVATE_H__
 
-#include <glib.h>
-#include <lt-tag.h>
+#include "lt-macros.h"
+#include "lt-tag.h"
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 enum _lt_tag_state_t {
 	STATE_NONE = 0,
@@ -47,9 +47,9 @@ enum _lt_tag_state_t {
 typedef enum _lt_tag_state_t	lt_tag_state_t;
 
 lt_tag_state_t lt_tag_parse_wildcard(lt_tag_t     *tag,
-				     const gchar  *tag_string,
+				     const char   *tag_string,
 				     GError      **error);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_TAG_PRIVATE_H__ */

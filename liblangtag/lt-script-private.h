@@ -13,17 +13,17 @@
 #ifndef __LT_SCRIPT_PRIVATE_H__
 #define __LT_SCRIPT_PRIVATE_H__
 
-#include <glib.h>
+#include "lt-macros.h"
 #include "lt-script.h"
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 lt_script_t *lt_script_create  (void);
 void         lt_script_set_name(lt_script_t *script,
-                                const gchar *description);
+                                const char  *description);
 void         lt_script_set_tag (lt_script_t *script,
-                                const gchar *subtag);
+                                const char  *subtag);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_SCRIPT_PRIVATE_H__ */

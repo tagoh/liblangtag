@@ -28,9 +28,9 @@
  */
 struct _lt_variant_t {
 	lt_mem_t  parent;
-	gchar    *tag;
-	gchar    *description;
-	gchar    *preferred_tag;
+	char     *tag;
+	char     *description;
+	char     *preferred_tag;
 	GList    *prefix;
 };
 
@@ -59,7 +59,7 @@ lt_variant_create(void)
 
 void
 lt_variant_set_tag(lt_variant_t *variant,
-		   const gchar  *subtag)
+		   const char   *subtag)
 {
 	g_return_if_fail (variant != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -73,7 +73,7 @@ lt_variant_set_tag(lt_variant_t *variant,
 
 void
 lt_variant_set_preferred_tag(lt_variant_t *variant,
-			     const gchar  *subtag)
+			     const char   *subtag)
 {
 	g_return_if_fail (variant != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -87,7 +87,7 @@ lt_variant_set_preferred_tag(lt_variant_t *variant,
 
 void
 lt_variant_set_name(lt_variant_t *variant,
-		    const gchar  *description)
+		    const char   *description)
 {
 	g_return_if_fail (variant != NULL);
 	g_return_if_fail (description != NULL);
@@ -101,7 +101,7 @@ lt_variant_set_name(lt_variant_t *variant,
 
 void
 lt_variant_add_prefix(lt_variant_t *variant,
-		      const gchar  *prefix)
+		      const char   *prefix)
 {
 	g_return_if_fail (variant != NULL);
 	g_return_if_fail (prefix != NULL);
@@ -155,10 +155,10 @@ lt_variant_unref(lt_variant_t *variant)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_variant_get_better_tag(const lt_variant_t *variant)
 {
-	const gchar *retval = lt_variant_get_preferred_tag(variant);
+	const char *retval = lt_variant_get_preferred_tag(variant);
 
 	if (!retval)
 		retval = lt_variant_get_tag(variant);
@@ -174,7 +174,7 @@ lt_variant_get_better_tag(const lt_variant_t *variant)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_variant_get_tag(const lt_variant_t *variant)
 {
 	g_return_val_if_fail (variant != NULL, NULL);
@@ -191,7 +191,7 @@ lt_variant_get_tag(const lt_variant_t *variant)
  *
  * Returns: a preferred-value for the tag or %NULL.
  */
-const gchar *
+const char *
 lt_variant_get_preferred_tag(const lt_variant_t *variant)
 {
 	g_return_val_if_fail (variant != NULL, NULL);
@@ -207,7 +207,7 @@ lt_variant_get_preferred_tag(const lt_variant_t *variant)
  *
  * Returns: a description string.
  */
-const gchar *
+const char *
 lt_variant_get_name(const lt_variant_t *variant)
 {
 	g_return_val_if_fail (variant != NULL, NULL);
@@ -246,7 +246,7 @@ lt_variant_dump(const lt_variant_t *variant)
 {
 	GString *string = g_string_new(NULL);
 	const GList *list, *l;
-	const gchar *preferred = lt_variant_get_preferred_tag(variant);
+	const char *preferred = lt_variant_get_preferred_tag(variant);
 
 	list = lt_variant_get_prefix(variant);
 	for (l = list; l != NULL; l = g_list_next(l)) {
@@ -254,7 +254,7 @@ lt_variant_dump(const lt_variant_t *variant)
 			g_string_append(string, " (prefix = [");
 		else
 			g_string_append(string, ", ");
-		g_string_append(string, (const gchar *)l->data);
+		g_string_append(string, (const char *)l->data);
 	}
 	if (preferred) {
 		if (string->len == 0)
@@ -286,11 +286,11 @@ lt_variant_dump(const lt_variant_t *variant)
  *
  * Returns: %TRUE if it's the same, otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_variant_compare(const lt_variant_t *v1,
 		   const lt_variant_t *v2)
 {
-	const gchar *s1, *s2;
+	const char *s1, *s2;
 
 	if (v1 == v2)
 		return TRUE;

@@ -32,7 +32,7 @@ struct _lt_extension_t {
 	lt_mem_t              parent;
 	GString              *cached_tag;
 	lt_ext_module_t      *module;
-	gint                  singleton;
+	int                   singleton;
 	lt_ext_module_data_t *extensions[LT_MAX_EXT_MODULES + 1];
 };
 
@@ -53,9 +53,9 @@ lt_extension_create(void)
 	return retval;
 }
 
-gboolean
+lt_bool_t
 lt_extension_has_singleton(lt_extension_t *extension,
-			   gchar           singleton_c)
+			   char            singleton_c)
 {
 	gint singleton;
 
@@ -68,9 +68,9 @@ lt_extension_has_singleton(lt_extension_t *extension,
 	return extension->extensions[singleton] != NULL;
 }
 
-gboolean
+lt_bool_t
 lt_extension_add_singleton(lt_extension_t  *extension,
-			   gchar            singleton_c,
+			   char             singleton_c,
 			   const lt_tag_t  *tag,
 			   GError         **error)
 {
@@ -128,12 +128,12 @@ lt_extension_add_singleton(lt_extension_t  *extension,
 	return TRUE;
 }
 
-gboolean
+lt_bool_t
 lt_extension_add_tag(lt_extension_t  *extension,
-		     const gchar     *subtag,
+		     const char      *subtag,
 		     GError         **error)
 {
-	gboolean retval;
+	lt_bool_t retval;
 	GError *err = NULL;
 
 	g_return_val_if_fail (extension != NULL, FALSE);
@@ -166,7 +166,7 @@ lt_extension_cancel_tag(lt_extension_t *extension)
 	g_return_if_fail (extension != NULL);
 
 	if (extension->module && extension->extensions[extension->singleton]) {
-		gchar **tags, singleton[4];
+		char **tags, singleton[4];
 		GList *l = NULL, *ll;
 		gint i;
 
@@ -193,7 +193,7 @@ lt_extension_cancel_tag(lt_extension_t *extension)
 				break;
 			}
 			if (extension->cached_tag->len > 0)
-				g_string_append_printf(extension->cached_tag, "-%s", (gchar *)ll->data);
+				g_string_append_printf(extension->cached_tag, "-%s", (char *)ll->data);
 			else
 				g_string_append(extension->cached_tag, ll->data);
 		}
@@ -232,10 +232,10 @@ lt_extension_copy(lt_extension_t *extension)
 	return retval;
 }
 
-gboolean
+lt_bool_t
 lt_extension_validate_state(lt_extension_t *extension)
 {
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 
 	g_return_val_if_fail (extension != NULL, FALSE);
 
@@ -286,7 +286,7 @@ lt_extension_unref(lt_extension_t *extension)
  *
  * Returns: the tag string.
  */
-const gchar *
+const char *
 lt_extension_get_tag(lt_extension_t *extension)
 {
 	g_return_val_if_fail (extension != NULL, NULL);
@@ -302,12 +302,12 @@ lt_extension_get_tag(lt_extension_t *extension)
  *
  * Returns: a string. this must be freed.
  */
-gchar *
+char *
 lt_extension_get_canonicalized_tag(lt_extension_t *extension)
 {
 	GString *string;
 	gint i;
-	gchar c, *s;
+	char c, *s;
 	lt_ext_module_t *m;
 
 	g_return_val_if_fail (extension != NULL, NULL);
@@ -348,8 +348,8 @@ void
 lt_extension_dump(lt_extension_t *extension)
 {
 	gint i;
-	gchar c;
-	gchar *s;
+	char c;
+	char *s;
 	lt_ext_module_t *m;
 
 	g_return_if_fail (extension != NULL);
@@ -387,14 +387,14 @@ lt_extension_dump(lt_extension_t *extension)
  *
  * Returns: %TRUE if it's the same, otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_extension_compare(const lt_extension_t *v1,
 		     const lt_extension_t *v2)
 {
 	gint i;
-	gchar *s1 = NULL, *s2 = NULL;
+	char *s1 = NULL, *s2 = NULL;
 	lt_ext_module_t *m = NULL;
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 
 	if (v1 == v2)
 		return TRUE;
@@ -443,11 +443,11 @@ lt_extension_compare(const lt_extension_t *v1,
  *
  * Returns: %TRUE if a subtag of the extension is truncated. otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_extension_truncate(lt_extension_t  *extension)
 {
 	gint i;
-	gboolean retval = FALSE;
+	lt_bool_t retval = FALSE;
 
 	g_return_val_if_fail (extension != NULL, FALSE);
 

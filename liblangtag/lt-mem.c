@@ -28,8 +28,8 @@ lt_mem_gstring_free(GString *string)
 }
 
 /*< public >*/
-gpointer
-lt_mem_alloc_object(gsize size)
+lt_pointer_t
+lt_mem_alloc_object(size_t size)
 {
 	lt_mem_t *retval;
 
@@ -45,7 +45,7 @@ lt_mem_alloc_object(gsize size)
 	return retval;
 }
 
-gpointer
+lt_pointer_t
 lt_mem_ref(lt_mem_t *object)
 {
 	g_return_val_if_fail (object != NULL, NULL);
@@ -65,7 +65,7 @@ lt_mem_unref(lt_mem_t *object)
 	if (g_atomic_int_dec_and_test(&object->ref_count)) {
 		if (object->refs) {
 			GHashTableIter iter;
-			gpointer p, unref;
+			lt_pointer_t p, unref;
 
 			g_hash_table_iter_init(&iter, object->refs);
 			while (g_hash_table_iter_next(&iter, &p, &unref)) {
@@ -76,7 +76,7 @@ lt_mem_unref(lt_mem_t *object)
 			g_hash_table_destroy(object->refs);
 		}
 		for (l = object->weak_pointers; l != NULL; l = g_list_next(l)) {
-			gpointer *p = (gpointer *)l->data;
+			lt_pointer_t *p = (lt_pointer_t *)l->data;
 			*p = NULL;
 		}
 		if (object->weak_pointers)
@@ -87,7 +87,7 @@ lt_mem_unref(lt_mem_t *object)
 
 void
 lt_mem_add_ref(lt_mem_t          *object,
-	       gpointer           p,
+	       lt_pointer_t       p,
 	       lt_destroy_func_t  func)
 {
 	g_return_if_fail (object != NULL);
@@ -103,8 +103,8 @@ lt_mem_add_ref(lt_mem_t          *object,
 }
 
 void
-lt_mem_remove_ref(lt_mem_t *object,
-		  gpointer  p)
+lt_mem_remove_ref(lt_mem_t     *object,
+		  lt_pointer_t  p)
 {
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (p != NULL);
@@ -120,8 +120,8 @@ lt_mem_remove_ref(lt_mem_t *object,
 }
 
 void
-lt_mem_delete_ref(lt_mem_t *object,
-		  gpointer  p)
+lt_mem_delete_ref(lt_mem_t     *object,
+		  lt_pointer_t  p)
 {
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (p != NULL);
@@ -132,8 +132,8 @@ lt_mem_delete_ref(lt_mem_t *object,
 }
 
 void
-lt_mem_add_weak_pointer(lt_mem_t *object,
-			gpointer *p)
+lt_mem_add_weak_pointer(lt_mem_t     *object,
+			lt_pointer_t *p)
 {
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (p != NULL);
@@ -143,8 +143,8 @@ lt_mem_add_weak_pointer(lt_mem_t *object,
 }
 
 void
-lt_mem_remove_weak_pointer(lt_mem_t *object,
-			   gpointer *p)
+lt_mem_remove_weak_pointer(lt_mem_t     *object,
+			   lt_pointer_t *p)
 {
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (p != NULL);

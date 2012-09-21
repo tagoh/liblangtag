@@ -13,21 +13,21 @@
 #ifndef __LT_VARIANT_PRIVATE_H__
 #define __LT_VARIANT_PRIVATE_H__
 
-#include <glib.h>
+#include "lt-macros.h"
 #include "lt-variant.h"
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 lt_variant_t *lt_variant_create           (void);
 void          lt_variant_set_tag          (lt_variant_t *variant,
-                                           const gchar  *subtag);
+                                           const char   *subtag);
 void          lt_variant_set_preferred_tag(lt_variant_t *variant,
-                                           const gchar  *subtag);
+                                           const char   *subtag);
 void          lt_variant_set_name         (lt_variant_t *variant,
-                                           const gchar  *description);
+                                           const char   *description);
 void          lt_variant_add_prefix       (lt_variant_t *variant,
-                                           const gchar  *prefix);
+                                           const char   *prefix);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_VARIANT_PRIVATE_H__ */

@@ -28,12 +28,12 @@
  */
 struct _lt_lang_t {
 	lt_mem_t  parent;
-	gchar    *tag;
-	gchar    *description;
-	gchar    *suppress_script;
-	gchar    *scope;
-	gchar    *macrolanguage;
-	gchar    *preferred_tag;
+	char     *tag;
+	char     *description;
+	char     *suppress_script;
+	char     *scope;
+	char     *macrolanguage;
+	char     *preferred_tag;
 };
 
 /*< private >*/
@@ -48,8 +48,8 @@ lt_lang_create(void)
 }
 
 void
-lt_lang_set_name(lt_lang_t   *lang,
-		 const gchar *description)
+lt_lang_set_name(lt_lang_t  *lang,
+		 const char *description)
 {
 	g_return_if_fail (lang != NULL);
 	g_return_if_fail (description != NULL);
@@ -62,8 +62,8 @@ lt_lang_set_name(lt_lang_t   *lang,
 }
 
 void
-lt_lang_set_tag(lt_lang_t   *lang,
-		const gchar *subtag)
+lt_lang_set_tag(lt_lang_t  *lang,
+		const char *subtag)
 {
 	g_return_if_fail (lang != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -76,8 +76,8 @@ lt_lang_set_tag(lt_lang_t   *lang,
 }
 
 void
-lt_lang_set_preferred_tag(lt_lang_t   *lang,
-			  const gchar *subtag)
+lt_lang_set_preferred_tag(lt_lang_t  *lang,
+			  const char *subtag)
 {
 	g_return_if_fail (lang != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -90,8 +90,8 @@ lt_lang_set_preferred_tag(lt_lang_t   *lang,
 }
 
 void
-lt_lang_set_suppress_script(lt_lang_t   *lang,
-			    const gchar *script)
+lt_lang_set_suppress_script(lt_lang_t  *lang,
+			    const char *script)
 {
 	g_return_if_fail (lang != NULL);
 	g_return_if_fail (script != NULL);
@@ -104,8 +104,8 @@ lt_lang_set_suppress_script(lt_lang_t   *lang,
 }
 
 void
-lt_lang_set_macro_language(lt_lang_t   *lang,
-			   const gchar *macrolanguage)
+lt_lang_set_macro_language(lt_lang_t  *lang,
+			   const char *macrolanguage)
 {
 	g_return_if_fail (lang != NULL);
 	g_return_if_fail (macrolanguage != NULL);
@@ -118,8 +118,8 @@ lt_lang_set_macro_language(lt_lang_t   *lang,
 }
 
 void
-lt_lang_set_scope(lt_lang_t   *lang,
-		  const gchar *scope)
+lt_lang_set_scope(lt_lang_t  *lang,
+		  const char *scope)
 {
 	g_return_if_fail (lang != NULL);
 	g_return_if_fail (scope != NULL);
@@ -170,7 +170,7 @@ lt_lang_unref(lt_lang_t *lang)
  *
  * Returns: a description string.
  */
-const gchar *
+const char *
 lt_lang_get_name(const lt_lang_t *lang)
 {
 	g_return_val_if_fail (lang != NULL, NULL);
@@ -187,10 +187,10 @@ lt_lang_get_name(const lt_lang_t *lang)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_lang_get_better_tag(const lt_lang_t *lang)
 {
-	const gchar *retval = lt_lang_get_preferred_tag(lang);
+	const char *retval = lt_lang_get_preferred_tag(lang);
 
 	if (!retval)
 		retval = lt_lang_get_tag(lang);
@@ -206,7 +206,7 @@ lt_lang_get_better_tag(const lt_lang_t *lang)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_lang_get_tag(const lt_lang_t *lang)
 {
 	g_return_val_if_fail (lang != NULL, NULL);
@@ -223,7 +223,7 @@ lt_lang_get_tag(const lt_lang_t *lang)
  *
  * Returns: a preferred-value for the tag or %NULL.
  */
-const gchar *
+const char *
 lt_lang_get_preferred_tag(const lt_lang_t *lang)
 {
 	g_return_val_if_fail (lang != NULL, NULL);
@@ -240,7 +240,7 @@ lt_lang_get_preferred_tag(const lt_lang_t *lang)
  *
  * Returns: a suppress-script string or %NULL.
  */
-const gchar *
+const char *
 lt_lang_get_suppress_script(const lt_lang_t *lang)
 {
 	g_return_val_if_fail (lang != NULL, NULL);
@@ -258,7 +258,7 @@ lt_lang_get_suppress_script(const lt_lang_t *lang)
  *
  * Returns: a macrolanguage string or %NULL.
  */
-const gchar *
+const char *
 lt_lang_get_macro_language(const lt_lang_t *lang)
 {
 	g_return_val_if_fail (lang != NULL, NULL);
@@ -275,7 +275,7 @@ lt_lang_get_macro_language(const lt_lang_t *lang)
  *
  * Returns: a scope string or %NULL.
  */
-const gchar *
+const char *
 lt_lang_get_scope(const lt_lang_t *lang)
 {
 	g_return_val_if_fail (lang != NULL, NULL);
@@ -292,10 +292,10 @@ lt_lang_get_scope(const lt_lang_t *lang)
 void
 lt_lang_dump(const lt_lang_t *lang)
 {
-	const gchar *preferred = lt_lang_get_preferred_tag(lang);
-	const gchar *suppress = lt_lang_get_suppress_script(lang);
-	const gchar *scope = lt_lang_get_scope(lang);
-	const gchar *macrolang = lt_lang_get_macro_language(lang);
+	const char *preferred = lt_lang_get_preferred_tag(lang);
+	const char *suppress = lt_lang_get_suppress_script(lang);
+	const char *scope = lt_lang_get_scope(lang);
+	const char *macrolang = lt_lang_get_macro_language(lang);
 	GString *string = g_string_new(NULL);
 
 	if (preferred) {
@@ -347,11 +347,11 @@ lt_lang_dump(const lt_lang_t *lang)
  *
  * Returns: %TRUE if it's the same, otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_lang_compare(const lt_lang_t *v1,
 		const lt_lang_t *v2)
 {
-	const gchar *s1, *s2;
+	const char *s1, *s2;
 
 	if (v1 == v2)
 		return TRUE;

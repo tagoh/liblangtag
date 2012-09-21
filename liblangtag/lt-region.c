@@ -28,9 +28,9 @@
  */
 struct _lt_region_t {
 	lt_mem_t  parent;
-	gchar    *tag;
-	gchar    *description;
-	gchar    *preferred_tag;
+	char     *tag;
+	char     *description;
+	char     *preferred_tag;
 };
 
 
@@ -47,7 +47,7 @@ lt_region_create(void)
 
 void
 lt_region_set_name(lt_region_t *region,
-		   const gchar *description)
+		   const char  *description)
 {
 	g_return_if_fail (region != NULL);
 	g_return_if_fail (description != NULL);
@@ -61,7 +61,7 @@ lt_region_set_name(lt_region_t *region,
 
 void
 lt_region_set_tag(lt_region_t *region,
-		  const gchar *subtag)
+		  const char  *subtag)
 {
 	g_return_if_fail (region != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -75,7 +75,7 @@ lt_region_set_tag(lt_region_t *region,
 
 void
 lt_region_set_preferred_tag(lt_region_t *region,
-			    const gchar *subtag)
+			    const char  *subtag)
 {
 	g_return_if_fail (region != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -126,7 +126,7 @@ lt_region_unref(lt_region_t *region)
  *
  * Returns: a description string.
  */
-const gchar *
+const char *
 lt_region_get_name(const lt_region_t *region)
 {
 	g_return_val_if_fail (region != NULL, NULL);
@@ -143,10 +143,10 @@ lt_region_get_name(const lt_region_t *region)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_region_get_better_tag(const lt_region_t *region)
 {
-	const gchar *retval = lt_region_get_preferred_tag(region);
+	const char *retval = lt_region_get_preferred_tag(region);
 
 	if (!retval)
 		retval = lt_region_get_tag(region);
@@ -162,7 +162,7 @@ lt_region_get_better_tag(const lt_region_t *region)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_region_get_tag(const lt_region_t *region)
 {
 	g_return_val_if_fail (region != NULL, NULL);
@@ -179,7 +179,7 @@ lt_region_get_tag(const lt_region_t *region)
  *
  * Returns: a preferred-value for the tag or %NULL.
  */
-const gchar *
+const char *
 lt_region_get_preferred_tag(const lt_region_t *region)
 {
 	g_return_val_if_fail (region != NULL, NULL);
@@ -197,7 +197,7 @@ void
 lt_region_dump(const lt_region_t *region)
 {
 	GString *string = g_string_new(NULL);
-	const gchar *preferred = lt_region_get_preferred_tag(region);
+	const char *preferred = lt_region_get_preferred_tag(region);
 
 	if (preferred) {
 		if (string->len == 0)
@@ -223,11 +223,11 @@ lt_region_dump(const lt_region_t *region)
  *
  * Returns: %TRUE if it's the same, otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_region_compare(const lt_region_t *v1,
 		  const lt_region_t *v2)
 {
-	const gchar *s1, *s2;
+	const char *s1, *s2;
 
 	if (v1 == v2)
 		return TRUE;

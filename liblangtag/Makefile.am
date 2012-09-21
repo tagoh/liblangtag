@@ -55,6 +55,7 @@ liblangtag_public_headers =			\
 	lt-grandfathered-db.h			\
 	lt-lang.h				\
 	lt-lang-db.h				\
+	lt-macros.h				\
 	lt-redundant.h				\
 	lt-redundant-db.h			\
 	lt-region.h				\

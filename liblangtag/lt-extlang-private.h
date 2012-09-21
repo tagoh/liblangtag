@@ -13,23 +13,23 @@
 #ifndef __LT_EXTLANG_PRIVATE_H__
 #define __LT_EXTLANG_PRIVATE_H__
 
-#include <glib.h>
+#include "lt-macros.h"
 #include "lt-extlang.h"
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 lt_extlang_t *lt_extlang_create            (void);
 void          lt_extlang_set_tag           (lt_extlang_t *extlang,
-                                            const gchar  *subtag);
+                                            const char   *subtag);
 void          lt_extlang_set_preferred_tag (lt_extlang_t *extlang,
-                                            const gchar  *subtag);
+                                            const char   *subtag);
 void          lt_extlang_set_name          (lt_extlang_t *extlang,
-                                            const gchar  *description);
+                                            const char   *description);
 void          lt_extlang_set_macro_language(lt_extlang_t *extlang,
-                                            const gchar  *macrolanguage);
+                                            const char   *macrolanguage);
 void          lt_extlang_add_prefix        (lt_extlang_t *extlang,
-                                            const gchar  *prefix);
+                                            const char   *prefix);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_EXTLANG_PRIVATE_H__ */

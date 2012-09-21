@@ -13,19 +13,19 @@
 #ifndef __LT_REGION_PRIVATE_H__
 #define __LT_REGION_PRIVATE_H__
 
-#include <glib.h>
+#include "lt-macros.h"
 #include "lt-region.h"
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 lt_region_t *lt_region_create           (void);
 void         lt_region_set_name         (lt_region_t *region,
-                                         const gchar *description);
+                                         const char  *description);
 void         lt_region_set_tag          (lt_region_t *region,
-                                         const gchar *subtag);
+                                         const char  *subtag);
 void         lt_region_set_preferred_tag(lt_region_t *region,
-                                         const gchar *subtag);
+                                         const char  *subtag);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_REGION_PRIVATE_H__ */

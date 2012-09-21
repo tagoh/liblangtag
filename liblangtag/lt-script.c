@@ -29,8 +29,8 @@
  */
 struct _lt_script_t {
 	lt_mem_t  parent;
-	gchar    *tag;
-	gchar    *description;
+	char     *tag;
+	char     *description;
 };
 
 
@@ -47,7 +47,7 @@ lt_script_create(void)
 
 void
 lt_script_set_name(lt_script_t *script,
-		   const gchar *description)
+		   const char  *description)
 {
 	g_return_if_fail (script != NULL);
 	g_return_if_fail (description != NULL);
@@ -61,7 +61,7 @@ lt_script_set_name(lt_script_t *script,
 
 void
 lt_script_set_tag(lt_script_t *script,
-		  const gchar *subtag)
+		  const char  *subtag)
 {
 	g_return_if_fail (script != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -112,7 +112,7 @@ lt_script_unref(lt_script_t *script)
  *
  * Returns: a description string.
  */
-const gchar *
+const char *
 lt_script_get_name(const lt_script_t *script)
 {
 	g_return_val_if_fail (script != NULL, NULL);
@@ -128,7 +128,7 @@ lt_script_get_name(const lt_script_t *script)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_script_get_tag(const lt_script_t *script)
 {
 	g_return_val_if_fail (script != NULL, NULL);
@@ -158,13 +158,13 @@ lt_script_dump(const lt_script_t *script)
  *
  * Returns: a modifier string or %NULL.
  */
-const gchar *
+const char *
 lt_script_convert_to_modifier(const lt_script_t *script)
 {
-	const gchar *p;
+	const char *p;
 	static const struct {
-		gchar *modifier;
-		gchar *script;
+		char *modifier;
+		char *script;
 	} modifiers[] = {
 		{"abegede", NULL},
 		{"cyrillic", "Cyrl"},
@@ -201,11 +201,11 @@ lt_script_convert_to_modifier(const lt_script_t *script)
  *
  * Returns: %TRUE if it's the same, otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_script_compare(const lt_script_t *v1,
 		  const lt_script_t *v2)
 {
-	const gchar *s1, *s2;
+	const char *s1, *s2;
 
 	if (v1 == v2)
 		return TRUE;

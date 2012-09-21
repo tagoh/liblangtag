@@ -17,9 +17,9 @@
 #ifndef __LT_REGION_H__
 #define __LT_REGION_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_region_t:
@@ -32,12 +32,12 @@ typedef struct _lt_region_t	lt_region_t;
 
 lt_region_t *lt_region_ref              (lt_region_t       *region);
 void         lt_region_unref            (lt_region_t       *region);
-const gchar *lt_region_get_name         (const lt_region_t *region);
-const gchar *lt_region_get_better_tag   (const lt_region_t *region);
-const gchar *lt_region_get_tag          (const lt_region_t *region);
-const gchar *lt_region_get_preferred_tag(const lt_region_t *region);
+const char  *lt_region_get_name         (const lt_region_t *region);
+const char  *lt_region_get_better_tag   (const lt_region_t *region);
+const char  *lt_region_get_tag          (const lt_region_t *region);
+const char  *lt_region_get_preferred_tag(const lt_region_t *region);
 void         lt_region_dump             (const lt_region_t *region);
-gboolean     lt_region_compare          (const lt_region_t *v1,
+lt_bool_t    lt_region_compare          (const lt_region_t *v1,
 					 const lt_region_t *v2);
 
 G_END_DECLS

@@ -17,7 +17,7 @@
 #ifndef __LT_DATABASE_H__
 #define __LT_DATABASE_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 #include <liblangtag/lt-extlang-db.h>
 #include <liblangtag/lt-grandfathered-db.h>
 #include <liblangtag/lt-lang-db.h>
@@ -26,10 +26,10 @@
 #include <liblangtag/lt-script-db.h>
 #include <liblangtag/lt-variant-db.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
-void                   lt_db_set_datadir      (const gchar *path);
-const gchar           *lt_db_get_datadir      (void);
+void                   lt_db_set_datadir      (const char *path);
+const char            *lt_db_get_datadir      (void);
 void                   lt_db_initialize       (void);
 void                   lt_db_finalize         (void);
 lt_lang_db_t          *lt_db_get_lang         (void);
@@ -40,6 +40,6 @@ lt_variant_db_t       *lt_db_get_variant      (void);
 lt_grandfathered_db_t *lt_db_get_grandfathered(void);
 lt_redundant_db_t     *lt_db_get_redundant    (void);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_DATABASE_H__ */

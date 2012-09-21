@@ -17,9 +17,10 @@
 #ifndef __LT_EXT_MODULE_DATA_H__
 #define __LT_EXT_MODULE_DATA_H__
 
+#include <liblangtag/lt-macros.h>
 #include <glib.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_ext_module_data_t:
@@ -29,17 +30,17 @@ G_BEGIN_DECLS
  * structure are private to the #lt_ext_module_data_t implementation.
  */
 struct _lt_ext_module_data_t {
-	gpointer dummy[8];
+	lt_pointer_t dummy[8];
 };
 
 typedef struct _lt_ext_module_data_t	lt_ext_module_data_t;
 
 
-lt_ext_module_data_t *lt_ext_module_data_new  (gsize                 size,
+lt_ext_module_data_t *lt_ext_module_data_new  (size_t                size,
                                                GDestroyNotify        finalizer);
 lt_ext_module_data_t *lt_ext_module_data_ref  (lt_ext_module_data_t *data);
 void                  lt_ext_module_data_unref(lt_ext_module_data_t *data);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_EXT_MODULE_DATA_H__ */

@@ -13,39 +13,40 @@
 #ifndef __LT_MEM_H__
 #define __LT_MEM_H__
 
+#include <liblangtag/lt-macros.h>
 #include <glib.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 typedef struct _lt_mem_t		lt_mem_t;
 
-typedef void (* lt_destroy_func_t)	(gpointer data);
+typedef void (* lt_destroy_func_t)	(lt_pointer_t data);
 
 struct _lt_mem_t {
-	volatile guint  ref_count;
-	gsize           size;
-	GHashTable     *refs;
-	GList          *weak_pointers;
+	volatile unsigned int  ref_count;
+	size_t                 size;
+	GHashTable            *refs;
+	GList                 *weak_pointers;
 };
 
-gpointer lt_mem_alloc_object       (gsize              size);
-gpointer lt_mem_ref                (lt_mem_t          *object);
-void     lt_mem_unref              (lt_mem_t          *object);
-void     lt_mem_add_ref            (lt_mem_t          *object,
-                                    gpointer           p,
-                                    lt_destroy_func_t  func);
-void     lt_mem_remove_ref         (lt_mem_t          *object,
-                                    gpointer           p);
-void     lt_mem_delete_ref         (lt_mem_t          *object,
-                                    gpointer           p);
-void     lt_mem_add_weak_pointer   (lt_mem_t          *object,
-                                    gpointer          *p);
-void     lt_mem_remove_weak_pointer(lt_mem_t          *object,
-                                    gpointer          *p);
+lt_pointer_t lt_mem_alloc_object       (size_t             size);
+lt_pointer_t lt_mem_ref                (lt_mem_t          *object);
+void         lt_mem_unref              (lt_mem_t          *object);
+void         lt_mem_add_ref            (lt_mem_t          *object,
+                                        lt_pointer_t       p,
+                                        lt_destroy_func_t  func);
+void         lt_mem_remove_ref         (lt_mem_t          *object,
+                                        lt_pointer_t       p);
+void         lt_mem_delete_ref         (lt_mem_t          *object,
+                                        lt_pointer_t       p);
+void         lt_mem_add_weak_pointer   (lt_mem_t          *object,
+                                        lt_pointer_t      *p);
+void         lt_mem_remove_weak_pointer(lt_mem_t          *object,
+                                        lt_pointer_t      *p);
 
 /* utility functions */
 void lt_mem_gstring_free(GString *string);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_MEM_H__ */

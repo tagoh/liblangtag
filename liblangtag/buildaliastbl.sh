@@ -37,15 +37,15 @@ cat<<EOF
 #ifndef __LT_LOCALEALIAS_H__
 #define __LT_LOCALEALIAS_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 typedef struct _lt_localealias_t	lt_localealias_t;
 
 struct _lt_localealias_t {
-	gchar *alias;
-	gchar *locale;
+	char *alias;
+	char *locale;
 };
 
 static lt_localealias_t __lt_localealias_tables[] = {
@@ -57,7 +57,7 @@ cat<<EOF
 	{NULL, NULL}
 };
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_LOCALEALIAS_H__ */
 EOF

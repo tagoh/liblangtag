@@ -17,9 +17,9 @@
 #ifndef __LT_VARIANT_H__
 #define __LT_VARIANT_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_variant_t:
@@ -32,15 +32,15 @@ typedef struct _lt_variant_t	lt_variant_t;
 
 lt_variant_t *lt_variant_ref              (lt_variant_t       *variant);
 void          lt_variant_unref            (lt_variant_t       *variant);
-const gchar  *lt_variant_get_better_tag   (const lt_variant_t *variant);
-const gchar  *lt_variant_get_tag          (const lt_variant_t *variant);
-const gchar  *lt_variant_get_preferred_tag(const lt_variant_t *variant);
-const gchar  *lt_variant_get_name         (const lt_variant_t *variant);
+const char   *lt_variant_get_better_tag   (const lt_variant_t *variant);
+const char   *lt_variant_get_tag          (const lt_variant_t *variant);
+const char   *lt_variant_get_preferred_tag(const lt_variant_t *variant);
+const char   *lt_variant_get_name         (const lt_variant_t *variant);
 const GList  *lt_variant_get_prefix       (const lt_variant_t *variant);
 void          lt_variant_dump             (const lt_variant_t *variant);
-gboolean      lt_variant_compare          (const lt_variant_t *v1,
+lt_bool_t     lt_variant_compare          (const lt_variant_t *v1,
 					   const lt_variant_t *v2);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_VARIANT_H__ */

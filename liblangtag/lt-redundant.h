@@ -17,9 +17,9 @@
 #ifndef __LT_REDUNDANT_H__
 #define __LT_REDUNDANT_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_redundant_t:
@@ -32,14 +32,14 @@ typedef struct _lt_redundant_t	lt_redundant_t;
 
 lt_redundant_t *lt_redundant_ref              (lt_redundant_t       *redundant);
 void            lt_redundant_unref            (lt_redundant_t       *redundant);
-const gchar    *lt_redundant_get_better_tag   (const lt_redundant_t *redundant);
-const gchar    *lt_redundant_get_tag          (const lt_redundant_t *redundant);
-const gchar    *lt_redundant_get_preferred_tag(const lt_redundant_t *redundant);
-const gchar    *lt_redundant_get_name         (const lt_redundant_t *redundant);
+const char     *lt_redundant_get_better_tag   (const lt_redundant_t *redundant);
+const char     *lt_redundant_get_tag          (const lt_redundant_t *redundant);
+const char     *lt_redundant_get_preferred_tag(const lt_redundant_t *redundant);
+const char     *lt_redundant_get_name         (const lt_redundant_t *redundant);
 void            lt_redundant_dump             (const lt_redundant_t *redundant);
-gboolean        lt_redundant_compare          (const lt_redundant_t *v1,
+lt_bool_t       lt_redundant_compare          (const lt_redundant_t *v1,
                                                const lt_redundant_t *v2);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_REDUNDANT_H__ */

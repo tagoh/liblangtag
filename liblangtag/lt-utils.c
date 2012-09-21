@@ -14,6 +14,7 @@
 #include "config.h"
 #endif
 
+#include <glib.h>
 #include <string.h>
 #include "lt-utils.h"
 
@@ -21,11 +22,11 @@
 /*< private >*/
 
 /*< public >*/
-gchar *
-lt_strlower(gchar *string)
+char *
+lt_strlower(char *string)
 {
-	gsize len;
-	gchar *p = string;
+	size_t len;
+	char *p = string;
 
 	g_return_val_if_fail (string != NULL, NULL);
 

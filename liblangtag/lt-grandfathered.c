@@ -28,9 +28,9 @@
  */
 struct _lt_grandfathered_t {
 	lt_mem_t  parent;
-	gchar    *tag;
-	gchar    *description;
-	gchar    *preferred_tag;
+	char     *tag;
+	char     *description;
+	char     *preferred_tag;
 };
 
 /*< private >*/
@@ -48,7 +48,7 @@ lt_grandfathered_create(void)
 
 void
 lt_grandfathered_set_tag(lt_grandfathered_t *grandfathered,
-			 const gchar        *tag)
+			 const char         *tag)
 {
 	g_return_if_fail (grandfathered != NULL);
 	g_return_if_fail (tag != NULL);
@@ -62,7 +62,7 @@ lt_grandfathered_set_tag(lt_grandfathered_t *grandfathered,
 
 void
 lt_grandfathered_set_name(lt_grandfathered_t *grandfathered,
-			  const gchar        *description)
+			  const char         *description)
 {
 	g_return_if_fail (grandfathered != NULL);
 	g_return_if_fail (description != NULL);
@@ -76,7 +76,7 @@ lt_grandfathered_set_name(lt_grandfathered_t *grandfathered,
 
 void
 lt_grandfathered_set_preferred_tag(lt_grandfathered_t *grandfathered,
-				   const gchar        *subtag)
+				   const char         *subtag)
 {
 	g_return_if_fail (grandfathered != NULL);
 	g_return_if_fail (subtag != NULL);
@@ -128,10 +128,10 @@ lt_grandfathered_unref(lt_grandfathered_t *grandfathered)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_grandfathered_get_better_tag(const lt_grandfathered_t *grandfathered)
 {
-	const gchar *retval = lt_grandfathered_get_preferred_tag(grandfathered);
+	const char *retval = lt_grandfathered_get_preferred_tag(grandfathered);
 
 	if (!retval)
 		retval = lt_grandfathered_get_tag(grandfathered);
@@ -147,7 +147,7 @@ lt_grandfathered_get_better_tag(const lt_grandfathered_t *grandfathered)
  *
  * Returns: a tag string.
  */
-const gchar *
+const char *
 lt_grandfathered_get_tag(const lt_grandfathered_t *grandfathered)
 {
 	g_return_val_if_fail (grandfathered != NULL, NULL);
@@ -163,7 +163,7 @@ lt_grandfathered_get_tag(const lt_grandfathered_t *grandfathered)
  *
  * Returns: a description string.
  */
-const gchar *
+const char *
 lt_grandfathered_get_name(const lt_grandfathered_t *grandfathered)
 {
 	g_return_val_if_fail (grandfathered != NULL, NULL);
@@ -180,7 +180,7 @@ lt_grandfathered_get_name(const lt_grandfathered_t *grandfathered)
  *
  * Returns: a preferred-value for the tag or %NULL.
  */
-const gchar *
+const char *
 lt_grandfathered_get_preferred_tag(const lt_grandfathered_t *grandfathered)
 {
 	g_return_val_if_fail (grandfathered != NULL, NULL);
@@ -197,7 +197,7 @@ lt_grandfathered_get_preferred_tag(const lt_grandfathered_t *grandfathered)
 void
 lt_grandfathered_dump(const lt_grandfathered_t *grandfathered)
 {
-	const gchar *preferred = lt_grandfathered_get_preferred_tag(grandfathered);
+	const char *preferred = lt_grandfathered_get_preferred_tag(grandfathered);
 	GString *string = g_string_new(NULL);
 
 	if (preferred) {
@@ -225,7 +225,7 @@ lt_grandfathered_dump(const lt_grandfathered_t *grandfathered)
  *
  * Returns: %TRUE if it's the same. otherwise %FALSE.
  */
-gboolean
+lt_bool_t
 lt_grandfathered_compare(const lt_grandfathered_t *v1,
 			 const lt_grandfathered_t *v2)
 {

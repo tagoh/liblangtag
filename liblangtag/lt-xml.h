@@ -13,10 +13,10 @@
 #ifndef __LT_XML_H__
 #define __LT_XML_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 #include <libxml/tree.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 typedef struct _lt_xml_t	lt_xml_t;
 typedef enum _lt_xml_cldr_t {
@@ -43,6 +43,6 @@ const xmlDocPtr  lt_xml_get_subtag_registry(lt_xml_t      *xml);
 const xmlDocPtr  lt_xml_get_cldr           (lt_xml_t      *xml,
                                             lt_xml_cldr_t  type);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_XML_H__ */

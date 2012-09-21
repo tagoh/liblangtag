@@ -34,7 +34,7 @@
  */
 struct _lt_ext_module_t {
 	lt_mem_t                     parent;
-	gchar                       *name;
+	char                        *name;
 	GModule                     *module;
 	const lt_ext_module_funcs_t *funcs;
 };
@@ -45,28 +45,28 @@ typedef struct _lt_ext_default_data_t {
 } lt_ext_default_data_t;
 
 static lt_ext_module_data_t *_lt_ext_default_create_data (void);
-static gboolean              _lt_ext_default_precheck_tag(lt_ext_module_data_t  *data,
+static lt_bool_t             _lt_ext_default_precheck_tag(lt_ext_module_data_t  *data,
 							  const lt_tag_t        *tag,
 							  GError               **error);
-static gboolean              _lt_ext_default_parse_tag   (lt_ext_module_data_t  *data,
-							  const gchar           *subtag,
+static lt_bool_t             _lt_ext_default_parse_tag   (lt_ext_module_data_t  *data,
+							  const char            *subtag,
 							  GError               **error);
-static gchar                *_lt_ext_default_get_tag     (lt_ext_module_data_t  *data);
-static gboolean              _lt_ext_default_validate_tag(lt_ext_module_data_t  *data);
+static char                 *_lt_ext_default_get_tag     (lt_ext_module_data_t  *data);
+static lt_bool_t             _lt_ext_default_validate_tag(lt_ext_module_data_t  *data);
 static lt_ext_module_data_t *_lt_ext_eaw_create_data     (void);
-static gboolean              _lt_ext_eaw_precheck_tag    (lt_ext_module_data_t  *data,
+static lt_bool_t             _lt_ext_eaw_precheck_tag    (lt_ext_module_data_t  *data,
 							  const lt_tag_t        *tag,
 							  GError               **error);
-static gboolean              _lt_ext_eaw_parse_tag       (lt_ext_module_data_t  *data,
-							  const gchar           *subtag,
+static lt_bool_t             _lt_ext_eaw_parse_tag       (lt_ext_module_data_t  *data,
+							  const char            *subtag,
 							  GError               **error);
-static gchar                *_lt_ext_eaw_get_tag         (lt_ext_module_data_t  *data);
-static gboolean              _lt_ext_eaw_validate_tag    (lt_ext_module_data_t  *data);
+static char                 *_lt_ext_eaw_get_tag         (lt_ext_module_data_t  *data);
+static lt_bool_t             _lt_ext_eaw_validate_tag    (lt_ext_module_data_t  *data);
 
 
 static lt_ext_module_t *__lt_ext_modules[LT_MAX_EXT_MODULES + 1];
 static lt_ext_module_t *__lt_ext_default_handler;
-static gboolean __lt_ext_module_initialized = FALSE;
+static lt_bool_t __lt_ext_module_initialized = FALSE;
 static const lt_ext_module_funcs_t __default_funcs = {
 	NULL,
 	_lt_ext_default_create_data,
@@ -108,7 +108,7 @@ _lt_ext_default_create_data(void)
 	return retval;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_default_precheck_tag(lt_ext_module_data_t  *data,
 			     const lt_tag_t        *tag,
 			     GError               **error)
@@ -116,9 +116,9 @@ _lt_ext_default_precheck_tag(lt_ext_module_data_t  *data,
 	return TRUE;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_default_parse_tag(lt_ext_module_data_t  *data,
-			  const gchar           *subtag,
+			  const char            *subtag,
 			  GError               **error)
 {
 	lt_ext_default_data_t *d = (lt_ext_default_data_t *)data;
@@ -131,7 +131,7 @@ _lt_ext_default_parse_tag(lt_ext_module_data_t  *data,
 	return TRUE;
 }
 
-static gchar *
+static char *
 _lt_ext_default_get_tag(lt_ext_module_data_t *data)
 {
 	lt_ext_default_data_t *d = (lt_ext_default_data_t *)data;
@@ -139,7 +139,7 @@ _lt_ext_default_get_tag(lt_ext_module_data_t *data)
 	return g_strdup(d->tags->str);
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_default_validate_tag(lt_ext_module_data_t *data)
 {
 	return TRUE;
@@ -159,7 +159,7 @@ _lt_ext_eaw_create_data(void)
 	return retval;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_eaw_precheck_tag(lt_ext_module_data_t  *data,
 			 const lt_tag_t        *tag,
 			 GError               **error)
@@ -169,9 +169,9 @@ _lt_ext_eaw_precheck_tag(lt_ext_module_data_t  *data,
 	return FALSE;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_eaw_parse_tag(lt_ext_module_data_t  *data,
-		      const gchar           *subtag,
+		      const char            *subtag,
 		      GError               **error)
 {
 	/* not allowed to add any tags */
@@ -179,28 +179,28 @@ _lt_ext_eaw_parse_tag(lt_ext_module_data_t  *data,
 	return FALSE;
 }
 
-static gchar *
+static char *
 _lt_ext_eaw_get_tag(lt_ext_module_data_t *data)
 {
 	return g_strdup("");
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_eaw_validate_tag(lt_ext_module_data_t *data)
 {
 	return TRUE;
 }
 
-static gboolean
+static lt_bool_t
 lt_ext_module_load(lt_ext_module_t *module)
 {
-	gchar *filename = g_strdup_printf("liblangtag-ext-%s." G_MODULE_SUFFIX,
+	char *filename = g_strdup_printf("liblangtag-ext-%s." G_MODULE_SUFFIX,
 					  module->name);
-	gchar **path_list, *s, *path = NULL, *fullname = NULL;
-	const gchar *env = g_getenv("LANGTAG_EXT_MODULE_PATH");
-	gint i;
-	gboolean retval = FALSE;
-	gsize len;
+	char **path_list, *s, *path = NULL, *fullname = NULL;
+	const char *env = g_getenv("LANGTAG_EXT_MODULE_PATH");
+	int i;
+	lt_bool_t retval = FALSE;
+	size_t len;
 
 	if (!env) {
 		path_list = g_strsplit(
@@ -278,7 +278,7 @@ lt_ext_module_load(lt_ext_module_t *module)
 }
 
 static lt_ext_module_t *
-lt_ext_module_new_with_data(const gchar                 *name,
+lt_ext_module_new_with_data(const char                  *name,
 			    const lt_ext_module_funcs_t *funcs)
 {
 	lt_ext_module_t *retval;
@@ -302,8 +302,8 @@ lt_ext_module_new_with_data(const gchar                 *name,
 }
 
 /*< protected >*/
-gboolean
-lt_ext_module_validate_singleton(gchar singleton)
+lt_bool_t
+lt_ext_module_validate_singleton(char singleton)
 {
 	return (singleton >= '0' && singleton <= '9') ||
 		(singleton >= 'A' && singleton <= 'W') ||
@@ -314,10 +314,10 @@ lt_ext_module_validate_singleton(gchar singleton)
 		singleton == '*';
 }
 
-gint
-lt_ext_module_singleton_char_to_int(gchar singleton_c)
+int
+lt_ext_module_singleton_char_to_int(char singleton_c)
 {
-	gint retval = -1;
+	int retval = -1;
 
 	if (!lt_ext_module_validate_singleton(singleton_c))
 		g_print("XXXXXXXXx: %c\n", singleton_c);
@@ -337,10 +337,10 @@ lt_ext_module_singleton_char_to_int(gchar singleton_c)
 	return retval;
 }
 
-gchar
-lt_ext_module_singleton_int_to_char(gint singleton)
+char
+lt_ext_module_singleton_int_to_char(int singleton)
 {
-	gchar retval;
+	char retval;
 
 	g_return_val_if_fail (singleton >= 0, 0);
 	g_return_val_if_fail (singleton < LT_MAX_EXT_MODULES, 0);
@@ -358,7 +358,7 @@ lt_ext_module_singleton_int_to_char(gint singleton)
 }
 
 lt_ext_module_t *
-lt_ext_module_new(const gchar *name)
+lt_ext_module_new(const char *name)
 {
 	lt_ext_module_t *retval;
 
@@ -367,18 +367,18 @@ lt_ext_module_new(const gchar *name)
 	retval = lt_mem_alloc_object(sizeof (lt_ext_module_t));
 
 	if (retval) {
-		gchar *filename = g_path_get_basename(name), *module = NULL;
-		static const gchar *prefix = "liblangtag-ext-";
-		static gsize prefix_len = 0;
-		gchar singleton_c;
-		gint singleton;
+		char *filename = g_path_get_basename(name), *module = NULL;
+		static const char *prefix = "liblangtag-ext-";
+		static size_t prefix_len = 0;
+		char singleton_c;
+		int singleton;
 
 		if (prefix_len == 0)
 			prefix_len = strlen(prefix);
 
 		if (strncmp(filename, prefix, prefix_len) == 0) {
-			gsize len = strlen(&filename[prefix_len]);
-			gsize suffix_len = strlen(G_MODULE_SUFFIX) + 1;
+			size_t len = strlen(&filename[prefix_len]);
+			size_t suffix_len = strlen(G_MODULE_SUFFIX) + 1;
 
 			if (len > suffix_len &&
 			    g_strcmp0(&filename[prefix_len + len - suffix_len], "." G_MODULE_SUFFIX) == 0) {
@@ -428,9 +428,9 @@ lt_ext_module_new(const gchar *name)
 }
 
 lt_ext_module_t *
-lt_ext_module_lookup(gchar singleton_c)
+lt_ext_module_lookup(char singleton_c)
 {
-	gint singleton = lt_ext_module_singleton_char_to_int(singleton_c);
+	int singleton = lt_ext_module_singleton_char_to_int(singleton_c);
 
 	g_return_val_if_fail (singleton >= 0, NULL);
 	g_return_val_if_fail (__lt_ext_module_initialized, NULL);
@@ -441,7 +441,7 @@ lt_ext_module_lookup(gchar singleton_c)
 	return lt_ext_module_ref(__lt_ext_modules[singleton]);
 }
 
-const gchar *
+const char *
 lt_ext_module_get_name(lt_ext_module_t *module)
 {
 	g_return_val_if_fail (module != NULL, NULL);
@@ -449,7 +449,7 @@ lt_ext_module_get_name(lt_ext_module_t *module)
 	return module->name;
 }
 
-gchar
+char
 lt_ext_module_get_singleton(lt_ext_module_t *module)
 {
 	g_return_val_if_fail (module != NULL, 0);
@@ -469,10 +469,10 @@ lt_ext_module_create_data(lt_ext_module_t *module)
 	return module->funcs->create_data();
 }
 
-gboolean
+lt_bool_t
 lt_ext_module_parse_tag(lt_ext_module_t       *module,
 			lt_ext_module_data_t  *data,
-			const gchar           *subtag,
+			const char            *subtag,
 			GError               **error)
 {
 	g_return_val_if_fail (module != NULL, FALSE);
@@ -484,7 +484,7 @@ lt_ext_module_parse_tag(lt_ext_module_t       *module,
 	return module->funcs->parse_tag(data, subtag, error);
 }
 
-gchar *
+char *
 lt_ext_module_get_tag(lt_ext_module_t      *module,
 		      lt_ext_module_data_t *data)
 {
@@ -496,7 +496,7 @@ lt_ext_module_get_tag(lt_ext_module_t      *module,
 	return module->funcs->get_tag(data);
 }
 
-gboolean
+lt_bool_t
 lt_ext_module_validate_tag(lt_ext_module_t      *module,
 			   lt_ext_module_data_t *data)
 {
@@ -508,14 +508,14 @@ lt_ext_module_validate_tag(lt_ext_module_t      *module,
 	return module->funcs->validate_tag(data);
 }
 
-gboolean
+lt_bool_t
 lt_ext_module_precheck_tag(lt_ext_module_t       *module,
 			   lt_ext_module_data_t  *data,
 			   const lt_tag_t        *tag,
 			   GError               **error)
 {
 	GError *err = NULL;
-	gboolean retval;
+	lt_bool_t retval;
 
 	g_return_val_if_fail (module != NULL, FALSE);
 	g_return_val_if_fail (data != NULL, FALSE);
@@ -547,10 +547,10 @@ void
 lt_ext_modules_load(void)
 {
 #ifdef ENABLE_GMODULE
-	const gchar *env = g_getenv("LANGTAG_EXT_MODULE_PATH");
-	gchar **path_list;
-	gint i;
-	gsize suffix_len = strlen(G_MODULE_SUFFIX) + 1;
+	const char *env = g_getenv("LANGTAG_EXT_MODULE_PATH");
+	char **path_list;
+	int i;
+	size_t suffix_len = strlen(G_MODULE_SUFFIX) + 1;
 
 	if (__lt_ext_module_initialized)
 		return;
@@ -572,7 +572,7 @@ lt_ext_modules_load(void)
 		dir = opendir(path_list[i]);
 		if (dir) {
 			struct dirent dent, *dresult;
-			gsize len;
+			size_t len;
 
 			while (1) {
 				if (readdir_r(dir, &dent, &dresult) || dresult == NULL)
@@ -613,7 +613,7 @@ lt_ext_modules_load(void)
 void
 lt_ext_modules_unload(void)
 {
-	gint i;
+	int i;
 
 	if (!__lt_ext_module_initialized)
 		return;

@@ -67,6 +67,7 @@ liblangtag_gobject_built_private_headers =	\
 	lt-grandfathered.gir.h			\
 	lt-lang-db.gir.h			\
 	lt-lang.gir.h				\
+	lt-macros.gir.h				\
 	lt-redundant-db.gir.h			\
 	lt-redundant.gir.h			\
 	lt-region-db.gir.h			\

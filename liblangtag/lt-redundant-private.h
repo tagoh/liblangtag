@@ -13,19 +13,19 @@
 #ifndef __LT_REDUNDANT_PRIVATE_H__
 #define __LT_REDUNDANT_PRIVATE_H__
 
-#include <glib.h>
+#include "lt-macros.h"
 #include "lt-redundant.h"
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 lt_redundant_t *lt_redundant_create           (void);
 void            lt_redundant_set_tag          (lt_redundant_t *redundant,
-                                               const gchar    *subtag);
+                                               const char     *subtag);
 void            lt_redundant_set_name         (lt_redundant_t *redundant,
-                                               const gchar    *description);
+                                               const char     *description);
 void            lt_redundant_set_preferred_tag(lt_redundant_t *redundant,
-                                               const gchar    *subtag);
+                                               const char     *subtag);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_REDUNDANT_PRIVATE_H__ */

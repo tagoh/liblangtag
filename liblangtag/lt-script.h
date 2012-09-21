@@ -17,9 +17,9 @@
 #ifndef __LT_SCRIPT_H__
 #define __LT_SCRIPT_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_script_t:
@@ -32,13 +32,13 @@ typedef struct _lt_script_t	lt_script_t;
 
 lt_script_t *lt_script_ref                (lt_script_t       *script);
 void         lt_script_unref              (lt_script_t       *script);
-const gchar *lt_script_get_name           (const lt_script_t *script);
-const gchar *lt_script_get_tag            (const lt_script_t *script);
+const char  *lt_script_get_name           (const lt_script_t *script);
+const char  *lt_script_get_tag            (const lt_script_t *script);
 void         lt_script_dump               (const lt_script_t *script);
-const gchar *lt_script_convert_to_modifier(const lt_script_t *script);
-gboolean     lt_script_compare            (const lt_script_t *v1,
+const char  *lt_script_convert_to_modifier(const lt_script_t *script);
+lt_bool_t    lt_script_compare            (const lt_script_t *v1,
 					   const lt_script_t *v2);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_SCRIPT_H__ */

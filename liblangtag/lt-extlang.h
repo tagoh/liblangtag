@@ -17,9 +17,9 @@
 #ifndef __LT_EXTLANG_H__
 #define __LT_EXTLANG_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_extlang_t:
@@ -32,15 +32,15 @@ typedef struct _lt_extlang_t	lt_extlang_t;
 
 lt_extlang_t *lt_extlang_ref               (lt_extlang_t       *extlang);
 void          lt_extlang_unref             (lt_extlang_t       *extlang);
-const gchar  *lt_extlang_get_tag           (const lt_extlang_t *extlang);
-const gchar  *lt_extlang_get_preferred_tag (const lt_extlang_t *extlang);
-const gchar  *lt_extlang_get_name          (const lt_extlang_t *extlang);
-const gchar  *lt_extlang_get_macro_language(const lt_extlang_t *extlang);
-const gchar  *lt_extlang_get_prefix        (const lt_extlang_t *extlang);
+const char   *lt_extlang_get_tag           (const lt_extlang_t *extlang);
+const char   *lt_extlang_get_preferred_tag (const lt_extlang_t *extlang);
+const char   *lt_extlang_get_name          (const lt_extlang_t *extlang);
+const char   *lt_extlang_get_macro_language(const lt_extlang_t *extlang);
+const char   *lt_extlang_get_prefix        (const lt_extlang_t *extlang);
 void          lt_extlang_dump              (const lt_extlang_t *extlang);
-gboolean      lt_extlang_compare           (const lt_extlang_t *v1,
+lt_bool_t     lt_extlang_compare           (const lt_extlang_t *v1,
 					    const lt_extlang_t *v2);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_EXTLANG_H__ */
