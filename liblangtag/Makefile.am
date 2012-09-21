@@ -125,7 +125,7 @@ stamp_files =					\
 ##
 # Local Rules
 lt-localealias.h: @BUILD_LOCALEALIAS@ Makefile
-	$(AM_V_GEN) $(srcdir)/buildaliastbl.sh @LOCALE_ALIAS@ > $@
+	$(AM_V_GEN) $(srcdir)/buildaliastbl.sh @LOCALE_ALIAS@ > $@.tmp && mv $@.tmp $@ || rm -f $@.tmp
 	@if [ ! -f $(builddir)/$@ ]; then			\
 		echo "Failed to generate $@.";			\
 		exit 1;						\
