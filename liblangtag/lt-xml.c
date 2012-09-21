@@ -91,8 +91,6 @@ lt_xml_read_subtag_registry(lt_xml_t  *xml,
 	if (xmlparser)
 		xmlFreeParserCtxt(xmlparser);
 
-	xmlCleanupParser();
-
 	if (err) {
 		if (error)
 			*error = g_error_copy(err);
@@ -148,8 +146,6 @@ lt_xml_read_cldr_bcp47(lt_xml_t     *xml,
 	if (xmlparser)
 		xmlFreeParserCtxt(xmlparser);
 
-	xmlCleanupParser();
-
 	if (err) {
 		if (error)
 			*error = g_error_copy(err);
@@ -204,8 +200,6 @@ lt_xml_read_cldr_supplemental(lt_xml_t     *xml,
 	g_free(regfile);
 	if (xmlparser)
 		xmlFreeParserCtxt(xmlparser);
-
-	xmlCleanupParser();
 
 	if (err) {
 		if (error)
