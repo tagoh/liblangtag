@@ -23,6 +23,8 @@ capitalize() {
     __tmpsed=`mktemp gengir.XXXXXXXX`
     printf "s/^${__cl}/${__Cl}/g
 s/\(const[ \t].*\)${__cl}/\\\1${__Cl}/g
+s/\(typedef[ \t].*\)${__cl}/\\\1${__Cl}/g
+s/\([ \t].*\)${__cl};/\\\1${__Cl};/g
 s/\([ \t].*\)_${__cl}/\\\1_${__Cl}/g
 s/\([\t(].*\)${__cl}/\\\1${__Cl}/g
 s/^\([ \t].*\)${__cl}/\\\1${__Cl}/g" > $__tmpsed
@@ -43,7 +45,7 @@ sed -i -e 's,^\(#include[ \t]<\)liblangtag\(/lt-.*\)\(\.h>\),\1liblangtag-gobjec
 
 while [ 1 ]; do
     if [ "x$type" = "xh" ]; then
-	line=`grep -E "${_ns}_.*_t[ \t].*" $_tmpgen | grep -v -E "(struct|func)" | grep -v -E "enum.*{"`
+	line=`grep -E "${_ns}_[a-z_].*_t[ \t;].*" $_tmpgen`
     elif [ "x$type" = "xc" ]; then
 	line=`sed -n -e '/\/\*< public >\*\//{:a p;n;b a};{d}' $_tmpgen|grep "[^#]${_ns}_.*_t[^a-z]"|grep -v -E "(func)"`
     else
@@ -54,20 +56,26 @@ while [ 1 ]; do
 	break;
     fi
     _tmpsed=`mktemp gengir.XXXXXXXX`
-    printf "/${_ns}_[a-z].*_t/{s/.*\(${_ns}_[a-z].*_t\)[^a-z]*/\\\1/;p}\n" > $_tmpsed
+    printf "/${_ns}_[a-z_].*_t/{s/.*\(${_ns}_[a-z_].*_t\)[^a-z]*/\\\1/;p}\n" > $_tmpsed
     _n=1
+    _tt=
     while [ 1 ]; do
 	_ll=`echo $line|sed -e 's/[ \t]*//'|cut -d' ' -f$_n`
 	_tt=`echo $_ll|sed -n -f $_tmpsed`
-	if [ "x$_tt" = "x" ]; then
+	if [ "x$_ll" = "x" ]; then
+	    break
+	elif [ "x$_tt" = "x" ]; then
 	    _n=`expr $_n + 1`
 	else
 	    break
 	fi
     done
-    _cl=`echo $line|sed -e 's/[ \t]*//'|cut -d' ' -f$_n|sed -n -f $_tmpsed`
+    _cl=$_tt
     rm $_tmpsed
     _in=$_tmpgen
+    if [ "x$_cl" = "x" ]; then
+	break
+    fi
     _tmpgen=`mktemp gengir.XXXXXXXX`
     capitalize $_in $_tmpgen $_cl
     rm $_in
