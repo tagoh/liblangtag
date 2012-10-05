@@ -14,7 +14,7 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
 #include <stdlib.h>
 #include <string.h>
 #include <libxml/xpath.h>
@@ -23,6 +23,7 @@
 #include "lt-redundant-private.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
+#include "lt-trie.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-redundant-db.h"
@@ -38,9 +39,9 @@
  * or RFC 5646.
  */
 struct _lt_redundant_db_t {
-	lt_mem_t    parent;
-	lt_xml_t   *xml;
-	GHashTable *redundant_entries;
+	lt_mem_t   parent;
+	lt_xml_t  *xml;
+	lt_trie_t *redundant_entries;
 };
 
 /*< private >*/
@@ -136,9 +137,11 @@ lt_redundant_db_parse(lt_redundant_db_t  *redundantdb,
 			lt_redundant_set_preferred_tag(le, (const char *)preferred);
 
 		s = strdup(lt_redundant_get_tag(le));
-		g_hash_table_replace(redundantdb->redundant_entries,
-				     lt_strlower(s),
-				     lt_redundant_ref(le));
+		lt_trie_replace(redundantdb->redundant_entries,
+				lt_strlower(s),
+				lt_redundant_ref(le),
+				(lt_destroy_func_t)lt_redundant_unref);
+		free(s);
 	  bail1:
 		if (tag)
 			xmlFree(tag);
@@ -182,12 +185,9 @@ lt_redundant_db_new(void)
 	if (retval) {
 		lt_error_t *err = NULL;
 
-		retval->redundant_entries = g_hash_table_new_full(g_str_hash,
-								  g_str_equal,
-								  free,
-								  (GDestroyNotify)lt_redundant_unref);
+		retval->redundant_entries = lt_trie_new();
 		lt_mem_add_ref(&retval->parent, retval->redundant_entries,
-			       (lt_destroy_func_t)g_hash_table_destroy);
+			       (lt_destroy_func_t)lt_trie_unref);
 
 		retval->xml = lt_xml_new();
 		if (!retval->xml) {
@@ -262,8 +262,8 @@ lt_redundant_db_lookup(lt_redundant_db_t *redundantdb,
 	lt_return_val_if_fail (tag != NULL, NULL);
 
 	s = strdup(tag);
-	retval = g_hash_table_lookup(redundantdb->redundant_entries,
-				     lt_strlower(s));
+	retval = lt_trie_lookup(redundantdb->redundant_entries,
+				lt_strlower(s));
 	free(s);
 	if (retval)
 		return lt_redundant_ref(retval);

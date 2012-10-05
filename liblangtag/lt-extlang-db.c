@@ -14,7 +14,7 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
@@ -22,6 +22,7 @@
 #include "lt-extlang-private.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
+#include "lt-trie.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-extlang-db.h"
@@ -36,9 +37,9 @@
  * registered as ISO 639 code.
  */
 struct _lt_extlang_db_t {
-	lt_mem_t    parent;
-	lt_xml_t   *xml;
-	GHashTable *extlang_entries;
+	lt_mem_t   parent;
+	lt_xml_t  *xml;
+	lt_trie_t *extlang_entries;
 };
 
 /*< private >*/
@@ -151,9 +152,11 @@ lt_extlang_db_parse(lt_extlang_db_t  *extlangdb,
 			lt_extlang_add_prefix(le, (const char *)prefix);
 
 		s = strdup(lt_extlang_get_tag(le));
-		g_hash_table_replace(extlangdb->extlang_entries,
-				     lt_strlower(s),
-				     lt_extlang_ref(le));
+		lt_trie_replace(extlangdb->extlang_entries,
+				lt_strlower(s),
+				lt_extlang_ref(le),
+				(lt_destroy_func_t)lt_extlang_unref);
+		free(s);
 	  bail1:
 		if (subtag)
 			xmlFree(subtag);
@@ -202,25 +205,24 @@ lt_extlang_db_new(void)
 		lt_error_t *err = NULL;
 		lt_extlang_t *le;
 
-		retval->extlang_entries = g_hash_table_new_full(g_str_hash,
-								g_str_equal,
-								free,
-								(GDestroyNotify)lt_extlang_unref);
+		retval->extlang_entries = lt_trie_new();
 		lt_mem_add_ref(&retval->parent, retval->extlang_entries,
-			       (lt_destroy_func_t)g_hash_table_destroy);
+			       (lt_destroy_func_t)lt_trie_unref);
 
 		le = lt_extlang_create();
 		lt_extlang_set_tag(le, "*");
 		lt_extlang_set_name(le, "Wildcard entry");
-		g_hash_table_replace(retval->extlang_entries,
-				     strdup(lt_extlang_get_tag(le)),
-				     le);
+		lt_trie_replace(retval->extlang_entries,
+				lt_extlang_get_tag(le),
+				le,
+				(lt_destroy_func_t)lt_extlang_unref);
 		le = lt_extlang_create();
 		lt_extlang_set_tag(le, "");
 		lt_extlang_set_name(le, "Empty entry");
-		g_hash_table_replace(retval->extlang_entries,
-				     strdup(lt_extlang_get_tag(le)),
-				     le);
+		lt_trie_replace(retval->extlang_entries,
+				lt_extlang_get_tag(le),
+				le,
+				(lt_destroy_func_t)lt_extlang_unref);
 
 		retval->xml = lt_xml_new();
 		if (!retval->xml) {
@@ -294,8 +296,8 @@ lt_extlang_db_lookup(lt_extlang_db_t *extlangdb,
 	lt_return_val_if_fail (subtag != NULL, NULL);
 
 	s = strdup(subtag);
-	retval = g_hash_table_lookup(extlangdb->extlang_entries,
-				     lt_strlower(s));
+	retval = lt_trie_lookup(extlangdb->extlang_entries,
+				lt_strlower(s));
 	free(s);
 	if (retval)
 		return lt_extlang_ref(retval);

@@ -14,12 +14,13 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
+#include "lt-trie.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-lang-private.h"
@@ -35,9 +36,9 @@
  * registered as ISO 639 code.
  */
 struct _lt_lang_db_t {
-	lt_mem_t    parent;
-	lt_xml_t   *xml;
-	GHashTable *lang_entries;
+	lt_mem_t   parent;
+	lt_xml_t  *xml;
+	lt_trie_t *lang_entries;
 };
 
 /*< private >*/
@@ -162,9 +163,11 @@ lt_lang_db_parse(lt_lang_db_t  *langdb,
 			lt_lang_set_suppress_script(le, (const char *)suppress);
 
 		s = strdup(lt_lang_get_tag(le));
-		g_hash_table_replace(langdb->lang_entries,
-				     lt_strlower(s),
-				     lt_lang_ref(le));
+		lt_trie_replace(langdb->lang_entries,
+				lt_strlower(s),
+				lt_lang_ref(le),
+				(lt_destroy_func_t)lt_lang_unref);
+		free(s);
 	  bail1:
 		if (subtag)
 			xmlFree(subtag);
@@ -215,19 +218,17 @@ lt_lang_db_new(void)
 		lt_error_t *err = NULL;
 		lt_lang_t *le;
 
-		retval->lang_entries = g_hash_table_new_full(g_str_hash,
-							     g_str_equal,
-							     free,
-							     (GDestroyNotify)lt_lang_unref);
+		retval->lang_entries = lt_trie_new();
 		lt_mem_add_ref(&retval->parent, retval->lang_entries,
-			       (lt_destroy_func_t)g_hash_table_destroy);
+			       (lt_destroy_func_t)lt_trie_unref);
 
 		le = lt_lang_create();
 		lt_lang_set_tag(le, "*");
 		lt_lang_set_name(le, "Wildcard entry");
-		g_hash_table_replace(retval->lang_entries,
-				     strdup(lt_lang_get_tag(le)),
-				     le);
+		lt_trie_replace(retval->lang_entries,
+				lt_lang_get_tag(le),
+				le,
+				(lt_destroy_func_t)lt_lang_unref);
 
 		retval->xml = lt_xml_new();
 		if (!retval->xml) {
@@ -302,7 +303,7 @@ lt_lang_db_lookup(lt_lang_db_t *langdb,
 	lt_return_val_if_fail (subtag != NULL, NULL);
 
 	s = strdup(subtag);
-	retval = g_hash_table_lookup(langdb->lang_entries, lt_strlower(s));
+	retval = lt_trie_lookup(langdb->lang_entries, lt_strlower(s));
 	free(s);
 	if (retval)
 		return lt_lang_ref(retval);

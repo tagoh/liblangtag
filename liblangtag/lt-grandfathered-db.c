@@ -14,7 +14,7 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
@@ -22,6 +22,7 @@
 #include "lt-grandfathered-private.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
+#include "lt-trie.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-grandfathered-db.h"
@@ -36,9 +37,9 @@
  * which has been registered under RFC 3066 and mostly deprecated.
  */
 struct _lt_grandfathered_db_t {
-	lt_mem_t    parent;
-	lt_xml_t   *xml;
-	GHashTable *grandfathered_entries;
+	lt_mem_t   parent;
+	lt_xml_t  *xml;
+	lt_trie_t *grandfathered_entries;
 };
 
 /*< private >*/
@@ -134,9 +135,11 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 			lt_grandfathered_set_preferred_tag(le, (const char *)preferred);
 
 		s = strdup(lt_grandfathered_get_tag(le));
-		g_hash_table_replace(grandfathereddb->grandfathered_entries,
-				     lt_strlower(s),
-				     lt_grandfathered_ref(le));
+		lt_trie_replace(grandfathereddb->grandfathered_entries,
+				lt_strlower(s),
+				lt_grandfathered_ref(le),
+				(lt_destroy_func_t)lt_grandfathered_unref);
+		free(s);
 	  bail1:
 		if (tag)
 			xmlFree(tag);
@@ -180,12 +183,9 @@ lt_grandfathered_db_new(void)
 	if (retval) {
 		lt_error_t *err = NULL;
 
-		retval->grandfathered_entries = g_hash_table_new_full(g_str_hash,
-								      g_str_equal,
-								      free,
-								      (GDestroyNotify)lt_grandfathered_unref);
+		retval->grandfathered_entries = lt_trie_new();
 		lt_mem_add_ref(&retval->parent, retval->grandfathered_entries,
-			       (lt_destroy_func_t)g_hash_table_destroy);
+			       (lt_destroy_func_t)lt_trie_unref);
 
 		retval->xml = lt_xml_new();
 		if (!retval->xml) {
@@ -260,8 +260,8 @@ lt_grandfathered_db_lookup(lt_grandfathered_db_t *grandfathereddb,
 	lt_return_val_if_fail (tag != NULL, NULL);
 
 	s = strdup(tag);
-	retval = g_hash_table_lookup(grandfathereddb->grandfathered_entries,
-				     lt_strlower(s));
+	retval = lt_trie_lookup(grandfathereddb->grandfathered_entries,
+				lt_strlower(s));
 	free(s);
 	if (retval)
 		return lt_grandfathered_ref(retval);

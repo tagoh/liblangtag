@@ -80,6 +80,7 @@ liblangtag_private_headers =			\
 	lt-region-private.h			\
 	lt-script-private.h			\
 	lt-tag-private.h			\
+	lt-trie.h				\
 	lt-utils.h				\
 	lt-variant-private.h			\
 	lt-xml.h				\
@@ -116,6 +117,7 @@ liblangtag_sources =				\
 	lt-script-db.c				\
 	lt-string.c				\
 	lt-tag.c				\
+	lt-trie.c				\
 	lt-utils.c				\
 	lt-variant.c				\
 	lt-variant-db.c				\

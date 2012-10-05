@@ -8,6 +8,7 @@ INCLUDES =									\
 	-DTEST_DATADIR="\"$(abs_top_builddir)/data\""				\
 	-DTEST_MODDIR="\"$(abs_top_builddir)/liblangtag/extensions/.libs\""	\
 	-D__LANGTAG_COMPILATION							\
+	$(GLIB_CFLAGS)								\
 	$(CHECK_CFLAGS)								\
 	$(NULL)
 DEPS =							\
@@ -60,6 +61,7 @@ testcases =					\
 	check-region				\
 	check-script				\
 	check-tag				\
+	check-trie				\
 	check-variant				\
 	$(NULL)
 noinst_PROGRAMS +=		\
@@ -125,6 +127,10 @@ check_script_SOURCES =		\
 	$(NULL)
 check_tag_SOURCES =		\
 	check-tag.c		\
+	$(common_sources)	\
+	$(NULL)
+check_trie_SOURCES =		\
+	check-trie.c		\
 	$(common_sources)	\
 	$(NULL)
 check_variant_SOURCES =		\

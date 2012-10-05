@@ -14,13 +14,14 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
 #include <stdlib.h>
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
+#include "lt-trie.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-region.h"
@@ -37,9 +38,9 @@
  * registered as ISO 3166-1 and UN M.49 code.
  */
 struct _lt_region_db_t {
-	lt_mem_t    parent;
-	lt_xml_t   *xml;
-	GHashTable *region_entries;
+	lt_mem_t   parent;
+	lt_xml_t  *xml;
+	lt_trie_t *region_entries;
 };
 
 
@@ -137,9 +138,11 @@ lt_region_db_parse(lt_region_db_t  *regiondb,
 			lt_region_set_preferred_tag(le, (const char *)preferred);
 
 		s = strdup(lt_region_get_tag(le));
-		g_hash_table_replace(regiondb->region_entries,
-				     lt_strlower(s),
-				     lt_region_ref(le));
+		lt_trie_replace(regiondb->region_entries,
+				lt_strlower(s),
+				lt_region_ref(le),
+				(lt_destroy_func_t)lt_region_unref);
+		free(s);
 	  bail1:
 		if (subtag)
 			xmlFree(subtag);
@@ -184,25 +187,24 @@ lt_region_db_new(void)
 		lt_error_t *err = NULL;
 		lt_region_t *le;
 
-		retval->region_entries = g_hash_table_new_full(g_str_hash,
-							       g_str_equal,
-							       free,
-							       (GDestroyNotify)lt_region_unref);
+		retval->region_entries = lt_trie_new();
 		lt_mem_add_ref(&retval->parent, retval->region_entries,
-			       (lt_destroy_func_t)g_hash_table_destroy);
+			       (lt_destroy_func_t)lt_trie_unref);
 
 		le = lt_region_create();
 		lt_region_set_tag(le, "*");
 		lt_region_set_name(le, "Wildcard entry");
-		g_hash_table_replace(retval->region_entries,
-				     strdup(lt_region_get_tag(le)),
-				     le);
+		lt_trie_replace(retval->region_entries,
+				lt_region_get_tag(le),
+				le,
+				(lt_destroy_func_t)lt_region_unref);
 		le = lt_region_create();
 		lt_region_set_tag(le, "");
 		lt_region_set_name(le, "Empty entry");
-		g_hash_table_replace(retval->region_entries,
-				     strdup(lt_region_get_tag(le)),
-				     le);
+		lt_trie_replace(retval->region_entries,
+				lt_region_get_tag(le),
+				le,
+				(lt_destroy_func_t)lt_region_unref);
 
 		retval->xml = lt_xml_new();
 		if (!retval->xml) {
@@ -278,8 +280,8 @@ lt_region_db_lookup(lt_region_db_t *regiondb,
 	lt_return_val_if_fail (language_or_code != NULL, NULL);
 
 	s = strdup(language_or_code);
-	retval = g_hash_table_lookup(regiondb->region_entries,
-				     lt_strlower(s));
+	retval = lt_trie_lookup(regiondb->region_entries,
+				lt_strlower(s));
 	free(s);
 	if (retval)
 		return lt_region_ref(retval);

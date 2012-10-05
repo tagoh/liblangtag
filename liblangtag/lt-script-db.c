@@ -14,13 +14,14 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
 #include <stdlib.h>
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
+#include "lt-trie.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-script-private.h"
@@ -36,9 +37,9 @@
  * registered as ISO 15924.
  */
 struct _lt_script_db_t {
-	lt_mem_t    parent;
-	lt_xml_t   *xml;
-	GHashTable *script_entries;
+	lt_mem_t   parent;
+	lt_xml_t  *xml;
+	lt_trie_t *script_entries;
 };
 
 /*< private >*/
@@ -125,9 +126,11 @@ lt_script_db_parse(lt_script_db_t  *scriptdb,
 		lt_script_set_name(le, (const char *)desc);
 
 		s = strdup(lt_script_get_tag(le));
-		g_hash_table_replace(scriptdb->script_entries,
-				     lt_strlower(s),
-				     lt_script_ref(le));
+		lt_trie_replace(scriptdb->script_entries,
+				lt_strlower(s),
+				lt_script_ref(le),
+				(lt_destroy_func_t)lt_script_unref);
+		free(s);
 	  bail1:
 		if (subtag)
 			xmlFree(subtag);
@@ -170,25 +173,24 @@ lt_script_db_new(void)
 		lt_error_t *err = NULL;
 		lt_script_t *le;
 
-		retval->script_entries = g_hash_table_new_full(g_str_hash,
-							       g_str_equal,
-							       free,
-							       (GDestroyNotify)lt_script_unref);
+		retval->script_entries = lt_trie_new();
 		lt_mem_add_ref(&retval->parent, retval->script_entries,
-			       (lt_destroy_func_t)g_hash_table_destroy);
+			       (lt_destroy_func_t)lt_trie_unref);
 
 		le = lt_script_create();
 		lt_script_set_tag(le, "*");
 		lt_script_set_name(le, "Wildcard entry");
-		g_hash_table_replace(retval->script_entries,
-				     strdup(lt_script_get_tag(le)),
-				     le);
+		lt_trie_replace(retval->script_entries,
+				lt_script_get_tag(le),
+				le,
+				(lt_destroy_func_t)lt_script_unref);
 		le = lt_script_create();
 		lt_script_set_tag(le, "");
 		lt_script_set_name(le, "Empty entry");
-		g_hash_table_replace(retval->script_entries,
-				     strdup(lt_script_get_tag(le)),
-				     le);
+		lt_trie_replace(retval->script_entries,
+				lt_script_get_tag(le),
+				le,
+				(lt_destroy_func_t)lt_script_unref);
 
 		retval->xml = lt_xml_new();
 		if (!retval->xml) {
@@ -263,8 +265,8 @@ lt_script_db_lookup(lt_script_db_t *scriptdb,
 	lt_return_val_if_fail (subtag != NULL, NULL);
 
 	s = strdup(subtag);
-	retval = g_hash_table_lookup(scriptdb->script_entries,
-				     lt_strlower(s));
+	retval = lt_trie_lookup(scriptdb->script_entries,
+				lt_strlower(s));
 	free(s);
 	if (retval)
 		return lt_script_ref(retval);
