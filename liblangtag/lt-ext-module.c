@@ -16,6 +16,7 @@
 
 #include <ctype.h>
 #include <dirent.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -201,36 +202,43 @@ lt_ext_module_load(lt_ext_module_t *module)
 	lt_string_t *fullname = lt_string_new(NULL);
 	char *filename = lt_strdup_printf("liblangtag-ext-%s." G_MODULE_SUFFIX,
 					  module->name);
-	char **path_list, *s, *path = NULL;
+	char *path_list, *p, *s, *path;
 	const char *env = getenv("LANGTAG_EXT_MODULE_PATH");
-	int i;
 	lt_bool_t retval = FALSE;
 	size_t len;
 
 	if (!env) {
-		path_list = g_strsplit(
+		path_list = strdup(
 #ifdef GNOME_ENABLE_DEBUG
-			BUILDDIR G_DIR_SEPARATOR_S "liblangtag" G_DIR_SEPARATOR_S "extensions" G_SEARCHPATH_SEPARATOR_S
-			BUILDDIR G_DIR_SEPARATOR_S "liblangtag" G_DIR_SEPARATOR_S "extensions" G_DIR_SEPARATOR_S ".libs" G_SEARCHPATH_SEPARATOR_S
+			BUILDDIR LT_DIR_SEPARATOR_S "liblangtag" LT_DIR_SEPARATOR_S "extensions" LT_SEARCHPATH_SEPARATOR_S
+			BUILDDIR LT_DIR_SEPARATOR_S "liblangtag" LT_DIR_SEPARATOR_S "extensions" LT_DIR_SEPARATOR_S ".libs" LT_SEARCHPATH_SEPARATOR_S
 #endif
-			LANGTAG_EXT_MODULE_PATH,
-			G_SEARCHPATH_SEPARATOR_S,
-			-1);
+			LANGTAG_EXT_MODULE_PATH);
 	} else {
-		path_list = g_strsplit(env, G_SEARCHPATH_SEPARATOR_S, -1);
+		path_list = strdup(env);
 	}
 
-	for (i = 0; path_list[i] != NULL && !retval; i++) {
-		s = path_list[i];
-
-		while (*s && isspace(*s))
+	s = path_list;
+	do {
+		if (!s)
+			break;
+		p = strchr(s, LT_SEARCHPATH_SEPARATOR);
+		if (p == s) {
 			s++;
-		len = strlen(s);
-		while (len > 0 && isspace(s[len - 1]))
+			continue;
+		}
+		path = s;
+		if (p) {
+			*p = 0;
+			p++;
+		}
+		s = p;
+		while (*path && isspace(*path))
+			path++;
+		len = strlen(path);
+		while (len > 0 && isspace(path[len - 1]))
 			len--;
-		if (path)
-			free(path);
-		path = strndup(s, len);
+		path[len] = 0;
 		if (path[0] != 0) {
 			lt_string_clear(fullname);
 			if (!lt_string_append_filename(fullname, path, filename, NULL)) {
@@ -274,14 +282,13 @@ lt_ext_module_load(lt_ext_module_t *module)
 				retval = TRUE;
 			}
 		}
-	}
+	} while (1);
 	if (!retval)
 		lt_warning("No such modules: %s", module->name);
 
 	lt_string_unref(fullname);
-	free(path);
 	free(filename);
-	g_strfreev(path_list);
+	free(path_list);
 
 	return retval;
 }
@@ -374,7 +381,8 @@ lt_ext_module_new(const char *name)
 	retval = lt_mem_alloc_object(sizeof (lt_ext_module_t));
 
 	if (retval) {
-		char *filename = g_path_get_basename(name), *module = NULL;
+		char *n = strdup(name);
+		char *filename = basename(n), *module = NULL;
 		static const char *prefix = "liblangtag-ext-";
 		static size_t prefix_len = 0;
 		char singleton_c;
@@ -399,7 +407,7 @@ lt_ext_module_new(const char *name)
 		lt_mem_add_ref(&retval->parent, retval->name,
 			       (lt_destroy_func_t)free);
 
-		g_free(filename);
+		free(n);
 
 		if (!lt_ext_module_load(retval)) {
 			lt_ext_module_unref(retval);
@@ -555,28 +563,40 @@ lt_ext_modules_load(void)
 {
 #ifdef ENABLE_GMODULE
 	const char *env = getenv("LANGTAG_EXT_MODULE_PATH");
-	char **path_list;
-	int i;
+	char *path_list, *s, *p, *path;
 	size_t suffix_len = strlen(G_MODULE_SUFFIX) + 1;
 
 	if (__lt_ext_module_initialized)
 		return;
 	if (!env) {
-		path_list = g_strsplit(
+		path_list = strdup(
 #ifdef GNOME_ENABLE_DEBUG
-			BUILDDIR G_DIR_SEPARATOR_S "liblangtag" G_DIR_SEPARATOR_S "extensions" G_SEARCHPATH_SEPARATOR_S
-			BUILDDIR G_DIR_SEPARATOR_S "liblangtag" G_DIR_SEPARATOR_S "extensions" G_DIR_SEPARATOR_S ".libs" G_SEARCHPATH_SEPARATOR_S
+			BUILDDIR LT_DIR_SEPARATOR_S "liblangtag" LT_DIR_SEPARATOR_S "extensions" LT_SEARCHPATH_SEPARATOR_S
+			BUILDDIR LT_DIR_SEPARATOR_S "liblangtag" LT_DIR_SEPARATOR_S "extensions" LT_DIR_SEPARATOR_S ".libs" LT_SEARCHPATH_SEPARATOR_S
 #endif
-			LANGTAG_EXT_MODULE_PATH,
-			G_SEARCHPATH_SEPARATOR_S,
-			-1);
+			LANGTAG_EXT_MODULE_PATH);
 	} else {
-		path_list = g_strsplit(env, G_SEARCHPATH_SEPARATOR_S, -1);
+		path_list = strdup(env);
 	}
-	for (i = 0; path_list[i] != NULL; i++) {
+	s = path_list;
+	do {
 		DIR *dir;
 
-		dir = opendir(path_list[i]);
+		if (!s)
+			break;
+		p = strchr(s, LT_SEARCHPATH_SEPARATOR);
+		if (s == p) {
+			s++;
+			continue;
+		}
+		path = s;
+		if (p) {
+			*p = 0;
+			p++;
+		}
+		s = p;
+
+		dir = opendir(path);
 		if (dir) {
 			struct dirent dent, *dresult;
 			size_t len;
@@ -594,8 +614,9 @@ lt_ext_modules_load(void)
 			}
 			closedir(dir);
 		}
-	}
-	g_strfreev(path_list);
+	} while (1);
+
+	free(path_list);
 #endif /* ENABLE_GMODULE */
 	__lt_ext_default_handler = lt_ext_module_new_with_data("default",
 							       &__default_funcs);

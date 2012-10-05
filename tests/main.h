@@ -15,9 +15,9 @@
 #define __TEST_MAIN_H__
 
 #include <check.h>
-#include <glib.h>
+#include <liblangtag/langtag.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 #define TESTER_ERROR	tester_get_error_quark()
 #define TDEF(fn)	START_TEST (test_ ## fn)
@@ -26,12 +26,11 @@ G_BEGIN_DECLS
 #define TNUL(obj)	fail_unless((obj) != NULL, "Failed to create an object")
 
 
-void    setup                 (void);
-void    teardown              (void);
-Suite  *tester_suite          (void);
-GQuark  tester_get_error_quark(void);
-gchar  *tester_pop_error      (void) G_GNUC_MALLOC;
+void   setup           (void);
+void   teardown        (void);
+Suite *tester_suite    (void);
+void   tester_pop_error(void);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __TEST_MAIN_H__ */

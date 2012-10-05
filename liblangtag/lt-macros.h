@@ -99,11 +99,15 @@
 
 /* Macros for path separator */
 #ifdef _WIN32
-#  define LT_DIR_SEPARATOR_S	"\\"
-#  define LT_DIR_SEPARATOR	'\\'
+#  define LT_DIR_SEPARATOR_S		"\\"
+#  define LT_DIR_SEPARATOR		'\\'
+#  define LT_SEARCHPATH_SEPARATOR_S	";"
+#  define LT_SEARCHPATH_SEPARATOR	';'
 #else
-#  define LT_DIR_SEPARATOR_S	"/"
-#  define LT_DIR_SEPARATOR	'/'
+#  define LT_DIR_SEPARATOR_S		"/"
+#  define LT_DIR_SEPARATOR		'/'
+#  define LT_SEARCHPATH_SEPARATOR_S	":"
+#  define LT_SEARCHPATH_SEPARATOR	':'
 #endif
 
 /* Macros for min/max */

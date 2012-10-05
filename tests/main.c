@@ -18,80 +18,53 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <check.h>
-#include <glib-object.h>
+#include "langtag.h"
+#include "lt-messages.h"
 #include "main.h"
 
 extern Suite *tester_suite(void);
 
-static GLogFunc old_logger = NULL;
-static GError *error = NULL;
-G_LOCK_DEFINE_STATIC(err);
+static lt_message_func_t old_logger = NULL;
+static lt_error_t *error = NULL;
 
 /*
  * Private functions
  */
 static void
-logger(const gchar    *log_domain,
-       GLogLevelFlags  log_level,
-       const gchar    *message,
-       gpointer        user_data)
+logger(lt_message_type_t      type,
+       lt_message_flags_t     flags,
+       lt_message_category_t  category,
+       const char            *message,
+       lt_pointer_t           user_data)
 {
-	gchar *prev = NULL;
-
-	G_LOCK (err);
-
-	if (error) {
-		prev = g_strdup_printf("\n    %s", error->message);
-		g_error_free(error);
-		error = NULL;
-	}
-	g_set_error(&error, TESTER_ERROR, log_level,
-		    "%s%s", message,
-		    (prev ? prev : ""));
-	g_free(prev);
-
-	G_UNLOCK (err);
+	lt_error_set(&error, type, message);
 }
 
 static void
 init(int    argc,
      char **argv)
 {
-	old_logger = g_log_set_default_handler(logger, NULL);
+	old_logger = lt_message_set_default_handler(logger, NULL);
 }
 
 static void
 fini(void)
 {
+	tester_pop_error();
 	if (old_logger)
-		g_log_set_default_handler(old_logger, NULL);
+		lt_message_set_default_handler(old_logger, NULL);
 }
 
 /*
  * Public functions
  */
-GQuark
-tester_get_error_quark(void)
-{
-	GQuark quark = 0;
-
-	if (!quark)
-		quark = g_quark_from_static_string("tester-error");
-
-	return quark;
-}
-
-gchar *
+void
 tester_pop_error(void)
 {
-	gchar *retval = NULL;
-
-	if (error) {
-		retval = g_strdup(error->message);
-		g_clear_error(&error);
+	if (lt_error_is_set(error, LT_ERR_ANY)) {
+		lt_error_print(error, LT_ERR_ANY);
+		lt_error_clear(error);
 	}
-
-	return retval;
 }
 
 int

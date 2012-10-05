@@ -10,6 +10,10 @@
  * Lesser General Public License or the Mozilla Public
  * License, as specified in the README file.
  */
+#if !defined (__LANGTAG_H__INSIDE) && !defined (__LANGTAG_COMPILATION)
+#error "Only <liblangtag/langtag.h> can be included directly."
+#endif
+
 #ifndef __LT_LIST_H__
 #define __LT_LIST_H__
 
