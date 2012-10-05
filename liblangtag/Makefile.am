@@ -55,6 +55,7 @@ liblangtag_public_headers =			\
 	lt-grandfathered-db.h			\
 	lt-lang.h				\
 	lt-lang-db.h				\
+	lt-list.h				\
 	lt-macros.h				\
 	lt-redundant.h				\
 	lt-redundant-db.h			\
@@ -62,6 +63,7 @@ liblangtag_public_headers =			\
 	lt-region-db.h				\
 	lt-script.h				\
 	lt-script-db.h				\
+	lt-string.h				\
 	lt-tag.h				\
 	lt-variant.h				\
 	lt-variant-db.h				\
@@ -73,6 +75,7 @@ liblangtag_private_headers =			\
 	lt-grandfathered-private.h		\
 	lt-lang-private.h			\
 	lt-mem.h				\
+	lt-messages.h				\
 	lt-redundant-private.h			\
 	lt-region-private.h			\
 	lt-script-private.h			\
@@ -102,13 +105,16 @@ liblangtag_sources =				\
 	lt-grandfathered-db.c			\
 	lt-lang.c				\
 	lt-lang-db.c				\
+	lt-list.c				\
 	lt-mem.c				\
+	lt-messages.c				\
 	lt-redundant.c				\
 	lt-redundant-db.c			\
 	lt-region.c				\
 	lt-region-db.c				\
 	lt-script.c				\
 	lt-script-db.c				\
+	lt-string.c				\
 	lt-tag.c				\
 	lt-utils.c				\
 	lt-variant.c				\

@@ -14,7 +14,13 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
+#include <stdlib.h>
+#include <string.h>
 #include "lt-mem.h"
+#include "lt-messages.h"
+#include "lt-string.h"
+#include "lt-utils.h"
 #include "lt-lang.h"
 #include "lt-lang-private.h"
 
@@ -51,84 +57,78 @@ void
 lt_lang_set_name(lt_lang_t  *lang,
 		 const char *description)
 {
-	g_return_if_fail (lang != NULL);
-	g_return_if_fail (description != NULL);
+	lt_return_if_fail (lang != NULL);
+	lt_return_if_fail (description != NULL);
 
 	if (lang->description)
 		lt_mem_remove_ref(&lang->parent, lang->description);
-	lang->description = g_strdup(description);
-	lt_mem_add_ref(&lang->parent, lang->description,
-		       (lt_destroy_func_t)g_free);
+	lang->description = strdup(description);
+	lt_mem_add_ref(&lang->parent, lang->description, free);
 }
 
 void
 lt_lang_set_tag(lt_lang_t  *lang,
 		const char *subtag)
 {
-	g_return_if_fail (lang != NULL);
-	g_return_if_fail (subtag != NULL);
+	lt_return_if_fail (lang != NULL);
+	lt_return_if_fail (subtag != NULL);
 
 	if (lang->tag)
 		lt_mem_remove_ref(&lang->parent, lang->tag);
-	lang->tag = g_strdup(subtag);
-	lt_mem_add_ref(&lang->parent, lang->tag,
-		       (lt_destroy_func_t)g_free);
+	lang->tag = strdup(subtag);
+	lt_mem_add_ref(&lang->parent, lang->tag, free);
 }
 
 void
 lt_lang_set_preferred_tag(lt_lang_t  *lang,
 			  const char *subtag)
 {
-	g_return_if_fail (lang != NULL);
-	g_return_if_fail (subtag != NULL);
+	lt_return_if_fail (lang != NULL);
+	lt_return_if_fail (subtag != NULL);
 
 	if (lang->preferred_tag)
 		lt_mem_remove_ref(&lang->parent, lang->preferred_tag);
-	lang->preferred_tag = g_strdup(subtag);
-	lt_mem_add_ref(&lang->parent, lang->preferred_tag,
-		       (lt_destroy_func_t)g_free);
+	lang->preferred_tag = strdup(subtag);
+	lt_mem_add_ref(&lang->parent, lang->preferred_tag, free);
 }
 
 void
 lt_lang_set_suppress_script(lt_lang_t  *lang,
 			    const char *script)
 {
-	g_return_if_fail (lang != NULL);
-	g_return_if_fail (script != NULL);
+	lt_return_if_fail (lang != NULL);
+	lt_return_if_fail (script != NULL);
 
 	if (lang->suppress_script)
 		lt_mem_remove_ref(&lang->parent, lang->suppress_script);
-	lang->suppress_script = g_strdup(script);
-	lt_mem_add_ref(&lang->parent, lang->suppress_script,
-		       (lt_destroy_func_t)g_free);
+	lang->suppress_script = strdup(script);
+	lt_mem_add_ref(&lang->parent, lang->suppress_script, free);
 }
 
 void
 lt_lang_set_macro_language(lt_lang_t  *lang,
 			   const char *macrolanguage)
 {
-	g_return_if_fail (lang != NULL);
-	g_return_if_fail (macrolanguage != NULL);
+	lt_return_if_fail (lang != NULL);
+	lt_return_if_fail (macrolanguage != NULL);
 
 	if (lang->macrolanguage)
 		lt_mem_remove_ref(&lang->parent, lang->macrolanguage);
-	lang->macrolanguage = g_strdup(macrolanguage);
-	lt_mem_add_ref(&lang->parent, lang->macrolanguage,
-		       (lt_destroy_func_t)g_free);
+	lang->macrolanguage = strdup(macrolanguage);
+	lt_mem_add_ref(&lang->parent, lang->macrolanguage, free);
 }
 
 void
 lt_lang_set_scope(lt_lang_t  *lang,
 		  const char *scope)
 {
-	g_return_if_fail (lang != NULL);
-	g_return_if_fail (scope != NULL);
+	lt_return_if_fail (lang != NULL);
+	lt_return_if_fail (scope != NULL);
 
 	if (lang->scope)
 		lt_mem_remove_ref(&lang->parent, lang->scope);
-	lang->scope = g_strdup(scope);
-	lt_mem_add_ref(&lang->parent, lang->scope,
-		       (lt_destroy_func_t)g_free);
+	lang->scope = strdup(scope);
+	lt_mem_add_ref(&lang->parent, lang->scope, free);
 }
 
 /*< public >*/
@@ -143,7 +143,7 @@ lt_lang_set_scope(lt_lang_t  *lang,
 lt_lang_t *
 lt_lang_ref(lt_lang_t *lang)
 {
-	g_return_val_if_fail (lang != NULL, NULL);
+	lt_return_val_if_fail (lang != NULL, NULL);
 
 	return lt_mem_ref(&lang->parent);
 }
@@ -173,7 +173,7 @@ lt_lang_unref(lt_lang_t *lang)
 const char *
 lt_lang_get_name(const lt_lang_t *lang)
 {
-	g_return_val_if_fail (lang != NULL, NULL);
+	lt_return_val_if_fail (lang != NULL, NULL);
 
 	return lang->description;
 }
@@ -209,7 +209,7 @@ lt_lang_get_better_tag(const lt_lang_t *lang)
 const char *
 lt_lang_get_tag(const lt_lang_t *lang)
 {
-	g_return_val_if_fail (lang != NULL, NULL);
+	lt_return_val_if_fail (lang != NULL, NULL);
 
 	return lang->tag;
 }
@@ -226,7 +226,7 @@ lt_lang_get_tag(const lt_lang_t *lang)
 const char *
 lt_lang_get_preferred_tag(const lt_lang_t *lang)
 {
-	g_return_val_if_fail (lang != NULL, NULL);
+	lt_return_val_if_fail (lang != NULL, NULL);
 
 	return lang->preferred_tag;
 }
@@ -243,7 +243,7 @@ lt_lang_get_preferred_tag(const lt_lang_t *lang)
 const char *
 lt_lang_get_suppress_script(const lt_lang_t *lang)
 {
-	g_return_val_if_fail (lang != NULL, NULL);
+	lt_return_val_if_fail (lang != NULL, NULL);
 
 	return lang->suppress_script;
 }
@@ -261,7 +261,7 @@ lt_lang_get_suppress_script(const lt_lang_t *lang)
 const char *
 lt_lang_get_macro_language(const lt_lang_t *lang)
 {
-	g_return_val_if_fail (lang != NULL, NULL);
+	lt_return_val_if_fail (lang != NULL, NULL);
 
 	return lang->macrolanguage;
 }
@@ -278,7 +278,7 @@ lt_lang_get_macro_language(const lt_lang_t *lang)
 const char *
 lt_lang_get_scope(const lt_lang_t *lang)
 {
-	g_return_val_if_fail (lang != NULL, NULL);
+	lt_return_val_if_fail (lang != NULL, NULL);
 
 	return lang->scope;
 }
@@ -296,46 +296,47 @@ lt_lang_dump(const lt_lang_t *lang)
 	const char *suppress = lt_lang_get_suppress_script(lang);
 	const char *scope = lt_lang_get_scope(lang);
 	const char *macrolang = lt_lang_get_macro_language(lang);
-	GString *string = g_string_new(NULL);
+	lt_string_t *string = lt_string_new(NULL);
 
 	if (preferred) {
-		if (string->len == 0)
-			g_string_append(string, " (");
-		g_string_append_printf(string, "preferred-value: %s",
-				       preferred);
+		if (lt_string_length(string) == 0)
+			lt_string_append(string, " (");
+		lt_string_append_printf(string, "preferred-value: %s",
+					preferred);
 	}
 	if (suppress) {
-		if (string->len == 0)
-			g_string_append(string, " (");
+		if (lt_string_length(string) == 0)
+			lt_string_append(string, " (");
 		else
-			g_string_append(string, ", ");
-		g_string_append_printf(string, "suppress-script: %s",
-				       suppress);
+			lt_string_append(string, ", ");
+		lt_string_append_printf(string, "suppress-script: %s",
+					suppress);
 	}
 	if (scope) {
-		if (string->len == 0)
-			g_string_append(string, " (");
+		if (lt_string_length(string) == 0)
+			lt_string_append(string, " (");
 		else
-			g_string_append(string, ", ");
-		g_string_append_printf(string, "scope: %s",
-				       scope);
+			lt_string_append(string, ", ");
+		lt_string_append_printf(string, "scope: %s",
+					scope);
 	}
 	if (macrolang) {
-		if (string->len == 0)
-			g_string_append(string, " (");
+		if (lt_string_length(string) == 0)
+			lt_string_append(string, " (");
 		else
-			g_string_append(string, ", ");
-		g_string_append_printf(string, "macrolanguage: %s",
-				       macrolang);
+			lt_string_append(string, ", ");
+		lt_string_append_printf(string, "macrolanguage: %s",
+					macrolang);
 	}
-	if (string->len > 0)
-		g_string_append(string, ")");
+	if (lt_string_length(string) > 0)
+		lt_string_append(string, ")");
 
-	g_print("Language: %s [%s]%s\n",
+	lt_info("Language: %s [%s]%s",
 		lt_lang_get_tag(lang),
 		lt_lang_get_name(lang),
-		string->str);
-	g_string_free(string, TRUE);
+		lt_string_value(string));
+
+	lt_string_unref(string);
 }
 
 /**
@@ -359,9 +360,9 @@ lt_lang_compare(const lt_lang_t *v1,
 	s1 = v1 ? lt_lang_get_tag(v1) : NULL;
 	s2 = v2 ? lt_lang_get_tag(v2) : NULL;
 
-	if (g_strcmp0(s1, "*") == 0 ||
-	    g_strcmp0(s2, "*") == 0)
+	if (lt_strcmp0(s1, "*") == 0 ||
+	    lt_strcmp0(s2, "*") == 0)
 		return TRUE;
 
-	return g_strcmp0(s1, s2) == 0;
+	return lt_strcmp0(s1, s2) == 0;
 }

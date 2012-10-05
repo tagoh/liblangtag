@@ -17,10 +17,10 @@
 #ifndef __LT_VARIANT_DB_H__
 #define __LT_VARIANT_DB_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 #include <liblangtag/lt-variant.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_variant_db_t:
@@ -35,8 +35,8 @@ lt_variant_db_t *lt_variant_db_new   (void);
 lt_variant_db_t *lt_variant_db_ref   (lt_variant_db_t *variantdb);
 void             lt_variant_db_unref (lt_variant_db_t *variantdb);
 lt_variant_t    *lt_variant_db_lookup(lt_variant_db_t *variantdb,
-                                      const gchar     *subtag);
+                                      const char      *subtag);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_VARIANT_DB_H__ */

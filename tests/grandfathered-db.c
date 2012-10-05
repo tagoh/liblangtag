@@ -14,8 +14,10 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
 #include <locale.h>
 #include "langtag.h"
+#include "lt-utils.h"
 
 int
 main(int    argc,
@@ -28,15 +30,15 @@ main(int    argc,
 	lt_db_set_datadir(TEST_DATADIR);
 	grandfathereddb = lt_grandfathered_db_new();
 
-	if (g_strcmp0(argv[1], "list") == 0) {
-	} else if (g_strcmp0(argv[1], "lookup") == 0) {
+	if (lt_strcmp0(argv[1], "list") == 0) {
+	} else if (lt_strcmp0(argv[1], "lookup") == 0) {
 		lt_grandfathered_t *grandfathered = lt_grandfathered_db_lookup(grandfathereddb, argv[2]);
 
 		if (grandfathered) {
-			g_print("desc: %s\n", lt_grandfathered_get_name(grandfathered));
+			printf("desc: %s\n", lt_grandfathered_get_name(grandfathered));
 			lt_grandfathered_unref(grandfathered);
 		} else {
-			g_print("no such grandfathered: %s\n", argv[2]);
+			printf("no such grandfathered: %s\n", argv[2]);
 		}
 	}
 

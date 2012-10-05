@@ -17,10 +17,10 @@
 #ifndef __LT_REDUNDANT_DB_H__
 #define __LT_REDUNDANT_DB_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 #include <liblangtag/lt-redundant.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_redundant_db_t:
@@ -35,8 +35,8 @@ lt_redundant_db_t *lt_redundant_db_new   (void);
 lt_redundant_db_t *lt_redundant_db_ref   (lt_redundant_db_t *redundantdb);
 void               lt_redundant_db_unref (lt_redundant_db_t *redundantdb);
 lt_redundant_t    *lt_redundant_db_lookup(lt_redundant_db_t *redundantdb,
-                                          const gchar       *tag);
+                                          const char        *tag);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_REDUNDANT_DB_H__ */

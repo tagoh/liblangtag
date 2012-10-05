@@ -17,10 +17,10 @@
 #ifndef __LT_SCRIPT_DB_H__
 #define __LT_SCRIPT_DB_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 #include <liblangtag/lt-script.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_script_db_t:
@@ -35,8 +35,8 @@ lt_script_db_t *lt_script_db_new        (void);
 lt_script_db_t *lt_script_db_ref        (lt_script_db_t *scriptdb);
 void            lt_script_db_unref      (lt_script_db_t *scriptdb);
 lt_script_t    *lt_script_db_lookup     (lt_script_db_t *scriptdb,
-                                         const gchar    *subtag);
+                                         const char     *subtag);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_SCRIPT_DB_H__ */

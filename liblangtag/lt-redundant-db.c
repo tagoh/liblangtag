@@ -14,11 +14,15 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <stdlib.h>
+#include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-redundant.h"
 #include "lt-redundant-private.h"
 #include "lt-mem.h"
+#include "lt-messages.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-redundant-db.h"
@@ -40,31 +44,31 @@ struct _lt_redundant_db_t {
 };
 
 /*< private >*/
-static gboolean
+static lt_bool_t
 lt_redundant_db_parse(lt_redundant_db_t  *redundantdb,
-		      GError            **error)
+		      lt_error_t        **error)
 {
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 	xmlDocPtr doc = NULL;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 	int i, n;
 
-	g_return_val_if_fail (redundantdb != NULL, FALSE);
+	lt_return_val_if_fail (redundantdb != NULL, FALSE);
 
 	doc = lt_xml_get_subtag_registry(redundantdb->xml);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
+		lt_error_set(&err, LT_ERR_OOM,
+			     "Unable to create an instance of xmlXPathContextPtr.");
 		goto bail;
 	}
 	xobj = xmlXPathEvalExpression((const xmlChar *)"/registry/redundant", xctxt);
 	if (!xobj) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s",
-			    doc->name);
+		lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+			     "No valid elements for %s",
+			     doc->name);
 		goto bail;
 	}
 	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
@@ -74,19 +78,19 @@ lt_redundant_db_parse(lt_redundant_db_t  *redundantdb,
 		xmlNodePtr cnode;
 		xmlChar *tag = NULL, *desc = NULL, *preferred = NULL;
 		lt_redundant_t *le = NULL;
-		gchar *s;
+		char *s;
 
 		if (!ent) {
-			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
+			lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+				     "Unable to obtain the xml node via XPath.");
 			goto bail;
 		}
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"tag") == 0) {
 				if (tag) {
-					g_warning("Duplicate tag element in redundant: previous value was '%s'",
-						  tag);
+					lt_warning("Duplicate tag element in redundant: previous value was '%s'",
+						   tag);
 				} else {
 					tag = xmlNodeGetContent(cnode);
 				}
@@ -100,38 +104,38 @@ lt_redundant_db_parse(lt_redundant_db_t  *redundantdb,
 					desc = xmlNodeGetContent(cnode);
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"preferred-value") == 0) {
 				if (preferred) {
-					g_warning("Duplicate preferred-value element in redundant: previous value was '%s'",
-						  preferred);
+					lt_warning("Duplicate preferred-value element in redundant: previous value was '%s'",
+						   preferred);
 				} else {
 					preferred = xmlNodeGetContent(cnode);
 				}
 			} else {
-				g_warning("Unknown node under /registry/redundant: %s", cnode->name);
+				lt_warning("Unknown node under /registry/redundant: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 		if (!tag) {
-			g_warning("No tag node: description = '%s', preferred-value = '%s'",
-				  desc, preferred);
+			lt_warning("No tag node: description = '%s', preferred-value = '%s'",
+				   desc, preferred);
 			goto bail1;
 		}
 		if (!desc) {
-			g_warning("No description node: tag = '%s', preferred-value = '%s'",
-				  tag, preferred);
+			lt_warning("No description node: tag = '%s', preferred-value = '%s'",
+				   tag, preferred);
 			goto bail1;
 		}
 		le = lt_redundant_create();
 		if (!le) {
-			g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-				    "Unable to create an instance of lt_redundant_t.");
+			lt_error_set(&err, LT_ERR_OOM,
+				     "Unable to create an instance of lt_redundant_t.");
 			goto bail1;
 		}
-		lt_redundant_set_tag(le, (const gchar *)tag);
-		lt_redundant_set_name(le, (const gchar *)desc);
+		lt_redundant_set_tag(le, (const char *)tag);
+		lt_redundant_set_name(le, (const char *)desc);
 		if (preferred)
-			lt_redundant_set_preferred_tag(le, (const gchar *)preferred);
+			lt_redundant_set_preferred_tag(le, (const char *)preferred);
 
-		s = g_strdup(lt_redundant_get_tag(le));
+		s = strdup(lt_redundant_get_tag(le));
 		g_hash_table_replace(redundantdb->redundant_entries,
 				     lt_strlower(s),
 				     lt_redundant_ref(le));
@@ -145,12 +149,12 @@ lt_redundant_db_parse(lt_redundant_db_t  *redundantdb,
 		lt_redundant_unref(le);
 	}
   bail:
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 		retval = FALSE;
 	}
 
@@ -176,11 +180,11 @@ lt_redundant_db_new(void)
 	lt_redundant_db_t *retval = lt_mem_alloc_object(sizeof (lt_redundant_db_t));
 
 	if (retval) {
-		GError *err = NULL;
+		lt_error_t *err = NULL;
 
 		retval->redundant_entries = g_hash_table_new_full(g_str_hash,
 								  g_str_equal,
-								  g_free,
+								  free,
 								  (GDestroyNotify)lt_redundant_unref);
 		lt_mem_add_ref(&retval->parent, retval->redundant_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
@@ -195,11 +199,11 @@ lt_redundant_db_new(void)
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_redundant_db_parse(retval, &err);
-		if (err) {
-			g_printerr(err->message);
+		if (lt_error_is_set(err, LT_ERR_ANY)) {
+			lt_error_print(err, LT_ERR_ANY);
 			lt_redundant_db_unref(retval);
 			retval = NULL;
-			g_error_free(err);
+			lt_error_unref(err);
 		}
 	}
   bail:
@@ -218,7 +222,7 @@ lt_redundant_db_new(void)
 lt_redundant_db_t *
 lt_redundant_db_ref(lt_redundant_db_t *redundantdb)
 {
-	g_return_val_if_fail (redundantdb != NULL, NULL);
+	lt_return_val_if_fail (redundantdb != NULL, NULL);
 
 	return lt_mem_ref(&redundantdb->parent);
 }
@@ -249,18 +253,18 @@ lt_redundant_db_unref(lt_redundant_db_t *redundantdb)
  */
 lt_redundant_t *
 lt_redundant_db_lookup(lt_redundant_db_t *redundantdb,
-		       const gchar       *tag)
+		       const char        *tag)
 {
 	lt_redundant_t *retval;
-	gchar *s;
+	char *s;
 
-	g_return_val_if_fail (redundantdb != NULL, NULL);
-	g_return_val_if_fail (tag != NULL, NULL);
+	lt_return_val_if_fail (redundantdb != NULL, NULL);
+	lt_return_val_if_fail (tag != NULL, NULL);
 
-	s = g_strdup(tag);
+	s = strdup(tag);
 	retval = g_hash_table_lookup(redundantdb->redundant_entries,
 				     lt_strlower(s));
-	g_free(s);
+	free(s);
 	if (retval)
 		return lt_redundant_ref(retval);
 

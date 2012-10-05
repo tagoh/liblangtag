@@ -14,9 +14,9 @@
 #define __LT_EXT_MODULE_PRIVATE_H__
 
 #include <liblangtag/lt-macros.h>
+#include <liblangtag/lt-error.h>
 #include <liblangtag/lt-ext-module-data.h>
 #include <liblangtag/lt-ext-module.h>
-#include <glib.h>
 
 LT_BEGIN_DECLS
 
@@ -35,13 +35,13 @@ lt_ext_module_data_t *lt_ext_module_create_data          (lt_ext_module_t       
 lt_bool_t             lt_ext_module_parse_tag            (lt_ext_module_t       *module,
                                                           lt_ext_module_data_t  *data,
                                                           const char            *subtag,
-                                                          GError               **error);
+                                                          lt_error_t           **error);
 lt_bool_t             lt_ext_module_validate_tag         (lt_ext_module_t       *module,
 							  lt_ext_module_data_t  *data);
 lt_bool_t             lt_ext_module_precheck_tag         (lt_ext_module_t       *module,
 							  lt_ext_module_data_t  *data,
 							  const lt_tag_t        *tag,
-							  GError               **error);
+							  lt_error_t           **error);
 
 LT_END_DECLS
 

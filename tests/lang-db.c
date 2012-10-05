@@ -14,8 +14,10 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
 #include <locale.h>
 #include "langtag.h"
+#include "lt-utils.h"
 
 int
 main(int    argc,
@@ -29,15 +31,15 @@ main(int    argc,
 	lt_db_set_datadir(TEST_DATADIR);
 	langdb = lt_lang_db_new();
 
-	if (g_strcmp0(argv[1], "list") == 0) {
-	} else if (g_strcmp0(argv[1], "lookup") == 0) {
+	if (lt_strcmp0(argv[1], "list") == 0) {
+	} else if (lt_strcmp0(argv[1], "lookup") == 0) {
 		lang = lt_lang_db_lookup(langdb, argv[2]);
 		if (!lang) {
-			g_print("No entry for %s\n", argv[2]);
+			printf("No entry for %s\n", argv[2]);
 		} else {
-			g_print("%s (%s)\n",
-				lt_lang_get_tag(lang),
-				lt_lang_get_name(lang));
+			printf("%s (%s)\n",
+			       lt_lang_get_tag(lang),
+			       lt_lang_get_name(lang));
 		}
 		lt_lang_unref(lang);
 	}

@@ -14,7 +14,10 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: just shut up GHashTable and atomic function dependency in lt-mem.h and here */
+#include <stdlib.h>
 #include "lt-mem.h"
+#include "lt-messages.h"
 #include "lt-ext-module-data.h"
 
 
@@ -57,7 +60,7 @@ lt_ext_module_data_new(size_t            size,
 {
 	lt_ext_module_data_private_t *retval;
 
-	g_assert(sizeof (lt_ext_module_data_t) == sizeof (lt_ext_module_data_private_t));
+	lt_assert(sizeof (lt_ext_module_data_t) == sizeof (lt_ext_module_data_private_t));
 
 	if (size < sizeof (lt_ext_module_data_private_t))
 		size += sizeof (lt_ext_module_data_private_t);
@@ -83,7 +86,7 @@ lt_ext_module_data_ref(lt_ext_module_data_t *data)
 {
 	lt_ext_module_data_private_t *priv = (lt_ext_module_data_private_t *)data;
 
-	g_return_val_if_fail (data != NULL, NULL);
+	lt_return_val_if_fail (data != NULL, NULL);
 
 	return lt_mem_ref(&priv->parent);
 }
@@ -101,7 +104,7 @@ lt_ext_module_data_unref(lt_ext_module_data_t *data)
 	lt_ext_module_data_private_t *priv = (lt_ext_module_data_private_t *)data;
 
 	if (data) {
-		volatile gint ref_count = g_atomic_int_get(&priv->parent.ref_count);
+		volatile int ref_count = g_atomic_int_get(&priv->parent.ref_count);
 
 		if (ref_count == 1) {
 			if (priv->finalizer) {

@@ -14,9 +14,12 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-mem.h"
+#include "lt-messages.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-lang-private.h"
@@ -38,31 +41,31 @@ struct _lt_lang_db_t {
 };
 
 /*< private >*/
-static gboolean
+static lt_bool_t
 lt_lang_db_parse(lt_lang_db_t  *langdb,
-		 GError       **error)
+		 lt_error_t   **error)
 {
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 	xmlDocPtr doc = NULL;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 	int i, n;
 
-	g_return_val_if_fail (langdb != NULL, FALSE);
+	lt_return_val_if_fail (langdb != NULL, FALSE);
 
 	doc = lt_xml_get_subtag_registry(langdb->xml);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
+		lt_error_set(&err, LT_ERR_OOM,
+			     "Unable to create an instance of xmlXPathContextPtr.");
 		goto bail;
 	}
 	xobj = xmlXPathEvalExpression((const xmlChar *)"/registry/language", xctxt);
 	if (!xobj) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s",
-			    doc->name);
+		lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+			     "No valid elements for %s",
+			     doc->name);
 		goto bail;
 	}
 	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
@@ -73,19 +76,19 @@ lt_lang_db_parse(lt_lang_db_t  *langdb,
 		xmlChar *subtag = NULL, *desc = NULL, *scope = NULL, *macrolang = NULL;
 		xmlChar *preferred = NULL, *suppress = NULL;
 		lt_lang_t *le = NULL;
-		gchar *s;
+		char *s;
 
 		if (!ent) {
-			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
+			lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+				     "Unable to obtain the xml node via XPath.");
 			goto bail;
 		}
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"subtag") == 0) {
 				if (subtag) {
-					g_warning("Duplicate subtag element in language: previous value was '%s'",
-						  subtag);
+					lt_warning("Duplicate subtag element in language: previous value was '%s'",
+						   subtag);
 				} else {
 					subtag = xmlNodeGetContent(cnode);
 				}
@@ -100,65 +103,65 @@ lt_lang_db_parse(lt_lang_db_t  *langdb,
 					desc = xmlNodeGetContent(cnode);
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"scope") == 0) {
 				if (scope) {
-					g_warning("Duplicate scope element in language: previous value was '%s'",
-						  scope);
+					lt_warning("Duplicate scope element in language: previous value was '%s'",
+						   scope);
 				} else {
 					scope = xmlNodeGetContent(cnode);
 				}
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"macrolanguage") == 0) {
 				if (macrolang) {
-					g_warning("Duplicate macrolanguage element in language: previous value was '%s'",
-						  macrolang);
+					lt_warning("Duplicate macrolanguage element in language: previous value was '%s'",
+						   macrolang);
 				} else {
 					macrolang = xmlNodeGetContent(cnode);
 				}
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"preferred-value") == 0) {
 				if (preferred) {
-					g_warning("Duplicate preferred-value element in language: previous value was '%s'",
-						  preferred);
+					lt_warning("Duplicate preferred-value element in language: previous value was '%s'",
+						   preferred);
 				} else {
 					preferred = xmlNodeGetContent(cnode);
 				}
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"suppress-script") == 0) {
 				if (suppress) {
-					g_warning("Duplicate suppress-script element in language: previous value was '%s'",
-						  suppress);
+					lt_warning("Duplicate suppress-script element in language: previous value was '%s'",
+						   suppress);
 				} else {
 					suppress = xmlNodeGetContent(cnode);
 				}
 			} else {
-				g_warning("Unknown node under /registry/language: %s", cnode->name);
+				lt_warning("Unknown node under /registry/language: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 		if (!subtag) {
-			g_warning("No subtag node: description = '%s', scope = '%s', macrolanguage = '%s'",
-				  desc, scope, macrolang);
+			lt_warning("No subtag node: description = '%s', scope = '%s', macrolanguage = '%s'",
+				   desc, scope, macrolang);
 			goto bail1;
 		}
 		if (!desc) {
-			g_warning("No description node: subtag = '%s', scope = '%s', macrolanguage = '%s'",
-				  subtag, scope, macrolang);
+			lt_warning("No description node: subtag = '%s', scope = '%s', macrolanguage = '%s'",
+				   subtag, scope, macrolang);
 			goto bail1;
 		}
 		le = lt_lang_create();
 		if (!le) {
-			g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-				    "Unable to create an instance of lt_lang_t.");
+			lt_error_set(&err, LT_ERR_OOM,
+				     "Unable to create an instance of lt_lang_t.");
 			goto bail1;
 		}
-		lt_lang_set_tag(le, (const gchar *)subtag);
-		lt_lang_set_name(le, (const gchar *)desc);
+		lt_lang_set_tag(le, (const char *)subtag);
+		lt_lang_set_name(le, (const char *)desc);
 		if (scope)
-			lt_lang_set_scope(le, (const gchar *)scope);
+			lt_lang_set_scope(le, (const char *)scope);
 		if (macrolang)
-			lt_lang_set_macro_language(le, (const gchar *)macrolang);
+			lt_lang_set_macro_language(le, (const char *)macrolang);
 		if (preferred)
-			lt_lang_set_preferred_tag(le, (const gchar *)preferred);
+			lt_lang_set_preferred_tag(le, (const char *)preferred);
 		if (suppress)
-			lt_lang_set_suppress_script(le, (const gchar *)suppress);
+			lt_lang_set_suppress_script(le, (const char *)suppress);
 
-		s = g_strdup(lt_lang_get_tag(le));
+		s = strdup(lt_lang_get_tag(le));
 		g_hash_table_replace(langdb->lang_entries,
 				     lt_strlower(s),
 				     lt_lang_ref(le));
@@ -178,12 +181,12 @@ lt_lang_db_parse(lt_lang_db_t  *langdb,
 		lt_lang_unref(le);
 	}
   bail:
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 		retval = FALSE;
 	}
 
@@ -209,12 +212,12 @@ lt_lang_db_new(void)
 	lt_lang_db_t *retval = lt_mem_alloc_object(sizeof (lt_lang_db_t));
 
 	if (retval) {
-		GError *err = NULL;
+		lt_error_t *err = NULL;
 		lt_lang_t *le;
 
 		retval->lang_entries = g_hash_table_new_full(g_str_hash,
 							     g_str_equal,
-							     g_free,
+							     free,
 							     (GDestroyNotify)lt_lang_unref);
 		lt_mem_add_ref(&retval->parent, retval->lang_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
@@ -223,7 +226,7 @@ lt_lang_db_new(void)
 		lt_lang_set_tag(le, "*");
 		lt_lang_set_name(le, "Wildcard entry");
 		g_hash_table_replace(retval->lang_entries,
-				     g_strdup(lt_lang_get_tag(le)),
+				     strdup(lt_lang_get_tag(le)),
 				     le);
 
 		retval->xml = lt_xml_new();
@@ -236,11 +239,11 @@ lt_lang_db_new(void)
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_lang_db_parse(retval, &err);
-		if (err) {
-			g_printerr(err->message);
+		if (lt_error_is_set(err, LT_ERR_ANY)) {
+			lt_error_print(err, LT_ERR_ANY);
 			lt_lang_db_unref(retval);
 			retval = NULL;
-			g_error_free(err);
+			lt_error_unref(err);
 		}
 	}
   bail:
@@ -259,7 +262,7 @@ lt_lang_db_new(void)
 lt_lang_db_t *
 lt_lang_db_ref(lt_lang_db_t *langdb)
 {
-	g_return_val_if_fail (langdb != NULL, NULL);
+	lt_return_val_if_fail (langdb != NULL, NULL);
 
 	return lt_mem_ref(&langdb->parent);
 }
@@ -290,17 +293,17 @@ lt_lang_db_unref(lt_lang_db_t *langdb)
  */
 lt_lang_t *
 lt_lang_db_lookup(lt_lang_db_t *langdb,
-		  const gchar  *subtag)
+		  const char   *subtag)
 {
 	lt_lang_t *retval;
-	gchar *s;
+	char *s;
 
-	g_return_val_if_fail (langdb != NULL, NULL);
-	g_return_val_if_fail (subtag != NULL, NULL);
+	lt_return_val_if_fail (langdb != NULL, NULL);
+	lt_return_val_if_fail (subtag != NULL, NULL);
 
-	s = g_strdup(subtag);
+	s = strdup(subtag);
 	retval = g_hash_table_lookup(langdb->lang_entries, lt_strlower(s));
-	g_free(s);
+	free(s);
 	if (retval)
 		return lt_lang_ref(retval);
 

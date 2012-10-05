@@ -17,10 +17,10 @@
 #ifndef __LT_LANG_DB_H__
 #define __LT_LANG_DB_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 #include <liblangtag/lt-lang.h>
 
-G_BEGIN_DECLS
+LT_BEGIN_DECLS
 
 /**
  * lt_lang_db_t:
@@ -35,8 +35,8 @@ lt_lang_db_t *lt_lang_db_new   (void);
 lt_lang_db_t *lt_lang_db_ref   (lt_lang_db_t *langdb);
 void          lt_lang_db_unref (lt_lang_db_t *langdb);
 lt_lang_t    *lt_lang_db_lookup(lt_lang_db_t *langdb,
-                                const gchar  *subtag);
+                                const char   *subtag);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_LANG_DB_H__ */

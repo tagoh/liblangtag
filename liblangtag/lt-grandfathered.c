@@ -14,7 +14,13 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
+#include <stdlib.h>
+#include <string.h>
 #include "lt-mem.h"
+#include "lt-messages.h"
+#include "lt-string.h"
+#include "lt-utils.h"
 #include "lt-grandfathered.h"
 #include "lt-grandfathered-private.h"
 
@@ -50,42 +56,39 @@ void
 lt_grandfathered_set_tag(lt_grandfathered_t *grandfathered,
 			 const char         *tag)
 {
-	g_return_if_fail (grandfathered != NULL);
-	g_return_if_fail (tag != NULL);
+	lt_return_if_fail (grandfathered != NULL);
+	lt_return_if_fail (tag != NULL);
 
 	if (grandfathered->tag)
 		lt_mem_remove_ref(&grandfathered->parent, grandfathered->tag);
-	grandfathered->tag = g_strdup(tag);
-	lt_mem_add_ref(&grandfathered->parent, grandfathered->tag,
-		       (lt_destroy_func_t)g_free);
+	grandfathered->tag = strdup(tag);
+	lt_mem_add_ref(&grandfathered->parent, grandfathered->tag, free);
 }
 
 void
 lt_grandfathered_set_name(lt_grandfathered_t *grandfathered,
 			  const char         *description)
 {
-	g_return_if_fail (grandfathered != NULL);
-	g_return_if_fail (description != NULL);
+	lt_return_if_fail (grandfathered != NULL);
+	lt_return_if_fail (description != NULL);
 
 	if (grandfathered->description)
 		lt_mem_remove_ref(&grandfathered->parent, grandfathered->description);
-	grandfathered->description = g_strdup(description);
-	lt_mem_add_ref(&grandfathered->parent, grandfathered->description,
-		       (lt_destroy_func_t)g_free);
+	grandfathered->description = strdup(description);
+	lt_mem_add_ref(&grandfathered->parent, grandfathered->description, free);
 }
 
 void
 lt_grandfathered_set_preferred_tag(lt_grandfathered_t *grandfathered,
 				   const char         *subtag)
 {
-	g_return_if_fail (grandfathered != NULL);
-	g_return_if_fail (subtag != NULL);
+	lt_return_if_fail (grandfathered != NULL);
+	lt_return_if_fail (subtag != NULL);
 
 	if (grandfathered->preferred_tag)
 		lt_mem_remove_ref(&grandfathered->parent, grandfathered->preferred_tag);
-	grandfathered->preferred_tag = g_strdup(subtag);
-	lt_mem_add_ref(&grandfathered->parent, grandfathered->preferred_tag,
-		       (lt_destroy_func_t)g_free);
+	grandfathered->preferred_tag = strdup(subtag);
+	lt_mem_add_ref(&grandfathered->parent, grandfathered->preferred_tag, free);
 }
 
 /*< public >*/
@@ -100,7 +103,7 @@ lt_grandfathered_set_preferred_tag(lt_grandfathered_t *grandfathered,
 lt_grandfathered_t *
 lt_grandfathered_ref(lt_grandfathered_t *grandfathered)
 {
-	g_return_val_if_fail (grandfathered != NULL, NULL);
+	lt_return_val_if_fail (grandfathered != NULL, NULL);
 
 	return lt_mem_ref(&grandfathered->parent);
 }
@@ -150,7 +153,7 @@ lt_grandfathered_get_better_tag(const lt_grandfathered_t *grandfathered)
 const char *
 lt_grandfathered_get_tag(const lt_grandfathered_t *grandfathered)
 {
-	g_return_val_if_fail (grandfathered != NULL, NULL);
+	lt_return_val_if_fail (grandfathered != NULL, NULL);
 
 	return grandfathered->tag;
 }
@@ -166,7 +169,7 @@ lt_grandfathered_get_tag(const lt_grandfathered_t *grandfathered)
 const char *
 lt_grandfathered_get_name(const lt_grandfathered_t *grandfathered)
 {
-	g_return_val_if_fail (grandfathered != NULL, NULL);
+	lt_return_val_if_fail (grandfathered != NULL, NULL);
 
 	return grandfathered->description;
 }
@@ -183,7 +186,7 @@ lt_grandfathered_get_name(const lt_grandfathered_t *grandfathered)
 const char *
 lt_grandfathered_get_preferred_tag(const lt_grandfathered_t *grandfathered)
 {
-	g_return_val_if_fail (grandfathered != NULL, NULL);
+	lt_return_val_if_fail (grandfathered != NULL, NULL);
 
 	return grandfathered->preferred_tag;
 }
@@ -198,22 +201,23 @@ void
 lt_grandfathered_dump(const lt_grandfathered_t *grandfathered)
 {
 	const char *preferred = lt_grandfathered_get_preferred_tag(grandfathered);
-	GString *string = g_string_new(NULL);
+	lt_string_t *string = lt_string_new(NULL);
 
 	if (preferred) {
-		if (string->len == 0)
-			g_string_append(string, " (");
-		g_string_append_printf(string, "preferred-value: %s",
-				       preferred);
+		if (lt_string_length(string) == 0)
+			lt_string_append(string, " (");
+		lt_string_append_printf(string, "preferred-value: %s",
+					preferred);
 	}
-	if (string->len > 0)
-		g_string_append(string, ")");
+	if (lt_string_length(string) > 0)
+		lt_string_append(string, ")");
 
-	g_print("Grandfathered: %s [%s]%s\n",
+	lt_info("Grandfathered: %s [%s]%s",
 		lt_grandfathered_get_tag(grandfathered),
 		lt_grandfathered_get_name(grandfathered),
-		string->str);
-	g_string_free(string, TRUE);
+		lt_string_value(string));
+
+	lt_string_unref(string);
 }
 
 /**
@@ -229,11 +233,11 @@ lt_bool_t
 lt_grandfathered_compare(const lt_grandfathered_t *v1,
 			 const lt_grandfathered_t *v2)
 {
-	g_return_val_if_fail (v1 != NULL, FALSE);
-	g_return_val_if_fail (v2 != NULL, FALSE);
+	lt_return_val_if_fail (v1 != NULL, FALSE);
+	lt_return_val_if_fail (v2 != NULL, FALSE);
 
 	if (v1 == v2)
 		return TRUE;
 
-	return g_strcmp0(lt_grandfathered_get_tag(v1), lt_grandfathered_get_tag(v2)) == 0;
+	return lt_strcmp0(lt_grandfathered_get_tag(v1), lt_grandfathered_get_tag(v2)) == 0;
 }

@@ -18,7 +18,6 @@
 #define __LT_EXT_MODULE_DATA_H__
 
 #include <liblangtag/lt-macros.h>
-#include <glib.h>
 
 LT_BEGIN_DECLS
 
@@ -37,7 +36,7 @@ typedef struct _lt_ext_module_data_t	lt_ext_module_data_t;
 
 
 lt_ext_module_data_t *lt_ext_module_data_new  (size_t                size,
-                                               GDestroyNotify        finalizer);
+					       lt_destroy_func_t     finalizer);
 lt_ext_module_data_t *lt_ext_module_data_ref  (lt_ext_module_data_t *data);
 void                  lt_ext_module_data_unref(lt_ext_module_data_t *data);
 

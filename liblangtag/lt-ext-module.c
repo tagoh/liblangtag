@@ -14,14 +14,18 @@
 #include "config.h"
 #endif
 
+#include <ctype.h>
 #include <dirent.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <glib.h>
 #include <gmodule.h>
 #include "lt-mem.h"
+#include "lt-messages.h"
 #include "lt-ext-module-data.h"
 #include "lt-ext-module.h"
 #include "lt-ext-module-private.h"
+#include "lt-utils.h"
 
 
 /**
@@ -41,25 +45,25 @@ struct _lt_ext_module_t {
 
 typedef struct _lt_ext_default_data_t {
 	lt_ext_module_data_t  parent;
-	GString              *tags;
+	lt_string_t          *tags;
 } lt_ext_default_data_t;
 
 static lt_ext_module_data_t *_lt_ext_default_create_data (void);
 static lt_bool_t             _lt_ext_default_precheck_tag(lt_ext_module_data_t  *data,
 							  const lt_tag_t        *tag,
-							  GError               **error);
+							  lt_error_t           **error);
 static lt_bool_t             _lt_ext_default_parse_tag   (lt_ext_module_data_t  *data,
 							  const char            *subtag,
-							  GError               **error);
+							  lt_error_t           **error);
 static char                 *_lt_ext_default_get_tag     (lt_ext_module_data_t  *data);
 static lt_bool_t             _lt_ext_default_validate_tag(lt_ext_module_data_t  *data);
 static lt_ext_module_data_t *_lt_ext_eaw_create_data     (void);
 static lt_bool_t             _lt_ext_eaw_precheck_tag    (lt_ext_module_data_t  *data,
 							  const lt_tag_t        *tag,
-							  GError               **error);
+							  lt_error_t           **error);
 static lt_bool_t             _lt_ext_eaw_parse_tag       (lt_ext_module_data_t  *data,
 							  const char            *subtag,
-							  GError               **error);
+							  lt_error_t           **error);
 static char                 *_lt_ext_eaw_get_tag         (lt_ext_module_data_t  *data);
 static lt_bool_t             _lt_ext_eaw_validate_tag    (lt_ext_module_data_t  *data);
 
@@ -90,7 +94,7 @@ _lt_ext_default_destroy_data(gpointer data)
 {
 	lt_ext_default_data_t *d = data;
 
-	g_string_free(d->tags, TRUE);
+	lt_string_unref(d->tags);
 }
 
 static lt_ext_module_data_t *
@@ -102,7 +106,7 @@ _lt_ext_default_create_data(void)
 	if (retval) {
 		lt_ext_default_data_t *data = (lt_ext_default_data_t *)retval;
 
-		data->tags = g_string_new(NULL);
+		data->tags = lt_string_new(NULL);
 	}
 
 	return retval;
@@ -111,7 +115,7 @@ _lt_ext_default_create_data(void)
 static lt_bool_t
 _lt_ext_default_precheck_tag(lt_ext_module_data_t  *data,
 			     const lt_tag_t        *tag,
-			     GError               **error)
+			     lt_error_t           **error)
 {
 	return TRUE;
 }
@@ -119,14 +123,14 @@ _lt_ext_default_precheck_tag(lt_ext_module_data_t  *data,
 static lt_bool_t
 _lt_ext_default_parse_tag(lt_ext_module_data_t  *data,
 			  const char            *subtag,
-			  GError               **error)
+			  lt_error_t           **error)
 {
 	lt_ext_default_data_t *d = (lt_ext_default_data_t *)data;
 
-	if (d->tags->len > 0)
-		g_string_append_printf(d->tags, "-%s", subtag);
+	if (lt_string_length(d->tags) > 0)
+		lt_string_append_printf(d->tags, "-%s", subtag);
 	else
-		g_string_append(d->tags, subtag);
+		lt_string_append(d->tags, subtag);
 
 	return TRUE;
 }
@@ -136,7 +140,7 @@ _lt_ext_default_get_tag(lt_ext_module_data_t *data)
 {
 	lt_ext_default_data_t *d = (lt_ext_default_data_t *)data;
 
-	return g_strdup(d->tags->str);
+	return strdup(lt_string_value(d->tags));
 }
 
 static lt_bool_t
@@ -162,7 +166,7 @@ _lt_ext_eaw_create_data(void)
 static lt_bool_t
 _lt_ext_eaw_precheck_tag(lt_ext_module_data_t  *data,
 			 const lt_tag_t        *tag,
-			 GError               **error)
+			 lt_error_t           **error)
 {
 	/* not allowed to process any extensions */
 
@@ -172,7 +176,7 @@ _lt_ext_eaw_precheck_tag(lt_ext_module_data_t  *data,
 static lt_bool_t
 _lt_ext_eaw_parse_tag(lt_ext_module_data_t  *data,
 		      const char            *subtag,
-		      GError               **error)
+		      lt_error_t           **error)
 {
 	/* not allowed to add any tags */
 
@@ -182,7 +186,7 @@ _lt_ext_eaw_parse_tag(lt_ext_module_data_t  *data,
 static char *
 _lt_ext_eaw_get_tag(lt_ext_module_data_t *data)
 {
-	return g_strdup("");
+	return strdup("");
 }
 
 static lt_bool_t
@@ -194,10 +198,11 @@ _lt_ext_eaw_validate_tag(lt_ext_module_data_t *data)
 static lt_bool_t
 lt_ext_module_load(lt_ext_module_t *module)
 {
-	char *filename = g_strdup_printf("liblangtag-ext-%s." G_MODULE_SUFFIX,
+	lt_string_t *fullname = lt_string_new(NULL);
+	char *filename = lt_strdup_printf("liblangtag-ext-%s." G_MODULE_SUFFIX,
 					  module->name);
-	char **path_list, *s, *path = NULL, *fullname = NULL;
-	const char *env = g_getenv("LANGTAG_EXT_MODULE_PATH");
+	char **path_list, *s, *path = NULL;
+	const char *env = getenv("LANGTAG_EXT_MODULE_PATH");
 	int i;
 	lt_bool_t retval = FALSE;
 	size_t len;
@@ -218,17 +223,21 @@ lt_ext_module_load(lt_ext_module_t *module)
 	for (i = 0; path_list[i] != NULL && !retval; i++) {
 		s = path_list[i];
 
-		while (*s && g_ascii_isspace(*s))
+		while (*s && isspace(*s))
 			s++;
 		len = strlen(s);
-		while (len > 0 && g_ascii_isspace(s[len - 1]))
+		while (len > 0 && isspace(s[len - 1]))
 			len--;
-		g_free(path);
-		path = g_strndup(s, len);
+		if (path)
+			free(path);
+		path = strndup(s, len);
 		if (path[0] != 0) {
-			g_free(fullname);
-			fullname = g_build_filename(path, filename, NULL);
-			module->module = g_module_open(fullname,
+			lt_string_clear(fullname);
+			if (!lt_string_append_filename(fullname, path, filename, NULL)) {
+				lt_critical("Unable to allocate a memory");
+				break;
+			}
+			module->module = g_module_open(lt_string_value(fullname),
 						       G_MODULE_BIND_LAZY|G_MODULE_BIND_LOCAL);
 			if (module->module) {
 				gpointer func;
@@ -239,39 +248,39 @@ lt_ext_module_load(lt_ext_module_t *module)
 						"module_get_version",
 						&func);
 				if (!func) {
-					g_warning(g_module_error());
+					lt_warning(g_module_error());
 					break;
 				}
 				if (((lt_ext_module_version_func_t)func)() != LT_EXT_MODULE_VERSION) {
-					g_warning("`%s' isn't satisfied the required module version.",
-						  filename);
+					lt_warning("`%s' isn't satisfied the required module version.",
+						   filename);
 					break;
 				}
 				g_module_symbol(module->module,
 						"module_get_funcs",
 						&func);
 				if (!func) {
-					g_warning(g_module_error());
+					lt_warning(g_module_error());
 					break;
 				}
 				if (!(module->funcs = ((lt_ext_module_get_funcs_func_t)func)())) {
-					g_warning("No function table for `%s'",
-						  filename);
+					lt_warning("No function table for `%s'",
+						   filename);
 					break;
 				}
-				g_log(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG,
-				      "Loading the external extension handler module: %s",
-				      fullname);
+				lt_debug(LT_MSGCAT_MODULE,
+					 "Loading the external extension handler module: %s",
+					 fullname);
 				retval = TRUE;
 			}
 		}
 	}
 	if (!retval)
-		g_warning("No such modules: %s", module->name);
+		lt_warning("No such modules: %s", module->name);
 
-	g_free(fullname);
-	g_free(path);
-	g_free(filename);
+	lt_string_unref(fullname);
+	free(path);
+	free(filename);
 	g_strfreev(path_list);
 
 	return retval;
@@ -283,19 +292,17 @@ lt_ext_module_new_with_data(const char                  *name,
 {
 	lt_ext_module_t *retval;
 
-	g_return_val_if_fail (name != NULL, NULL);
-	g_return_val_if_fail (funcs != NULL, NULL);
+	lt_return_val_if_fail (name != NULL, NULL);
+	lt_return_val_if_fail (funcs != NULL, NULL);
 
 	retval = lt_mem_alloc_object(sizeof (lt_ext_module_t));
 	if (retval) {
-		retval->name = g_strdup(name);
+		retval->name = strdup(name);
 		lt_mem_add_ref(&retval->parent, retval->name,
-			       (lt_destroy_func_t)g_free);
+			       (lt_destroy_func_t)free);
 		retval->funcs = funcs;
 
-		g_log(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG,
-		      "Loading the internal extension handler: %s",
-		      name);
+		lt_debug(LT_MSGCAT_MODULE, "Loading the internal extension handler: %s", name);
 	}
 
 	return retval;
@@ -320,14 +327,14 @@ lt_ext_module_singleton_char_to_int(char singleton_c)
 	int retval = -1;
 
 	if (!lt_ext_module_validate_singleton(singleton_c))
-		g_print("XXXXXXXXx: %c\n", singleton_c);
-	g_return_val_if_fail (lt_ext_module_validate_singleton(singleton_c), -1);
+		fprintf(stderr, "XXXXXXXXx: %c\n", singleton_c);
+	lt_return_val_if_fail (lt_ext_module_validate_singleton(singleton_c), -1);
 
 	if (singleton_c >= '0' && singleton_c <= '9') {
 		retval = singleton_c - '0';
 	} else if ((singleton_c >= 'a' && singleton_c <= 'z') ||
 		   (singleton_c >= 'A' && singleton_c <= 'Z')) {
-		retval = g_ascii_tolower(singleton_c) - 'a' + 10;
+		retval = tolower(singleton_c) - 'a' + 10;
 	} else if (singleton_c == ' ') {
 		retval = LT_MAX_EXT_MODULES - 2;
 	} else if (singleton_c == '*') {
@@ -342,8 +349,8 @@ lt_ext_module_singleton_int_to_char(int singleton)
 {
 	char retval;
 
-	g_return_val_if_fail (singleton >= 0, 0);
-	g_return_val_if_fail (singleton < LT_MAX_EXT_MODULES, 0);
+	lt_return_val_if_fail (singleton >= 0, 0);
+	lt_return_val_if_fail (singleton < LT_MAX_EXT_MODULES, 0);
 
 	if ((singleton - 10) < 0)
 		retval = singleton + '0';
@@ -362,7 +369,7 @@ lt_ext_module_new(const char *name)
 {
 	lt_ext_module_t *retval;
 
-	g_return_val_if_fail (name != NULL, NULL);
+	lt_return_val_if_fail (name != NULL, NULL);
 
 	retval = lt_mem_alloc_object(sizeof (lt_ext_module_t));
 
@@ -381,16 +388,16 @@ lt_ext_module_new(const char *name)
 			size_t suffix_len = strlen(G_MODULE_SUFFIX) + 1;
 
 			if (len > suffix_len &&
-			    g_strcmp0(&filename[prefix_len + len - suffix_len], "." G_MODULE_SUFFIX) == 0) {
-				module = g_strndup(&filename[prefix_len], len - suffix_len);
+			    lt_strcmp0(&filename[prefix_len + len - suffix_len], "." G_MODULE_SUFFIX) == 0) {
+				module = strndup(&filename[prefix_len], len - suffix_len);
 				module[len - suffix_len] = 0;
 			}
 		}
 		if (!module)
-			module = g_strdup(filename);
+			module = strdup(filename);
 		retval->name = module;
 		lt_mem_add_ref(&retval->parent, retval->name,
-			       (lt_destroy_func_t)g_free);
+			       (lt_destroy_func_t)free);
 
 		g_free(filename);
 
@@ -401,27 +408,27 @@ lt_ext_module_new(const char *name)
 		singleton_c = lt_ext_module_get_singleton(retval);
 		if (singleton_c == ' ' ||
 		    singleton_c == '*') {
-			g_warning("Not allowed to override the internal handlers for special singleton.");
+			lt_warning("Not allowed to override the internal handlers for special singleton.");
 			lt_ext_module_unref(retval);
 			return NULL;
 		}
 		singleton = lt_ext_module_singleton_char_to_int(singleton_c);
 		if (singleton < 0) {
-			g_warning("Invalid singleton: `%c' - `%s'",
-				  singleton_c, 
-				  retval->name);
+			lt_warning("Invalid singleton: `%c' - `%s'",
+				   singleton_c, 
+				   retval->name);
 			lt_ext_module_unref(retval);
 			return NULL;
 		}
 		if (__lt_ext_modules[singleton]) {
-			g_warning("Duplicate extension module: %s",
+			lt_warning("Duplicate extension module: %s",
 				  retval->name);
 			lt_ext_module_unref(retval);
 			return NULL;
 		}
 		__lt_ext_modules[singleton] = retval;
 		lt_mem_add_weak_pointer(&retval->parent,
-					(gpointer *)&__lt_ext_modules[singleton]);
+					(lt_pointer_t *)&__lt_ext_modules[singleton]);
 	}
 
 	return retval;
@@ -432,8 +439,8 @@ lt_ext_module_lookup(char singleton_c)
 {
 	int singleton = lt_ext_module_singleton_char_to_int(singleton_c);
 
-	g_return_val_if_fail (singleton >= 0, NULL);
-	g_return_val_if_fail (__lt_ext_module_initialized, NULL);
+	lt_return_val_if_fail (singleton >= 0, NULL);
+	lt_return_val_if_fail (__lt_ext_module_initialized, NULL);
 
 	if (!__lt_ext_modules[singleton])
 		return lt_ext_module_ref(__lt_ext_default_handler);
@@ -444,7 +451,7 @@ lt_ext_module_lookup(char singleton_c)
 const char *
 lt_ext_module_get_name(lt_ext_module_t *module)
 {
-	g_return_val_if_fail (module != NULL, NULL);
+	lt_return_val_if_fail (module != NULL, NULL);
 
 	return module->name;
 }
@@ -452,9 +459,9 @@ lt_ext_module_get_name(lt_ext_module_t *module)
 char
 lt_ext_module_get_singleton(lt_ext_module_t *module)
 {
-	g_return_val_if_fail (module != NULL, 0);
-	g_return_val_if_fail (module->funcs != NULL, 0);
-	g_return_val_if_fail (module->funcs->get_singleton != NULL, 0);
+	lt_return_val_if_fail (module != NULL, 0);
+	lt_return_val_if_fail (module->funcs != NULL, 0);
+	lt_return_val_if_fail (module->funcs->get_singleton != NULL, 0);
 
 	return module->funcs->get_singleton();
 }
@@ -462,9 +469,9 @@ lt_ext_module_get_singleton(lt_ext_module_t *module)
 lt_ext_module_data_t *
 lt_ext_module_create_data(lt_ext_module_t *module)
 {
-	g_return_val_if_fail (module != NULL, NULL);
-	g_return_val_if_fail (module->funcs != NULL, NULL);
-	g_return_val_if_fail (module->funcs->create_data != NULL, NULL);
+	lt_return_val_if_fail (module != NULL, NULL);
+	lt_return_val_if_fail (module->funcs != NULL, NULL);
+	lt_return_val_if_fail (module->funcs->create_data != NULL, NULL);
 
 	return module->funcs->create_data();
 }
@@ -473,13 +480,13 @@ lt_bool_t
 lt_ext_module_parse_tag(lt_ext_module_t       *module,
 			lt_ext_module_data_t  *data,
 			const char            *subtag,
-			GError               **error)
+			lt_error_t           **error)
 {
-	g_return_val_if_fail (module != NULL, FALSE);
-	g_return_val_if_fail (data != NULL, FALSE);
-	g_return_val_if_fail (subtag != NULL, FALSE);
-	g_return_val_if_fail (module->funcs != NULL, FALSE);
-	g_return_val_if_fail (module->funcs->parse_tag != NULL, FALSE);
+	lt_return_val_if_fail (module != NULL, FALSE);
+	lt_return_val_if_fail (data != NULL, FALSE);
+	lt_return_val_if_fail (subtag != NULL, FALSE);
+	lt_return_val_if_fail (module->funcs != NULL, FALSE);
+	lt_return_val_if_fail (module->funcs->parse_tag != NULL, FALSE);
 
 	return module->funcs->parse_tag(data, subtag, error);
 }
@@ -488,10 +495,10 @@ char *
 lt_ext_module_get_tag(lt_ext_module_t      *module,
 		      lt_ext_module_data_t *data)
 {
-	g_return_val_if_fail (module != NULL, NULL);
-	g_return_val_if_fail (data != NULL, NULL);
-	g_return_val_if_fail (module->funcs != NULL, NULL);
-	g_return_val_if_fail (module->funcs->get_tag != NULL, NULL);
+	lt_return_val_if_fail (module != NULL, NULL);
+	lt_return_val_if_fail (data != NULL, NULL);
+	lt_return_val_if_fail (module->funcs != NULL, NULL);
+	lt_return_val_if_fail (module->funcs->get_tag != NULL, NULL);
 
 	return module->funcs->get_tag(data);
 }
@@ -500,10 +507,10 @@ lt_bool_t
 lt_ext_module_validate_tag(lt_ext_module_t      *module,
 			   lt_ext_module_data_t *data)
 {
-	g_return_val_if_fail (module != NULL, FALSE);
-	g_return_val_if_fail (data != NULL, FALSE);
-	g_return_val_if_fail (module->funcs != NULL, FALSE);
-	g_return_val_if_fail (module->funcs->validate_tag != NULL, FALSE);
+	lt_return_val_if_fail (module != NULL, FALSE);
+	lt_return_val_if_fail (data != NULL, FALSE);
+	lt_return_val_if_fail (module->funcs != NULL, FALSE);
+	lt_return_val_if_fail (module->funcs->validate_tag != NULL, FALSE);
 
 	return module->funcs->validate_tag(data);
 }
@@ -512,23 +519,23 @@ lt_bool_t
 lt_ext_module_precheck_tag(lt_ext_module_t       *module,
 			   lt_ext_module_data_t  *data,
 			   const lt_tag_t        *tag,
-			   GError               **error)
+			   lt_error_t           **error)
 {
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 	lt_bool_t retval;
 
-	g_return_val_if_fail (module != NULL, FALSE);
-	g_return_val_if_fail (data != NULL, FALSE);
-	g_return_val_if_fail (module->funcs != NULL, FALSE);
-	g_return_val_if_fail (module->funcs->precheck_tag != NULL, FALSE);
+	lt_return_val_if_fail (module != NULL, FALSE);
+	lt_return_val_if_fail (data != NULL, FALSE);
+	lt_return_val_if_fail (module->funcs != NULL, FALSE);
+	lt_return_val_if_fail (module->funcs->precheck_tag != NULL, FALSE);
 
 	retval = module->funcs->precheck_tag(data, tag, &err);
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 		retval = FALSE;
 	}
 
@@ -547,7 +554,7 @@ void
 lt_ext_modules_load(void)
 {
 #ifdef ENABLE_GMODULE
-	const char *env = g_getenv("LANGTAG_EXT_MODULE_PATH");
+	const char *env = getenv("LANGTAG_EXT_MODULE_PATH");
 	char **path_list;
 	int i;
 	size_t suffix_len = strlen(G_MODULE_SUFFIX) + 1;
@@ -580,8 +587,8 @@ lt_ext_modules_load(void)
 
 				len = strlen(dent.d_name);
 				if (len > suffix_len &&
-				    g_strcmp0(&dent.d_name[len - suffix_len],
-					      "." G_MODULE_SUFFIX) == 0) {
+				    lt_strcmp0(&dent.d_name[len - suffix_len],
+					       "." G_MODULE_SUFFIX) == 0) {
 					lt_ext_module_new(dent.d_name);
 				}
 			}
@@ -636,7 +643,7 @@ lt_ext_modules_unload(void)
 lt_ext_module_t *
 lt_ext_module_ref(lt_ext_module_t *module)
 {
-	g_return_val_if_fail (module != NULL, NULL);
+	lt_return_val_if_fail (module != NULL, NULL);
 
 	return lt_mem_ref(&module->parent);
 }

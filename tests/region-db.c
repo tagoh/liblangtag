@@ -14,8 +14,10 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
 #include <locale.h>
 #include "langtag.h"
+#include "lt-utils.h"
 
 int
 main(int    argc,
@@ -28,11 +30,11 @@ main(int    argc,
 	lt_db_set_datadir(TEST_DATADIR);
 	regiondb = lt_region_db_new();
 
-	if (g_strcmp0(argv[1], "list") == 0) {
-	} else if (g_strcmp0(argv[1], "lookup") == 0) {
+	if (lt_strcmp0(argv[1], "list") == 0) {
+	} else if (lt_strcmp0(argv[1], "lookup") == 0) {
 		lt_region_t *region = lt_region_db_lookup(regiondb, argv[2]);
 
-		g_print("%s (%s)\n", lt_region_get_tag(region), lt_region_get_name(region));
+		printf("%s (%s)\n", lt_region_get_tag(region), lt_region_get_name(region));
 		lt_region_unref(region);
 	}
 

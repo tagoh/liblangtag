@@ -13,7 +13,6 @@
 #ifndef __LT_EXTENSION_PRIVATE_H__
 #define __LT_EXTENSION_PRIVATE_H__
 
-#include <glib.h>
 #include "lt-macros.h"
 #include "lt-ext-module.h"
 #include "lt-extension.h"
@@ -27,10 +26,10 @@ lt_bool_t       lt_extension_has_singleton (lt_extension_t  *extension,
 lt_bool_t       lt_extension_add_singleton (lt_extension_t  *extension,
 					    char             singleton_c,
 					    const lt_tag_t  *tag,
-					    GError         **error);
+					    lt_error_t     **error);
 lt_bool_t       lt_extension_add_tag       (lt_extension_t  *extension,
                                             const char      *subtag,
-                                            GError         **error);
+                                            lt_error_t     **error);
 void            lt_extension_cancel_tag    (lt_extension_t  *extension);
 lt_bool_t       lt_extension_validate_state(lt_extension_t  *extension);
 

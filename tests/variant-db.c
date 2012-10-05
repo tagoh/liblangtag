@@ -14,8 +14,10 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
 #include <locale.h>
 #include "langtag.h"
+#include "lt-utils.h"
 
 int
 main(int    argc,
@@ -28,20 +30,20 @@ main(int    argc,
 	lt_db_set_datadir(TEST_DATADIR);
 	variantdb = lt_variant_db_new();
 
-	if (g_strcmp0(argv[1], "list") == 0) {
-	} else if (g_strcmp0(argv[1], "lookup") == 0) {
+	if (lt_strcmp0(argv[1], "list") == 0) {
+	} else if (lt_strcmp0(argv[1], "lookup") == 0) {
 		lt_variant_t *variant = lt_variant_db_lookup(variantdb, argv[2]);
-		const GList *prefix, *l;
+		const lt_list_t *prefix, *l;
 
 		if (variant) {
-			g_print("desc: %s\n", lt_variant_get_name(variant));
+			printf("desc: %s\n", lt_variant_get_name(variant));
 			prefix = lt_variant_get_prefix(variant);
-			for (l = prefix; l != NULL; l = g_list_next(l)) {
-				g_print("prefix: %s\n", (gchar *)l->data);
+			for (l = prefix; l != NULL; l = lt_list_next(l)) {
+				printf("prefix: %s\n", (char *)lt_list_value(l));
 			}
 			lt_variant_unref(variant);
 		} else {
-			g_print("no such variant: %s\n", argv[2]);
+			printf("no such variant: %s\n", argv[2]);
 		}
 	}
 

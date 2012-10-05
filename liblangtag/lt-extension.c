@@ -14,8 +14,13 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
+#include <stdlib.h>
+#include <string.h>
 #include "lt-error.h"
 #include "lt-mem.h"
+#include "lt-messages.h"
+#include "lt-utils.h"
 #include "lt-ext-module-private.h"
 #include "lt-extension.h"
 #include "lt-extension-private.h"
@@ -30,7 +35,7 @@
  */
 struct _lt_extension_t {
 	lt_mem_t              parent;
-	GString              *cached_tag;
+	lt_string_t          *cached_tag;
 	lt_ext_module_t      *module;
 	int                   singleton;
 	lt_ext_module_data_t *extensions[LT_MAX_EXT_MODULES + 1];
@@ -45,9 +50,9 @@ lt_extension_create(void)
 	lt_extension_t *retval = lt_mem_alloc_object(sizeof (lt_extension_t));
 
 	if (retval) {
-		retval->cached_tag = g_string_new(NULL);
+		retval->cached_tag = lt_string_new(NULL);
 		lt_mem_add_ref(&retval->parent, retval->cached_tag,
-			       (lt_destroy_func_t)lt_mem_gstring_free);
+			       (lt_destroy_func_t)lt_string_unref);
 	}
 
 	return retval;
@@ -57,9 +62,9 @@ lt_bool_t
 lt_extension_has_singleton(lt_extension_t *extension,
 			   char            singleton_c)
 {
-	gint singleton;
+	int singleton;
 
-	g_return_val_if_fail (extension != NULL, FALSE);
+	lt_return_val_if_fail (extension != NULL, FALSE);
 
 	singleton = lt_ext_module_singleton_char_to_int(singleton_c);
 	if (singleton < 0)
@@ -72,24 +77,24 @@ lt_bool_t
 lt_extension_add_singleton(lt_extension_t  *extension,
 			   char             singleton_c,
 			   const lt_tag_t  *tag,
-			   GError         **error)
+			   lt_error_t     **error)
 {
-	gint singleton = lt_ext_module_singleton_char_to_int(singleton_c);
+	int singleton = lt_ext_module_singleton_char_to_int(singleton_c);
 	lt_ext_module_t *m;
 	lt_ext_module_data_t *d;
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 
-	g_return_val_if_fail (extension != NULL, FALSE);
-	g_return_val_if_fail (singleton_c != 'X' && singleton_c != 'x', FALSE);
-	g_return_val_if_fail (!lt_extension_has_singleton(extension, singleton_c), FALSE);
-	g_return_val_if_fail (singleton >= 0, FALSE);
+	lt_return_val_if_fail (extension != NULL, FALSE);
+	lt_return_val_if_fail (singleton_c != 'X' && singleton_c != 'x', FALSE);
+	lt_return_val_if_fail (!lt_extension_has_singleton(extension, singleton_c), FALSE);
+	lt_return_val_if_fail (singleton >= 0, FALSE);
 
 	m = lt_ext_module_lookup(singleton_c);
 	d = lt_ext_module_create_data(m);
 	if (!d) {
 		lt_ext_module_unref(m);
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of lt_ext_module_data_t.");
+		lt_error_set(&err, LT_ERR_OOM,
+			     "Unable to create an instance of lt_ext_module_data_t.");
 
 		goto bail;
 	}
@@ -109,18 +114,18 @@ lt_extension_add_singleton(lt_extension_t  *extension,
 		       (lt_destroy_func_t)lt_ext_module_data_unref);
 	extension->singleton = singleton;
 
-	if (extension->cached_tag->len > 0)
-		g_string_append_printf(extension->cached_tag, "-%c", singleton_c);
+	if (lt_string_length(extension->cached_tag) > 0)
+		lt_string_append_printf(extension->cached_tag, "-%c", singleton_c);
 	else
-		g_string_append_c(extension->cached_tag, singleton_c);
+		lt_string_append_c(extension->cached_tag, singleton_c);
 
   bail:
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 
 		return FALSE;
 	}
@@ -131,29 +136,29 @@ lt_extension_add_singleton(lt_extension_t  *extension,
 lt_bool_t
 lt_extension_add_tag(lt_extension_t  *extension,
 		     const char      *subtag,
-		     GError         **error)
+		     lt_error_t     **error)
 {
 	lt_bool_t retval;
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 
-	g_return_val_if_fail (extension != NULL, FALSE);
-	g_return_val_if_fail (subtag != NULL, FALSE);
-	g_return_val_if_fail (extension->module != NULL, FALSE);
-	g_return_val_if_fail (extension->extensions[extension->singleton] != NULL, FALSE);
+	lt_return_val_if_fail (extension != NULL, FALSE);
+	lt_return_val_if_fail (subtag != NULL, FALSE);
+	lt_return_val_if_fail (extension->module != NULL, FALSE);
+	lt_return_val_if_fail (extension->extensions[extension->singleton] != NULL, FALSE);
 
 	retval = lt_ext_module_parse_tag(extension->module,
 					 extension->extensions[extension->singleton],
 					 subtag,
 					 &err);
 	if (retval)
-		g_string_append_printf(extension->cached_tag, "-%s", subtag);
+		lt_string_append_printf(extension->cached_tag, "-%s", subtag);
 
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 		retval = FALSE;
 	}
 
@@ -163,43 +168,46 @@ lt_extension_add_tag(lt_extension_t  *extension,
 void
 lt_extension_cancel_tag(lt_extension_t *extension)
 {
-	g_return_if_fail (extension != NULL);
+	lt_return_if_fail (extension != NULL);
 
 	if (extension->module && extension->extensions[extension->singleton]) {
-		char **tags, singleton[4];
-		GList *l = NULL, *ll;
-		gint i;
+		char *tags, singleton[4], *p, *lastp;
+		lt_list_t *l = NULL, *ll;
 
 		lt_mem_remove_ref(&extension->parent, extension->module);
 		extension->module = NULL;
 		lt_mem_remove_ref(&extension->parent, extension->extensions[extension->singleton]);
 		extension->extensions[extension->singleton] = NULL;
 
-		tags = g_strsplit(extension->cached_tag->str, "-", -1);
-		for (i = 0; tags[i] != NULL; i++) {
-			l = g_list_append(l, tags[i]);
+		lastp = p = tags = strdup(lt_string_value(extension->cached_tag));
+		while (p) {
+			p = strchr(p, '-');
+			if (p) {
+				*p = 0;
+				p++;
+			}
+			l = lt_list_append(l, lastp, NULL);
+			lastp = p;
 		}
 		singleton[0] = lt_ext_module_singleton_int_to_char(extension->singleton);
 		singleton[1] = 0;
-		g_string_truncate(extension->cached_tag, 0);
-		for (ll = l; ll != NULL; ll = g_list_next(ll)) {
-			if (g_strcmp0(ll->data, singleton) == 0) {
-				if (ll->prev)
-					ll->prev->next = NULL;
-				ll->prev = NULL;
+		lt_string_clear(extension->cached_tag);
+		for (ll = l; ll != NULL; ll = lt_list_next(ll)) {
+			if (lt_strcmp0(lt_list_value(ll), singleton) == 0) {
 				if (ll == l)
 					l = NULL;
-				g_list_free(ll);
+				lt_list_free(ll);
 				break;
 			}
-			if (extension->cached_tag->len > 0)
-				g_string_append_printf(extension->cached_tag, "-%s", (char *)ll->data);
+			if (lt_string_length(extension->cached_tag) > 0)
+				lt_string_append_printf(extension->cached_tag,
+							"-%s", (char *)lt_list_value(ll));
 			else
-				g_string_append(extension->cached_tag, ll->data);
+				lt_string_append(extension->cached_tag, lt_list_value(ll));
 		}
-		if (l)
-			g_list_free(l);
-		g_strfreev(tags);
+		lt_list_free(l);
+		if (tags)
+			free(tags);
 	}
 }
 
@@ -207,13 +215,13 @@ lt_extension_t *
 lt_extension_copy(lt_extension_t *extension)
 {
 	lt_extension_t *retval;
-	gint i;
+	int i;
 
-	g_return_val_if_fail (extension != NULL, NULL);
+	lt_return_val_if_fail (extension != NULL, NULL);
 
 	retval = lt_extension_create();
 	if (retval) {
-		g_string_append(retval->cached_tag, extension->cached_tag->str);
+		lt_string_append(retval->cached_tag, lt_string_value(extension->cached_tag));
 		if (extension->module) {
 			retval->module = lt_ext_module_ref(extension->module);
 			lt_mem_add_ref(&retval->parent, retval->module,
@@ -237,7 +245,7 @@ lt_extension_validate_state(lt_extension_t *extension)
 {
 	lt_bool_t retval = TRUE;
 
-	g_return_val_if_fail (extension != NULL, FALSE);
+	lt_return_val_if_fail (extension != NULL, FALSE);
 
 	if (extension->module) {
 		retval = lt_ext_module_validate_tag(extension->module,
@@ -259,7 +267,7 @@ lt_extension_validate_state(lt_extension_t *extension)
 lt_extension_t *
 lt_extension_ref(lt_extension_t *extension)
 {
-	g_return_val_if_fail (extension != NULL, NULL);
+	lt_return_val_if_fail (extension != NULL, NULL);
 
 	return lt_mem_ref(&extension->parent);
 }
@@ -289,9 +297,9 @@ lt_extension_unref(lt_extension_t *extension)
 const char *
 lt_extension_get_tag(lt_extension_t *extension)
 {
-	g_return_val_if_fail (extension != NULL, NULL);
+	lt_return_val_if_fail (extension != NULL, NULL);
 
-	return extension->cached_tag->str;
+	return lt_string_value(extension->cached_tag);
 }
 
 /**
@@ -305,37 +313,37 @@ lt_extension_get_tag(lt_extension_t *extension)
 char *
 lt_extension_get_canonicalized_tag(lt_extension_t *extension)
 {
-	GString *string;
-	gint i;
+	lt_string_t *string;
+	int i;
 	char c, *s;
 	lt_ext_module_t *m;
 
-	g_return_val_if_fail (extension != NULL, NULL);
+	lt_return_val_if_fail (extension != NULL, NULL);
 
-	string = g_string_new(NULL);
+	string = lt_string_new(NULL);
 
 	for (i = 0; i < LT_MAX_EXT_MODULES; i++) {
 		if (extension->extensions[i]) {
-			if (string->len > 0)
-				g_string_append_c(string, '-');
+			if (lt_string_length(string) > 0)
+				lt_string_append_c(string, '-');
 			c = lt_ext_module_singleton_int_to_char(i);
-			g_string_append_c(string, c);
+			lt_string_append_c(string, c);
 			if (c != ' ' && c != '*') {
 				m = lt_ext_module_lookup(c);
 				if (m) {
 					s = lt_ext_module_get_tag(m, extension->extensions[i]);
-					g_string_append_printf(string, "-%s", s);
-					g_free(s);
+					lt_string_append_printf(string, "-%s", s);
+					free(s);
 					lt_ext_module_unref(m);
 				} else {
-					g_warning("Unable to obtain the certain module instance: singleton = '%c", c);
+					lt_warning("Unable to obtain the certain module instance: singleton = '%c", c);
 					break;
 				}
 			}
 		}
 	}
 
-	return g_string_free(string, FALSE);
+	return lt_string_free(string, FALSE);
 }
 
 /**
@@ -347,31 +355,31 @@ lt_extension_get_canonicalized_tag(lt_extension_t *extension)
 void
 lt_extension_dump(lt_extension_t *extension)
 {
-	gint i;
+	int i;
 	char c;
 	char *s;
 	lt_ext_module_t *m;
 
-	g_return_if_fail (extension != NULL);
+	lt_return_if_fail (extension != NULL);
 
-	g_print("Extensions:\n");
+	lt_info("Extensions:");
 	for (i = 0; i < LT_MAX_EXT_MODULES; i++) {
 		if (extension->extensions[i]) {
 			c = lt_ext_module_singleton_int_to_char(i);
 			if (c == ' ') {
-				g_print(" '' [empty]\n");
+				lt_info(" '' [empty]");
 			} else if (c == '*') {
-				g_print(" '*' [wildcard]\n");
+				lt_info(" '*' [wildcard]");
 			} else {
 				m = lt_ext_module_lookup(c);
 				if (m) {
 					s = lt_ext_module_get_tag(m, extension->extensions[i]);
-					g_print("  %c-%s\n", c, s);
-					g_free(s);
+					lt_info("  %c-%s", c, s);
+					free(s);
 					lt_ext_module_unref(m);
 				} else {
-					g_print("  [failed to obtain the module instance: singleton = '%c', data = %p]\n",
-						c, extension->extensions[i]);
+					lt_warning("  [failed to obtain the module instance: singleton = '%c', data = %p]",
+						   c, extension->extensions[i]);
 				}
 			}
 		}
@@ -391,7 +399,7 @@ lt_bool_t
 lt_extension_compare(const lt_extension_t *v1,
 		     const lt_extension_t *v2)
 {
-	gint i;
+	int i;
 	char *s1 = NULL, *s2 = NULL;
 	lt_ext_module_t *m = NULL;
 	lt_bool_t retval = TRUE;
@@ -417,11 +425,13 @@ lt_extension_compare(const lt_extension_t *v1,
 		if (m)
 			lt_ext_module_unref(m);
 		m = lt_ext_module_lookup(lt_ext_module_singleton_int_to_char(i));
-		g_free(s1);
-		g_free(s2);
+		if (s1)
+			free(s1);
+		if (s2)
+			free(s2);
 		s1 = lt_ext_module_get_tag(m, v1->extensions[i]);
 		s2 = lt_ext_module_get_tag(m, v2->extensions[i]);
-		if (g_strcmp0(s1, s2)) {
+		if (lt_strcmp0(s1, s2)) {
 			retval = FALSE;
 			break;
 		}
@@ -429,8 +439,10 @@ lt_extension_compare(const lt_extension_t *v1,
 
 	if (m)
 		lt_ext_module_unref(m);
-	g_free(s1);
-	g_free(s2);
+	if (s1)
+		free(s1);
+	if (s2)
+		free(s2);
 
 	return retval;
 }
@@ -446,10 +458,10 @@ lt_extension_compare(const lt_extension_t *v1,
 lt_bool_t
 lt_extension_truncate(lt_extension_t  *extension)
 {
-	gint i;
+	int i;
 	lt_bool_t retval = FALSE;
 
-	g_return_val_if_fail (extension != NULL, FALSE);
+	lt_return_val_if_fail (extension != NULL, FALSE);
 
 	for (i = LT_MAX_EXT_MODULES - 1; i >= 0; i--) {
 		if (extension->extensions[i]) {

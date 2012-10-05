@@ -14,11 +14,14 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-grandfathered.h"
 #include "lt-grandfathered-private.h"
 #include "lt-mem.h"
+#include "lt-messages.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-grandfathered-db.h"
@@ -39,31 +42,31 @@ struct _lt_grandfathered_db_t {
 };
 
 /*< private >*/
-static gboolean
+static lt_bool_t
 lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
-			  GError                **error)
+			  lt_error_t            **error)
 {
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 	xmlDocPtr doc = NULL;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 	int i, n;
 
-	g_return_val_if_fail (grandfathereddb != NULL, FALSE);
+	lt_return_val_if_fail (grandfathereddb != NULL, FALSE);
 
 	doc = lt_xml_get_subtag_registry(grandfathereddb->xml);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
+		lt_error_set(&err, LT_ERR_OOM,
+			     "Unable to create an instance of xmlXPathContextPtr.");
 		goto bail;
 	}
 	xobj = xmlXPathEvalExpression((const xmlChar *)"/registry/grandfathered", xctxt);
 	if (!xobj) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s",
-			    doc->name);
+		lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+			     "No valid elements for %s",
+			     doc->name);
 		goto bail;
 	}
 	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
@@ -73,19 +76,19 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 		xmlNodePtr cnode;
 		xmlChar *tag = NULL, *desc = NULL, *preferred = NULL;
 		lt_grandfathered_t *le = NULL;
-		gchar *s;
+		char *s;
 
 		if (!ent) {
-			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
+			lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+				     "Unable to obtain the xml node via XPath.");
 			goto bail;
 		}
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"tag") == 0) {
 				if (tag) {
-					g_warning("Duplicate tag element in grandfathered: previous value was '%s'",
-						  tag);
+					lt_warning("Duplicate tag element in grandfathered: previous value was '%s'",
+						   tag);
 				} else {
 					tag = xmlNodeGetContent(cnode);
 				}
@@ -99,38 +102,38 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 					desc = xmlNodeGetContent(cnode);
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"preferred-value") == 0) {
 				if (preferred) {
-					g_warning("Duplicate preferred-value element in grandfathered: previous value was '%s'",
-						  preferred);
+					lt_warning("Duplicate preferred-value element in grandfathered: previous value was '%s'",
+						   preferred);
 				} else {
 					preferred = xmlNodeGetContent(cnode);
 				}
 			} else {
-				g_warning("Unknown node under /registry/grandfathered: %s", cnode->name);
+				lt_warning("Unknown node under /registry/grandfathered: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 		if (!tag) {
-			g_warning("No tag node: description = '%s', preferred-value = '%s'",
-				  desc, preferred);
+			lt_warning("No tag node: description = '%s', preferred-value = '%s'",
+				   desc, preferred);
 			goto bail1;
 		}
 		if (!desc) {
-			g_warning("No description node: tag = '%s', preferred-value = '%s'",
-				  tag, preferred);
+			lt_warning("No description node: tag = '%s', preferred-value = '%s'",
+				   tag, preferred);
 			goto bail1;
 		}
 		le = lt_grandfathered_create();
 		if (!le) {
-			g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-				    "Unable to create an instance of lt_grandfathered_t.");
+			lt_error_set(&err, LT_ERR_OOM,
+				     "Unable to create an instance of lt_grandfathered_t.");
 			goto bail1;
 		}
-		lt_grandfathered_set_tag(le, (const gchar *)tag);
-		lt_grandfathered_set_name(le, (const gchar *)desc);
+		lt_grandfathered_set_tag(le, (const char *)tag);
+		lt_grandfathered_set_name(le, (const char *)desc);
 		if (preferred)
-			lt_grandfathered_set_preferred_tag(le, (const gchar *)preferred);
+			lt_grandfathered_set_preferred_tag(le, (const char *)preferred);
 
-		s = g_strdup(lt_grandfathered_get_tag(le));
+		s = strdup(lt_grandfathered_get_tag(le));
 		g_hash_table_replace(grandfathereddb->grandfathered_entries,
 				     lt_strlower(s),
 				     lt_grandfathered_ref(le));
@@ -144,12 +147,12 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 		lt_grandfathered_unref(le);
 	}
   bail:
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 		retval = FALSE;
 	}
 
@@ -175,11 +178,11 @@ lt_grandfathered_db_new(void)
 	lt_grandfathered_db_t *retval = lt_mem_alloc_object(sizeof (lt_grandfathered_db_t));
 
 	if (retval) {
-		GError *err = NULL;
+		lt_error_t *err = NULL;
 
 		retval->grandfathered_entries = g_hash_table_new_full(g_str_hash,
 								      g_str_equal,
-								      g_free,
+								      free,
 								      (GDestroyNotify)lt_grandfathered_unref);
 		lt_mem_add_ref(&retval->parent, retval->grandfathered_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
@@ -194,11 +197,11 @@ lt_grandfathered_db_new(void)
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_grandfathered_db_parse(retval, &err);
-		if (err) {
-			g_printerr(err->message);
+		if (lt_error_is_set(err, LT_ERR_ANY)) {
+			lt_error_print(err, LT_ERR_ANY);
 			lt_grandfathered_db_unref(retval);
 			retval = NULL;
-			g_error_free(err);
+			lt_error_unref(err);
 		}
 	}
   bail:
@@ -217,7 +220,7 @@ lt_grandfathered_db_new(void)
 lt_grandfathered_db_t *
 lt_grandfathered_db_ref(lt_grandfathered_db_t *grandfathereddb)
 {
-	g_return_val_if_fail (grandfathereddb != NULL, NULL);
+	lt_return_val_if_fail (grandfathereddb != NULL, NULL);
 
 	return lt_mem_ref(&grandfathereddb->parent);
 }
@@ -248,18 +251,18 @@ lt_grandfathered_db_unref(lt_grandfathered_db_t *grandfathereddb)
  */
 lt_grandfathered_t *
 lt_grandfathered_db_lookup(lt_grandfathered_db_t *grandfathereddb,
-			   const gchar           *tag)
+			   const char            *tag)
 {
 	lt_grandfathered_t *retval;
-	gchar *s;
+	char *s;
 
-	g_return_val_if_fail (grandfathereddb != NULL, NULL);
-	g_return_val_if_fail (tag != NULL, NULL);
+	lt_return_val_if_fail (grandfathereddb != NULL, NULL);
+	lt_return_val_if_fail (tag != NULL, NULL);
 
-	s = g_strdup(tag);
+	s = strdup(tag);
 	retval = g_hash_table_lookup(grandfathereddb->grandfathered_entries,
 				     lt_strlower(s));
-	g_free(s);
+	free(s);
 	if (retval)
 		return lt_grandfathered_ref(retval);
 

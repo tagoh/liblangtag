@@ -14,21 +14,143 @@
 #error "Only <liblangtag/langtag.h> can be included directly."
 #endif
 
+#include <sys/param.h>
+
 #ifndef __LT_MACROS_H__
 #define __LT_MACROS_H__
 
+/* Guard C code in headers, while including them from C++ */
 #ifdef __cplusplus
-#define LT_BEGIN_DECLS	extern "C" {
-#define LT_END_DECLS	}
+#  define LT_BEGIN_DECLS	extern "C" {
+#  define LT_END_DECLS		}
 #else
-#define LT_BEGIN_DECLS
-#define LT_END_DECLS
+#  define LT_BEGIN_DECLS
+#  define LT_END_DECLS
+#endif
+
+/* statement wrappers */
+#if !(defined (LT_STMT_START) && defined (LT_STMT_END))
+#  define LT_STMT_START		do
+#  define LT_STMT_END		while (0)
+#endif
+
+/* inline wrapper */
+/* inlining hassle. for compilers thta don't allow the 'inline' keyword,
+ * mostly because of strict ANSI C compliance or dumbness, we try to fall
+ * back to either '__inline__' or '__inline'.
+ * LT_CAN_INLINE is defined in hgconfig.h if the compiler seems to be
+ * actually *capable* to do function inlining, in which case inline
+ * function bodies do make sense. we also define LT_INLINE_FUNC to properly
+ * export the function prototypes if no inlining can be performed.
+ */
+#if defined (LT_HAVE_INLINE) && defined (__GNUC__) && defined (__STRICT_ANSI__)
+#  undef inline
+#  define inline	__inline__
+#elif !defined (LT_HAVE_INLINE)
+#  undef inline
+#  if defined (LT_HAVE___INLINE__)
+#    define inline __inline__
+#  elif defined (LT_HAVE___INLINE)
+#    define inline __inline
+#  else /* !inline && !__inline__ && !__inline */
+#    define inline /* don't inline, then */
+#  endif
+#endif
+#if defined (__GNUC__)
+#  define LT_INLINE_FUNC	static __inline __attribute__ ((unused))
+#elif defined (LT_CAN_INLINE)
+#  define LT_INLINE_FUNC	static inline
+#else /* can't inline */
+#  define LT_INLINE_FUNC
+#endif
+
+/*
+ * The LT_LIKELY and LT_UNLIKELY macros let the programmer give hints to
+ * the compiler about the expected result of an expression. Some compilers
+ * can use this information for optimizations.
+ *
+ * The _LT_BOOLEAN_EXPR macro is intended to trigger a gcc warning when
+ * putting assignments in lt_return_if_fail()
+ */
+#if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
+#  define _LT_BOOLEAN_EXPR(_e_)				\
+	__extension__ ({				\
+			int __bool_var__;		\
+			if (_e_)			\
+				__bool_var__ = 1;	\
+			else				\
+				__bool_var__ = 0;	\
+			__bool_var__;			\
+		})
+#  define LT_LIKELY(_e_)	(__builtin_expect (_LT_BOOLEAN_EXPR (_e_), 1))
+#  define LT_UNLIKELY(_e_)	(__builtin_expect (_LT_BOOLEAN_EXPR (_e_), 0))
+#else
+#  define LT_LIKELY(_e_)	(_e_)
+#  define LT_UNLIKELY(_e_)	(_e_)
+#endif
+
+/* boolean */
+#ifndef FALSE
+#  define FALSE	(0)
+#endif
+#ifndef TRUE
+#  define TRUE	(!FALSE)
+#endif
+
+/* Macros for path separator */
+#ifdef _WIN32
+#  define LT_DIR_SEPARATOR_S	"\\"
+#  define LT_DIR_SEPARATOR	'\\'
+#else
+#  define LT_DIR_SEPARATOR_S	"/"
+#  define LT_DIR_SEPARATOR	'/'
+#endif
+
+/* Macros for min/max */
+#ifdef MAX
+#  define LT_MAX		MAX
+#else
+#  define LT_MAX(a,b)		(((a)>(b))?(a):(b))
+#endif
+#ifdef MIN
+#  define LT_MIN		MIN
+#else
+#  define LT_MIN(a,b)		(((a)<(b))?(a):(b))
+#endif
+
+/* Macros to adjust an alignment */
+#define LT_ALIGNED_TO(_x_,_y_)		(((_x_) + (_y_) - 1) & ~((_y_) - 1))
+#define LT_ALIGNED_TO_POINTER(_x_)	LT_ALIGNED_TO ((_x_), ALIGNOF_VOID_P)
+
+/* Macro to count the number of elements in an array. */
+#define LT_N_ELEMENTS(_x_)		(sizeof (_x_) / sizeof ((_x_)[0]))
+
+/* Debugging macro */
+#if (defined (__i386__) || defined (__x86_64__)) && defined (__GNUC__) && __GNUC__ >= 2
+#  define LT_BREAKPOINT()						\
+	LT_STMT_START {__asm__ __volatile__ ("int $03");} LT_STMT_END
+#elif (defined (_MSC_VER) || defined (__DMC__)) && defined (_M_IX86)
+#  define LT_BREAKPOINT()				\
+	LT_STMT_START {__asm int 3h} LT_STMT_END
+#elif defined (_MSC_VER)
+#  define LT_BREAKPOINT()				\
+	LT_STMT_START {__debugbreak();} LT_STMT_END
+#elif defined (__alpha__) && !defined(__osf__) && defined (__GNUC__) && __GNUC__ >= 2
+#  define LT_BREAKPOINT()						\
+	LT_STMT_START {__asm__ __volatile__ ("bpt");} LT_STMT_END
+#else
+#  define LT_BREAKPOINT()				\
+	LT_STMT_START {raise(SIGTRAP);} LT_STMT_END
 #endif
 
 LT_BEGIN_DECLS
 
 typedef void *		lt_pointer_t;
 typedef int		lt_bool_t;
+typedef lt_pointer_t (* lt_copy_func_t)	(lt_pointer_t data);
+typedef void (* lt_destroy_func_t)	(lt_pointer_t data);
+typedef int (* lt_compare_func_t)	(const lt_pointer_t v1,
+					 const lt_pointer_t v2);
 
 LT_END_DECLS
 

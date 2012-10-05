@@ -69,6 +69,96 @@ dnl ======================================================================
 LANGTAG_MODULEDIR="${libdir}/liblangtag"
 AC_SUBST(LANGTAG_MODULEDIR)
 
+dnl check for flavours of varargs macros
+AC_MSG_CHECKING(for ISO C99 varargs macros in C)
+_save_cflags=$CFLAGS
+CFLAGS=$(sed -e 's/\-Werror//g')
+AC_TRY_COMPILE([],[
+int a(int p1, int p2, int p3);
+#define call_a(...) a(1,__VA_ARGS__)
+call_a(2,3);
+],[have_iso_c_varargs=yes;AC_DEFINE(LT_HAVE_ISO_VARARGS, 1, [Use ISO C99 varargs])],[have_iso_c_varargs=no])
+CFLAGS=$_save_cflags
+AC_MSG_RESULT($have_iso_c_varargs)
+
+AC_MSG_CHECKING(for GNUC varargs macros)
+_save_cflags=$CFLAGS
+CFLAGS=$(sed -e 's/\-Werror//g')
+AC_TRY_COMPILE([],[
+int a(int p1, int p2, int p3);
+#define call_a(params...) a(1,params)
+call_a(2,3);
+],[have_gnuc_varargs=yes;AC_DEFINE(LT_HAVE_GNUC_VARARGS, 1, [Use GNUC varargs macro])],[have_gnuc_varargs=no])
+CFLAGS=$_save_cflags
+AC_MSG_RESULT($have_gnuc_varargs)
+
+dnl inline
+AC_CACHE_CHECK([for __inline],lt_cv_has__inline,[
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+	__inline int foo(void);
+	__inline int foo() {return 0;}
+	int main() {return foo();}
+	]])],
+	lt_cv_has__inline=yes,
+	lt_cv_has__inline=no,)
+])
+case x$lt_cv_has__inline in
+xyes)
+	AC_DEFINE(LT_HAVE___INLINE,1,[Have __inline keyword])
+esac
+AC_CACHE_CHECK([for __inline__],lt_cv_has__inline__,[
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+	__inline__ int foo(void);
+	__inline__ int foo() {return 0;}
+	int main() {return foo();}
+	]])],
+	lt_cv_has__inline__=yes,
+	lt_cv_has__inline__=no,)
+])
+case x$lt_cv_has__inline__ in
+xyes)
+	AC_DEFINE(LT_HAVE___INLINE__,1,[Have __inline__ keyword])
+esac
+AC_CACHE_CHECK([for inline],lt_cv_hasinline,[
+	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+	#undef inline
+	inline int foo(void);
+	inline int foo() {return 0;}
+	int main() {return foo();}
+	]])],
+	lt_cv_hasinline=yes,
+	lt_cv_hasinline=no,)
+])
+case x$lt_cv_hasinline in
+xyes)
+	AC_DEFINE(LT_HAVE_INLINE,1,[Have inline keyword])
+esac
+AC_MSG_CHECKING(if inline functions in headers work)
+AC_LINK_IFELSE([AC_LANG_SOURCE([[
+#if defined (LT_HAVE_INLINE) && defined (__GNUC__) && defined (__STRICT_ANSI__)
+#undef inline
+#define inline __inline__
+#elif !defined (LT_HAVE_INLINE)
+#undef inline
+#if defined (LT_HAVE___INLINE__)
+#define inline __inline__
+#elif defined (LT_HAVE___INLINE)
+#define inline __inline
+#endif
+#endif
+
+int lt_test_func2(int);
+
+static inline int
+lt_test_func1(void) {
+  return lt_test_func2(1);
+}
+int main(void) {int i = 1; return --i;}]])],[lt_can_inline=yes;AC_DEFINE(LT_CAN_INLINE, 1, [Wheter inline statement can be used])],[lt_can_inline=no])
+AC_MSG_RESULT($lt_can_inline)
+
+dnl ---alignment---
+AC_CHECK_ALIGNOF(void *)
+
 dnl ======================================================================
 dnl functions testing
 dnl ======================================================================

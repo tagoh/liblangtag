@@ -14,8 +14,10 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
 #include <locale.h>
 #include "langtag.h"
+#include "lt-utils.h"
 
 int
 main(int    argc,
@@ -28,16 +30,16 @@ main(int    argc,
 	lt_db_set_datadir(TEST_DATADIR);
 	extlangdb = lt_extlang_db_new();
 
-	if (g_strcmp0(argv[1], "list") == 0) {
-	} else if (g_strcmp0(argv[1], "lookup") == 0) {
+	if (lt_strcmp0(argv[1], "list") == 0) {
+	} else if (lt_strcmp0(argv[1], "lookup") == 0) {
 		lt_extlang_t *extlang = lt_extlang_db_lookup(extlangdb, argv[2]);
 
 		if (extlang) {
-			g_print("desc: %s\n", lt_extlang_get_name(extlang));
-			g_print("lang: %s\n", lt_extlang_get_macro_language(extlang));
+			printf("desc: %s\n", lt_extlang_get_name(extlang));
+			printf("lang: %s\n", lt_extlang_get_macro_language(extlang));
 			lt_extlang_unref(extlang);
 		} else {
-			g_print("no such extlang: %s\n", argv[2]);
+			printf("no such extlang: %s\n", argv[2]);
 		}
 	}
 

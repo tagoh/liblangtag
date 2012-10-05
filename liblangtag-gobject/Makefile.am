@@ -67,6 +67,7 @@ liblangtag_gobject_built_private_headers =	\
 	lt-grandfathered.gir.h			\
 	lt-lang-db.gir.h			\
 	lt-lang.gir.h				\
+	lt-list.gir.h				\
 	lt-macros.gir.h				\
 	lt-redundant-db.gir.h			\
 	lt-redundant.gir.h			\
@@ -74,6 +75,7 @@ liblangtag_gobject_built_private_headers =	\
 	lt-region.gir.h				\
 	lt-script-db.gir.h			\
 	lt-script.gir.h				\
+	lt-string.gir.h				\
 	lt-tag.gir.h				\
 	lt-variant-db.gir.h			\
 	lt-variant.gir.h			\
@@ -90,12 +92,14 @@ liblangtag_gobject_built_sources =	\
 	lt-grandfathered.gir.c		\
 	lt-lang-db.gir.c		\
 	lt-lang.gir.c			\
+	lt-list.gir.c			\
 	lt-redundant-db.gir.c		\
 	lt-redundant.gir.c		\
 	lt-region-db.gir.c		\
 	lt-region.gir.c			\
 	lt-script-db.gir.c		\
 	lt-script.gir.c			\
+	lt-string.gir.c			\
 	lt-tag.gir.c			\
 	lt-variant-db.gir.c		\
 	lt-variant.gir.c		\

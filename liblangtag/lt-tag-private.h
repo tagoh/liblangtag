@@ -48,7 +48,7 @@ typedef enum _lt_tag_state_t	lt_tag_state_t;
 
 lt_tag_state_t lt_tag_parse_wildcard(lt_tag_t     *tag,
 				     const char   *tag_string,
-				     GError      **error);
+				     lt_error_t  **error);
 
 LT_END_DECLS
 

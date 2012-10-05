@@ -14,8 +14,12 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
+#include <stdlib.h>
 #include <string.h>
 #include "lt-mem.h"
+#include "lt-messages.h"
+#include "lt-utils.h"
 #include "lt-script.h"
 #include "lt-script-private.h"
 
@@ -49,28 +53,26 @@ void
 lt_script_set_name(lt_script_t *script,
 		   const char  *description)
 {
-	g_return_if_fail (script != NULL);
-	g_return_if_fail (description != NULL);
+	lt_return_if_fail (script != NULL);
+	lt_return_if_fail (description != NULL);
 
 	if (script->description)
 		lt_mem_remove_ref(&script->parent, script->description);
-	script->description = g_strdup(description);
-	lt_mem_add_ref(&script->parent, script->description,
-		       (lt_destroy_func_t)g_free);
+	script->description = strdup(description);
+	lt_mem_add_ref(&script->parent, script->description, free);
 }
 
 void
 lt_script_set_tag(lt_script_t *script,
 		  const char  *subtag)
 {
-	g_return_if_fail (script != NULL);
-	g_return_if_fail (subtag != NULL);
+	lt_return_if_fail (script != NULL);
+	lt_return_if_fail (subtag != NULL);
 
 	if (script->tag)
 		lt_mem_remove_ref(&script->parent, script->tag);
-	script->tag = g_strdup(subtag);
-	lt_mem_add_ref(&script->parent, script->tag,
-		       (lt_destroy_func_t)g_free);
+	script->tag = strdup(subtag);
+	lt_mem_add_ref(&script->parent, script->tag, free);
 }
 
 /*< public >*/
@@ -85,7 +87,7 @@ lt_script_set_tag(lt_script_t *script,
 lt_script_t *
 lt_script_ref(lt_script_t *script)
 {
-	g_return_val_if_fail (script != NULL, NULL);
+	lt_return_val_if_fail (script != NULL, NULL);
 
 	return lt_mem_ref(&script->parent);
 }
@@ -115,7 +117,7 @@ lt_script_unref(lt_script_t *script)
 const char *
 lt_script_get_name(const lt_script_t *script)
 {
-	g_return_val_if_fail (script != NULL, NULL);
+	lt_return_val_if_fail (script != NULL, NULL);
 
 	return script->description;
 }
@@ -131,7 +133,7 @@ lt_script_get_name(const lt_script_t *script)
 const char *
 lt_script_get_tag(const lt_script_t *script)
 {
-	g_return_val_if_fail (script != NULL, NULL);
+	lt_return_val_if_fail (script != NULL, NULL);
 
 	return script->tag;
 }
@@ -145,7 +147,7 @@ lt_script_get_tag(const lt_script_t *script)
 void
 lt_script_dump(const lt_script_t *script)
 {
-	g_print("Script: %s [%s]\n",
+	lt_info("Script: %s [%s]",
 		lt_script_get_tag(script),
 		lt_script_get_name(script));
 }
@@ -178,14 +180,14 @@ lt_script_convert_to_modifier(const lt_script_t *script)
 		{"saaho", NULL},
 		{NULL, NULL}
 	};
-	static gsize len = G_N_ELEMENTS(modifiers), i;
+	static size_t len = LT_N_ELEMENTS(modifiers), i;
 
-	g_return_val_if_fail (script != NULL, NULL);
+	lt_return_val_if_fail (script != NULL, NULL);
 
 	p = lt_script_get_tag(script);
 	for (i = 0; i < len; i++) {
 		if (modifiers[i].script &&
-		    g_ascii_strcasecmp(p, modifiers[i].script) == 0)
+		    lt_strcasecmp(p, modifiers[i].script) == 0)
 			return modifiers[i].modifier;
 	}
 
@@ -213,9 +215,9 @@ lt_script_compare(const lt_script_t *v1,
 	s1 = v1 ? lt_script_get_tag(v1) : NULL;
 	s2 = v2 ? lt_script_get_tag(v2) : NULL;
 
-	if (g_strcmp0(s1, "*") == 0 ||
-	    g_strcmp0(s2, "*") == 0)
+	if (lt_strcmp0(s1, "*") == 0 ||
+	    lt_strcmp0(s2, "*") == 0)
 		return TRUE;
 
-	return g_strcmp0(s1, s2) == 0;
+	return lt_strcmp0(s1, s2) == 0;
 }

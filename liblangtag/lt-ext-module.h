@@ -17,8 +17,8 @@
 #ifndef __LT_EXT_MODULE_H__
 #define __LT_EXT_MODULE_H__
 
-#include <glib.h>
 #include <liblangtag/lt-macros.h>
+#include <liblangtag/lt-error.h>
 #include <liblangtag/lt-ext-module-data.h>
 #include <liblangtag/lt-tag.h>
 
@@ -84,7 +84,7 @@ typedef lt_ext_module_data_t * (* lt_ext_module_data_new_func_t)  (void);
  * lt_ext_module_precheck_func_t:
  * @data: a #lt_ext_module_data_t.
  * @tag: a #lt_tag_t.
- * @error: (allow-none): a #GError.
+ * @error: (allow-none): a #lt_error_t.
  *
  * The type of the callback function used to check @tag prior to process
  * parsing subtags for the extension.
@@ -94,12 +94,12 @@ typedef lt_ext_module_data_t * (* lt_ext_module_data_new_func_t)  (void);
  */
 typedef lt_bool_t (* lt_ext_module_precheck_func_t)  (lt_ext_module_data_t  *data,
 						      const lt_tag_t        *tag,
-						      GError               **error);
+						      lt_error_t           **error);
 /**
  * lt_ext_module_parse_func_t:
  * @data: a #lt_ext_module_data_t.
  * @subtag: a subtag string to parse.
- * @error: (allow-none): a #GError.
+ * @error: (allow-none): a #lt_error_t.
  *
  * The type of the callback function used to parse tags.
  *
@@ -107,7 +107,7 @@ typedef lt_bool_t (* lt_ext_module_precheck_func_t)  (lt_ext_module_data_t  *dat
  */
 typedef lt_bool_t (* lt_ext_module_parse_func_t)     (lt_ext_module_data_t  *data,
 						      const char            *subtag,
-						      GError               **error);
+						      lt_error_t           **error);
 /**
  * lt_ext_module_get_tag_func_t:
  * @data: a #lt_ext_module_data_t.

@@ -40,6 +40,6 @@ void         lt_region_dump             (const lt_region_t *region);
 lt_bool_t    lt_region_compare          (const lt_region_t *v1,
 					 const lt_region_t *v2);
 
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_REGION_H__ */

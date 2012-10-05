@@ -14,8 +14,10 @@
 #include "config.h"
 #endif
 
+#include <stdio.h>
 #include <locale.h>
 #include "langtag.h"
+#include "lt-utils.h"
 
 int
 main(int    argc,
@@ -28,13 +30,13 @@ main(int    argc,
 	lt_db_set_datadir(TEST_DATADIR);
 	scriptdb = lt_script_db_new();
 
-	if (g_strcmp0(argv[1], "list") == 0) {
-	} else if (g_strcmp0(argv[1], "lookup") == 0) {
+	if (lt_strcmp0(argv[1], "list") == 0) {
+	} else if (lt_strcmp0(argv[1], "lookup") == 0) {
 		lt_script_t *script = lt_script_db_lookup(scriptdb, argv[2]);
 
-		g_print("%s (%s)\n",
-			lt_script_get_tag(script),
-			lt_script_get_name(script));
+		printf("%s (%s)\n",
+		       lt_script_get_tag(script),
+		       lt_script_get_name(script));
 		lt_script_unref(script);
 	}
 

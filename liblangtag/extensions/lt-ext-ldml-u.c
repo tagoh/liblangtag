@@ -14,10 +14,14 @@
 #include "config.h"
 #endif
 
+#include <stdint.h>
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-ext-module.h"
+#include "lt-list.h"
+#include "lt-messages.h"
+#include "lt-string.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 
@@ -33,68 +37,68 @@ typedef struct _lt_ext_ldml_u_data_t {
 	lt_ext_module_data_t   parent;
 	lt_xml_cldr_t          current_type;
 	lt_ext_ldml_u_state_t  state;
-	GList                 *attributes;
-	GList                 *tags;
+	lt_list_t             *attributes;
+	lt_list_t             *tags;
 } lt_ext_ldml_u_data_t;
 
 /*< private >*/
-static gint
-_lt_ext_ldml_u_sort_attributes(gconstpointer a,
-			       gconstpointer b)
+static int
+_lt_ext_ldml_u_sort_attributes(const lt_pointer_t a,
+			       const lt_pointer_t b)
 {
-	return g_ascii_strcasecmp(a, b);
+	return lt_strcasecmp(a, b);
 }
 
-static gint
-_lt_ext_ldml_u_sort_tags(gconstpointer a,
-			 gconstpointer b)
+static int
+_lt_ext_ldml_u_sort_tags(const lt_pointer_t a,
+			 const lt_pointer_t b)
 {
-	const GString *s1 = a, *s2 = b;
+	const lt_string_t *s1 = a, *s2 = b;
 
-	return g_ascii_strcasecmp(s1->str, s2->str);
+	return lt_strcasecmp(lt_string_value(s1), lt_string_value(s2));
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_u_lookup_type(lt_ext_ldml_u_data_t  *data,
-			   const gchar           *subtag,
-			   GError               **error)
+			   const char            *subtag,
+			   lt_error_t           **error)
 {
 	lt_xml_t *xml = NULL;
 	xmlDocPtr doc;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
-	gint i, n;
-	gchar key[4], *xpath_string = NULL;
-	GList *l;
-	GString *s;
-	gboolean retval = FALSE;
+	int i, n;
+	char key[4], *xpath_string = NULL;
+	lt_list_t *l;
+	lt_string_t *s;
+	lt_bool_t retval = FALSE;
 
-	g_return_val_if_fail (data->current_type > 0, FALSE);
+	lt_return_val_if_fail (data->current_type > 0, FALSE);
 
-	l = g_list_last(data->tags);
+	l = lt_list_last(data->tags);
 	if (l == NULL) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-			    "Invalid internal state. failed to find a key container.");
+		lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+			     "Invalid internal state. failed to find a key container.");
 		goto bail;
 	}
-	s = l->data;
-	strncpy(key, s->str, 2);
+	s = lt_list_value(l);
+	strncpy(key, lt_string_value(s), 2);
 	key[2] = 0;
 
 	xml = lt_xml_new();
 	doc = lt_xml_get_cldr(xml, data->current_type);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
-		g_set_error(error, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
+		lt_error_set(error, LT_ERR_OOM,
+			     "Unable to create an instance of xmlXPathContextPtr.");
 		goto bail;
 	}
-	xpath_string = g_strdup_printf("/ldmlBCP47/keyword/key[@name = '%s']", key);
+	xpath_string = lt_strdup_printf("/ldmlBCP47/keyword/key[@name = '%s']", key);
 	xobj = xmlXPathEvalExpression((const xmlChar *)xpath_string, xctxt);
 	if (!xobj) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s: %s",
-			    doc->name, xpath_string);
+		lt_error_set(error, LT_ERR_FAIL_ON_XML,
+			     "No valid elements for %s: %s",
+			     doc->name, xpath_string);
 		goto bail;
 	}
 	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
@@ -105,23 +109,23 @@ _lt_ext_ldml_u_lookup_type(lt_ext_ldml_u_data_t  *data,
 		xmlChar *name;
 
 		if (!ent) {
-			g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
+			lt_error_set(error, LT_ERR_FAIL_ON_XML,
+				     "Unable to obtain the xml node via XPath.");
 			goto bail;
 		}
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"type") == 0) {
 				name = xmlGetProp(cnode, (const xmlChar *)"name");
-				if (name && g_ascii_strcasecmp((const gchar *)name, subtag) == 0) {
+				if (name && lt_strcasecmp((const char *)name, subtag) == 0) {
 					retval = TRUE;
 					xmlFree(name);
 					goto bail;
-				} else if (g_strcmp0((const gchar *)name, "CODEPOINTS") == 0) {
-					gsize len = strlen(subtag), j;
-					static const gchar *hexdigit = "0123456789abcdefABCDEF";
-					gchar *p;
-					guint64 x;
+				} else if (lt_strcmp0((const char *)name, "CODEPOINTS") == 0) {
+					size_t len = strlen(subtag), j;
+					static const char *hexdigit = "0123456789abcdefABCDEF";
+					char *p;
+					uint64_t x;
 
 					/* an exception to deal with the unicode code point. */
 					if (len >= 4 && len <= 6) {
@@ -129,7 +133,7 @@ _lt_ext_ldml_u_lookup_type(lt_ext_ldml_u_data_t  *data,
 							if (!strchr(hexdigit, subtag[j]))
 								goto bail2;
 						}
-						x = g_ascii_strtoull(subtag, &p, 16);
+						x = strtoull(subtag, &p, 16);
 						if (p && p[0] == 0 && x <= 0x10ffff) {
 							retval = TRUE;
 							xmlFree(name);
@@ -142,13 +146,13 @@ _lt_ext_ldml_u_lookup_type(lt_ext_ldml_u_data_t  *data,
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"text") == 0) {
 				/* ignore */
 			} else {
-				g_warning("Unknown node under /ldmlBCP47/keyword/key: %s", cnode->name);
+				lt_warning("Unknown node under /ldmlBCP47/keyword/key: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 	}
   bail:
-	g_free(xpath_string);
+	free(xpath_string);
 	if (xobj)
 		xmlXPathFreeObject(xobj);
 	if (xctxt)
@@ -159,14 +163,14 @@ _lt_ext_ldml_u_lookup_type(lt_ext_ldml_u_data_t  *data,
 	return retval;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_u_lookup_key(lt_ext_ldml_u_data_t  *data,
-			  const gchar           *subtag,
-			  GError               **error)
+			  const char            *subtag,
+			  lt_error_t           **error)
 {
-	gint i, j, n;
+	int i, j, n;
 	lt_xml_t *xml = lt_xml_new();
-	gboolean retval = FALSE;
+	lt_bool_t retval = FALSE;
 
 	for (i = LT_XML_CLDR_BCP47_BEGIN; i <= LT_XML_CLDR_BCP47_END; i++) {
 		xmlDocPtr doc = lt_xml_get_cldr(xml, i);
@@ -175,15 +179,15 @@ _lt_ext_ldml_u_lookup_key(lt_ext_ldml_u_data_t  *data,
 
 		xctxt = xmlXPathNewContext(doc);
 		if (!xctxt) {
-			g_set_error(error, LT_ERROR, LT_ERR_OOM,
-				    "Unable to create an instance of xmlXPathContextPtr.");
+			lt_error_set(error, LT_ERR_OOM,
+				     "Unable to create an instance of xmlXPathContextPtr.");
 			goto bail1;
 		}
 		xobj = xmlXPathEvalExpression((const xmlChar *)"/ldmlBCP47/keyword/key", xctxt);
 		if (!xobj) {
-			g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "No valid elements for %s",
-				    doc->name);
+			lt_error_set(error, LT_ERR_FAIL_ON_XML,
+				     "No valid elements for %s",
+				     doc->name);
 			goto bail1;
 		}
 		n = xmlXPathNodeSetGetLength(xobj->nodesetval);
@@ -193,12 +197,12 @@ _lt_ext_ldml_u_lookup_key(lt_ext_ldml_u_data_t  *data,
 			xmlChar *name;
 
 			if (!ent) {
-				g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-					    "Unable to obtain the xml node via XPath.");
+				lt_error_set(error, LT_ERR_FAIL_ON_XML,
+					     "Unable to obtain the xml node via XPath.");
 				goto bail1;
 			}
 			name = xmlGetProp(ent, (const xmlChar *)"name");
-			if (g_ascii_strcasecmp((const gchar *)name, subtag) == 0) {
+			if (lt_strcasecmp((const char *)name, subtag) == 0) {
 				data->current_type = i;
 				data->state = STATE_TYPE;
 				xmlFree(name);
@@ -212,12 +216,12 @@ _lt_ext_ldml_u_lookup_key(lt_ext_ldml_u_data_t  *data,
 			xmlXPathFreeObject(xobj);
 		if (xctxt)
 			xmlXPathFreeContext(xctxt);
-		if (*error || retval)
+		if (lt_error_is_set(*error, LT_ERR_ANY) || retval)
 			goto bail;
 	}
-	g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-		    "Invalid key for -u- extension: %s",
-		    subtag);
+	lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+		     "Invalid key for -u- extension: %s",
+		     subtag);
   bail:
 	lt_xml_unref(xml);
 
@@ -225,29 +229,17 @@ _lt_ext_ldml_u_lookup_key(lt_ext_ldml_u_data_t  *data,
 }
 
 static void
-_lt_ext_ldml_u_destroy_data(gpointer data)
+_lt_ext_ldml_u_destroy_data(lt_pointer_t data)
 {
 	lt_ext_ldml_u_data_t *d = (lt_ext_ldml_u_data_t *)data;
 
-	if (d->attributes) {
-		GList *l;
-
-		for (l = d->attributes; l != NULL; l = g_list_next(l)) {
-			g_free(l->data);
-		}
-		g_list_free(d->attributes);
-	}
-	if (d->tags) {
-		GList *l;
-
-		for (l = d->tags; l != NULL; l = g_list_next(l)) {
-			g_string_free(l->data, TRUE);
-		}
-		g_list_free(d->tags);
-	}
+	if (d->attributes)
+		lt_list_free(d->attributes);
+	if (d->tags)
+		lt_list_free(d->tags);
 }
 
-static gchar
+static char
 _lt_ext_ldml_u_get_singleton(void)
 {
 	return 'u';
@@ -269,34 +261,33 @@ _lt_ext_ldml_u_create_data(void)
 	return retval;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_u_precheck_tag(lt_ext_module_data_t  *data,
 			    const lt_tag_t        *tag,
-			    GError               **error)
+			    lt_error_t           **error)
 {
 	if (lt_tag_get_grandfathered(tag)) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-			    "Grandfathered tags aren't allowed to have LDML.");
+		lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+			     "Grandfathered tags aren't allowed to have LDML.");
 		return FALSE;
 	}
 	if (lt_tag_get_extlang(tag)) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-			    "Extlang tags aren't allowed to have LDML.");
+		lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+			     "Extlang tags aren't allowed to have LDML.");
 		return FALSE;
 	}
 
 	return TRUE;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_u_parse_tag(lt_ext_module_data_t  *data,
-			 const gchar           *subtag,
-			 GError               **error)
+			 const char            *subtag,
+			 lt_error_t           **error)
 {
 	lt_ext_ldml_u_data_t *d = (lt_ext_ldml_u_data_t *)data;
-	GError *err = NULL;
-	gboolean retval = TRUE;
-	gsize len = strlen(subtag);
+	lt_bool_t retval = TRUE;
+	size_t len = strlen(subtag);
 
   restate:
 	switch (d->state) {
@@ -306,15 +297,16 @@ _lt_ext_ldml_u_parse_tag(lt_ext_module_data_t  *data,
 		    } else if (len == 2) {
 			    d->state = STATE_KEY;
 		    } else {
-			    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-					"Invalid syntax: expected to see an attribute or a key, but `%s'", subtag);
+			    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+					 "Invalid syntax: expected to see an attribute or a key, but `%s'", subtag);
 			    break;
 		    }
 		    goto restate;
 	    case STATE_ATTRIBUTE:
 		    if (len >= 3 && len <= 8) {
-			    d->attributes = g_list_append(d->attributes,
-							  g_strdup(subtag));
+			    d->attributes = lt_list_append(d->attributes,
+							   strdup(subtag),
+							   free);
 			    /* next words may be still an attribute. keep the state */
 		    } else {
 			    /* it may be a key */
@@ -324,96 +316,91 @@ _lt_ext_ldml_u_parse_tag(lt_ext_module_data_t  *data,
 		    break;
 	    case STATE_KEY:
 		    if (len != 2) {
-			    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-					"Invalid syntax: expected to see a key, but `%s'", subtag);
+			    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+					 "Invalid syntax: expected to see a key, but `%s'", subtag);
 			    break;
 		    }
-		    _lt_ext_ldml_u_lookup_key(d, subtag, &err);
-		    d->tags = g_list_append(d->tags, g_string_new(subtag));
+		    _lt_ext_ldml_u_lookup_key(d, subtag, error);
+		    d->tags = lt_list_append(d->tags,
+					     lt_string_new(subtag),
+					     (lt_destroy_func_t)lt_string_unref);
 		    break;
 	    case STATE_TYPE:
 		    if (len >= 3 && len <= 8) {
-			    GList *l;
-			    GString *s;
+			    lt_list_t *l;
+			    lt_string_t *s;
 
-			    if (!_lt_ext_ldml_u_lookup_type(d, subtag, &err)) {
-				    if (!err) {
-					    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-							"Unknown -u- extension type: %s", subtag);
-				    }
+			    if (!_lt_ext_ldml_u_lookup_type(d, subtag, error)) {
+				    if (!lt_error_is_set(*error, LT_ERR_ANY))
+					    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+							 "Unknown -u- extension type: %s", subtag);
 				    break;
 			    }
-			    l = g_list_last(d->tags);
+			    l = lt_list_last(d->tags);
 			    if (l == NULL) {
-				    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-						"Invalid internal state. failed to find a key container.");
+				    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+						 "Invalid internal state. failed to find a key container.");
 				    break;
 			    }
-			    s = l->data;
-			    g_string_append_printf(s, "-%s", subtag);
+			    s = lt_list_value(l);
+			    lt_string_append_printf(s, "-%s", subtag);
 		    } else if (len == 2) {
 			    d->state = STATE_KEY;
 			    goto restate;
 		    } else {
-			    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-					"Invalid syntax: expected to see a type or a key, but `%s'", subtag);
+			    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+					 "Invalid syntax: expected to see a type or a key, but `%s'", subtag);
 			    break;
 		    }
 		    break;
 	    default:
-		    g_warn_if_reached();
+		    lt_warn_if_reached();
 		    break;
 	}
 
-	if (err) {
-		if (error)
-			*error = g_error_copy(err);
-		else
-			g_warning(err->message);
-		g_error_free(err);
+	if (lt_error_is_set(*error, LT_ERR_ANY))
 		retval = FALSE;
-	}
 
 	return retval;
 }
 
-static gchar *
+static char *
 _lt_ext_ldml_u_get_tag(lt_ext_module_data_t *data)
 {
 	lt_ext_ldml_u_data_t *d = (lt_ext_ldml_u_data_t *)data;
-	GString *s = g_string_new(NULL);
-	GList *l;
+	lt_string_t *s = lt_string_new(NULL);
+	lt_list_t *l;
 
 	if (d->attributes) {
-		d->attributes = g_list_sort(d->attributes, _lt_ext_ldml_u_sort_attributes);
-		for (l = d->attributes; l != NULL; l = g_list_next(l)) {
-			const gchar *a = l->data;
+		d->attributes = lt_list_sort(d->attributes, _lt_ext_ldml_u_sort_attributes);
+		for (l = d->attributes; l != NULL; l = lt_list_next(l)) {
+			const char *a = lt_list_value(l);
 
-			if (s->len > 0)
-				g_string_append_c(s, '-');
-			g_string_append(s, a);
+			if (lt_string_length(s) > 0)
+				lt_string_append_c(s, '-');
+			lt_string_append(s, a);
 		}
 	}
 	if (d->tags) {
-		d->tags = g_list_sort(d->tags, _lt_ext_ldml_u_sort_tags);
-		for (l = d->tags; l != NULL; l = g_list_next(l)) {
-			const GString *t = l->data;
-			gchar *ts = g_strdup(t->str);
+		d->tags = lt_list_sort(d->tags, _lt_ext_ldml_u_sort_tags);
+		for (l = d->tags; l != NULL; l = lt_list_next(l)) {
+			const lt_string_t *t = lt_list_value(l);
+			char *ts = strdup(lt_string_value(t));
 
-			if (s->len > 0)
-				g_string_append_c(s, '-');
-			if (t->len == 2) {
+			if (lt_string_length(s) > 0)
+				lt_string_append_c(s, '-');
+			if (lt_string_length(t) == 2) {
 				/* XXX: do we need to auto-complete the clipped type here? */
 			}
-			g_string_append(s, lt_strlower(ts));
-			g_free(ts);
+			lt_string_append(s, lt_strlower(ts));
+			free(ts);
 		}
 	}
 
-	return g_string_free(s, FALSE);
+	return lt_string_free(s, FALSE);
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_u_validate_tag(lt_ext_module_data_t *data)
 {
 	return TRUE;
@@ -429,7 +416,7 @@ static const lt_ext_module_funcs_t __funcs = {
 };
 
 /*< public >*/
-gint
+int
 module_get_version(void)
 {
 	return LT_EXT_MODULE_VERSION;

@@ -14,7 +14,13 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
+#include <stdlib.h>
+#include <string.h>
 #include "lt-mem.h"
+#include "lt-messages.h"
+#include "lt-string.h"
+#include "lt-utils.h"
 #include "lt-variant.h"
 #include "lt-variant-private.h"
 
@@ -27,24 +33,14 @@
  * This container class provides a data access to Variant subtag entry.
  */
 struct _lt_variant_t {
-	lt_mem_t  parent;
-	char     *tag;
-	char     *description;
-	char     *preferred_tag;
-	GList    *prefix;
+	lt_mem_t   parent;
+	char      *tag;
+	char      *description;
+	char      *preferred_tag;
+	lt_list_t *prefix;
 };
 
 /*< private >*/
-static void
-_lt_variant_prefix_free(GList *list)
-{
-	GList *l;
-
-	for (l = list; l != NULL; l = g_list_next(l)) {
-		g_free(l->data);
-	}
-	g_list_free(list);
-}
 
 /*< protected >*/
 lt_variant_t *
@@ -61,58 +57,54 @@ void
 lt_variant_set_tag(lt_variant_t *variant,
 		   const char   *subtag)
 {
-	g_return_if_fail (variant != NULL);
-	g_return_if_fail (subtag != NULL);
+	lt_return_if_fail (variant != NULL);
+	lt_return_if_fail (subtag != NULL);
 
 	if (variant->tag)
 		lt_mem_remove_ref(&variant->parent, variant->tag);
-	variant->tag = g_strdup(subtag);
-	lt_mem_add_ref(&variant->parent, variant->tag,
-		       (lt_destroy_func_t)g_free);
+	variant->tag = strdup(subtag);
+	lt_mem_add_ref(&variant->parent, variant->tag, free);
 }
 
 void
 lt_variant_set_preferred_tag(lt_variant_t *variant,
 			     const char   *subtag)
 {
-	g_return_if_fail (variant != NULL);
-	g_return_if_fail (subtag != NULL);
+	lt_return_if_fail (variant != NULL);
+	lt_return_if_fail (subtag != NULL);
 
 	if (variant->preferred_tag)
 		lt_mem_remove_ref(&variant->parent, variant->preferred_tag);
-	variant->preferred_tag = g_strdup(subtag);
-	lt_mem_add_ref(&variant->parent, variant->preferred_tag,
-		       (lt_destroy_func_t)g_free);
+	variant->preferred_tag = strdup(subtag);
+	lt_mem_add_ref(&variant->parent, variant->preferred_tag, free);
 }
 
 void
 lt_variant_set_name(lt_variant_t *variant,
 		    const char   *description)
 {
-	g_return_if_fail (variant != NULL);
-	g_return_if_fail (description != NULL);
+	lt_return_if_fail (variant != NULL);
+	lt_return_if_fail (description != NULL);
 
 	if (variant->description)
 		lt_mem_remove_ref(&variant->parent, variant->description);
-	variant->description = g_strdup(description);
-	lt_mem_add_ref(&variant->parent, variant->description,
-		       (lt_destroy_func_t)g_free);
+	variant->description = strdup(description);
+	lt_mem_add_ref(&variant->parent, variant->description, free);
 }
 
 void
 lt_variant_add_prefix(lt_variant_t *variant,
 		      const char   *prefix)
 {
-	g_return_if_fail (variant != NULL);
-	g_return_if_fail (prefix != NULL);
+	lt_bool_t no_prefixes;
 
-	if (!variant->prefix) {
-		variant->prefix = g_list_append(variant->prefix, g_strdup(prefix));
-		lt_mem_add_ref(&variant->parent, variant->prefix,
-			       (lt_destroy_func_t)_lt_variant_prefix_free);
-	} else {
-		variant->prefix = g_list_append(variant->prefix, g_strdup(prefix));
-	}
+	lt_return_if_fail (variant != NULL);
+	lt_return_if_fail (prefix != NULL);
+
+	no_prefixes = variant->prefix == NULL;
+	variant->prefix = lt_list_append(variant->prefix, strdup(prefix), free);
+	if (no_prefixes)
+		lt_mem_add_ref(&variant->parent, variant->prefix, lt_list_free);
 }
 
 /*< public >*/
@@ -127,7 +119,7 @@ lt_variant_add_prefix(lt_variant_t *variant,
 lt_variant_t *
 lt_variant_ref(lt_variant_t *variant)
 {
-	g_return_val_if_fail (variant != NULL, NULL);
+	lt_return_val_if_fail (variant != NULL, NULL);
 
 	return lt_mem_ref(&variant->parent);
 }
@@ -177,7 +169,7 @@ lt_variant_get_better_tag(const lt_variant_t *variant)
 const char *
 lt_variant_get_tag(const lt_variant_t *variant)
 {
-	g_return_val_if_fail (variant != NULL, NULL);
+	lt_return_val_if_fail (variant != NULL, NULL);
 
 	return variant->tag;
 }
@@ -194,7 +186,7 @@ lt_variant_get_tag(const lt_variant_t *variant)
 const char *
 lt_variant_get_preferred_tag(const lt_variant_t *variant)
 {
-	g_return_val_if_fail (variant != NULL, NULL);
+	lt_return_val_if_fail (variant != NULL, NULL);
 
 	return variant->preferred_tag;
 }
@@ -210,7 +202,7 @@ lt_variant_get_preferred_tag(const lt_variant_t *variant)
 const char *
 lt_variant_get_name(const lt_variant_t *variant)
 {
-	g_return_val_if_fail (variant != NULL, NULL);
+	lt_return_val_if_fail (variant != NULL, NULL);
 
 	return variant->description;
 }
@@ -224,13 +216,13 @@ lt_variant_get_name(const lt_variant_t *variant)
  * subtags for forming (with other subtags, as appropriate) a language
  * tag when using the variant.
  *
- * Returns: (element-type utf8) (transfer none): a #GList contains prefix
+ * Returns: (element-type utf8) (transfer none): a #lt_list_t contains prefix
  *          strings or %NULL.
  */
-const GList *
+const lt_list_t *
 lt_variant_get_prefix(const lt_variant_t *variant)
 {
-	g_return_val_if_fail (variant != NULL, NULL);
+	lt_return_val_if_fail (variant != NULL, NULL);
 
 	return variant->prefix;
 }
@@ -244,37 +236,37 @@ lt_variant_get_prefix(const lt_variant_t *variant)
 void
 lt_variant_dump(const lt_variant_t *variant)
 {
-	GString *string = g_string_new(NULL);
-	const GList *list, *l;
+	lt_string_t *string = lt_string_new(NULL);
+	const lt_list_t *list, *l;
 	const char *preferred = lt_variant_get_preferred_tag(variant);
 
 	list = lt_variant_get_prefix(variant);
-	for (l = list; l != NULL; l = g_list_next(l)) {
-		if (string->len == 0)
-			g_string_append(string, " (prefix = [");
+	for (l = list; l != NULL; l = lt_list_next(l)) {
+		if (lt_string_length(string) == 0)
+			lt_string_append(string, " (prefix = [");
 		else
-			g_string_append(string, ", ");
-		g_string_append(string, (const char *)l->data);
+			lt_string_append(string, ", ");
+		lt_string_append(string, (const char *)lt_list_value(l));
 	}
+	if (lt_string_length(string) > 0)
+		lt_string_append(string, "]");
 	if (preferred) {
-		if (string->len == 0)
-			g_string_append(string, " (");
+		if (lt_string_length(string) == 0)
+			lt_string_append(string, " (");
 		else
-			g_string_append(string, ", ");
-		g_string_append_printf(string, "preferred-value: %s",
-				       preferred);
+			lt_string_append(string, ", ");
+		lt_string_append_printf(string, "preferred-value: %s",
+					preferred);
 	}
-	if (string->len > 0)
-		g_string_append(string, "]");
-	if (string->len > 0)
-		g_string_append(string, ")");
+	if (lt_string_length(string) > 0)
+		lt_string_append(string, ")");
 
-	g_print("Variant: %s [%s]%s\n",
+	lt_info("Variant: %s [%s]%s",
 		lt_variant_get_tag(variant),
 		lt_variant_get_name(variant),
-		string->str);
+		lt_string_value(string));
 
-	g_string_free(string, TRUE);
+	lt_string_unref(string);
 }
 
 /**
@@ -298,9 +290,9 @@ lt_variant_compare(const lt_variant_t *v1,
 	s1 = v1 ? lt_variant_get_tag(v1) : NULL;
 	s2 = v2 ? lt_variant_get_tag(v2) : NULL;
 
-	if (g_strcmp0(s1, "*") == 0 ||
-	    g_strcmp0(s2, "*") == 0)
+	if (lt_strcmp0(s1, "*") == 0 ||
+	    lt_strcmp0(s2, "*") == 0)
 		return TRUE;
 
-	return g_strcmp0(s1, s2) == 0;
+	return lt_strcmp0(s1, s2) == 0;
 }

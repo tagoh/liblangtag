@@ -14,11 +14,14 @@
 #include "config.h"
 #endif
 
-#include <glib.h>
+#include <glib.h> /* GHashTable and mutex lock is still used here */
+#include <sys/stat.h>
 #include <libxml/parser.h>
 #include "lt-error.h"
 #include "lt-mem.h"
+#include "lt-messages.h"
 #include "lt-database.h"
+#include "lt-string.h"
 #include "lt-xml.h"
 
 
@@ -40,37 +43,51 @@ static lt_xml_t *__xml = NULL;
 G_LOCK_DEFINE_STATIC (lt_xml);
 
 /*< private >*/
-static gboolean
+static lt_bool_t
 lt_xml_read_subtag_registry(lt_xml_t  *xml,
-			    GError   **error)
+			    lt_error_t   **error)
 {
-	gchar *regfile = NULL;
-	xmlParserCtxtPtr xmlparser;
+	lt_string_t *regfile;
+	xmlParserCtxtPtr xmlparser = NULL;
 	xmlDocPtr doc = NULL;
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 
-	g_return_val_if_fail (xml != NULL, FALSE);
+	lt_return_val_if_fail (xml != NULL, FALSE);
 
+	regfile = lt_string_new(NULL);
 #ifdef GNOME_ENABLE_DEBUG
-	regfile = g_build_filename(BUILDDIR, "data", "language-subtag-registry.xml", NULL);
-	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
-		g_free(regfile);
+	LT_STMT_START {
+		struct stat st;
+
+		if (!lt_string_append_filename(regfile,
+					       BUILDDIR, "data", "language-subtag-reegistry.xml", NULL)) {
+			lt_error_set(&err, LT_ERR_OOM, "Unable to allocate a memory");
+			goto bail;
+		}
+		if (stat(lt_string_value(regfile), &st) == -1) {
+			lt_string_clear(regfile);
 #endif
-	regfile = g_build_filename(lt_db_get_datadir(), "language-subtag-registry.xml", NULL);
-#ifdef GNOME_ENABLE_DEBUG
+	if (!lt_string_append_filename(regfile,
+				       lt_db_get_datadir(),
+				       "language-subtag-registry.xml", NULL)) {
+		lt_error_set(&err, LT_ERR_OOM, "Unable to allocate a memory");
+		goto bail;
 	}
+#ifdef GNOME_ENABLE_DEBUG
+		}
+	} LT_STMT_END;
 #endif
 	xmlparser = xmlNewParserCtxt();
 	if (!xmlparser) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlParserCtxt.");
+		lt_error_set(&err, LT_ERR_OOM,
+			     "Unable to create an instance of xmlParserCtxt.");
 		goto bail;
 	}
-	doc = xmlCtxtReadFile(xmlparser, regfile, "UTF-8", 0);
+	doc = xmlCtxtReadFile(xmlparser, lt_string_value(regfile), "UTF-8", 0);
 	if (!doc) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "Unable to read the xml file: %s",
-			    regfile);
+		lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+			     "Unable to read the xml file: %s",
+			     lt_string_value(regfile));
 		goto bail;
 	}
 	xml->subtag_registry = doc;
@@ -78,16 +95,16 @@ lt_xml_read_subtag_registry(lt_xml_t  *xml,
 		       (lt_destroy_func_t)xmlFreeDoc);
 
   bail:
-	g_free(regfile);
+	lt_string_unref(regfile);
 	if (xmlparser)
 		xmlFreeParserCtxt(xmlparser);
 
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 
 		return FALSE;
 	}
@@ -95,54 +112,68 @@ lt_xml_read_subtag_registry(lt_xml_t  *xml,
 	return TRUE;
 }
 
-static gboolean
+static lt_bool_t
 lt_xml_read_cldr_bcp47(lt_xml_t     *xml,
-		       const gchar  *filename,
+		       const char   *filename,
 		       xmlDocPtr    *doc,
-		       GError      **error)
+		       lt_error_t  **error)
 {
-	gchar *regfile = NULL;
-	xmlParserCtxtPtr xmlparser;
-	GError *err = NULL;
+	lt_string_t *regfile;
+	xmlParserCtxtPtr xmlparser = NULL;
+	lt_error_t *err = NULL;
 
-	g_return_val_if_fail (xml != NULL, FALSE);
+	lt_return_val_if_fail (xml != NULL, FALSE);
 
+	regfile = lt_string_new(NULL);
 #ifdef GNOME_ENABLE_DEBUG
-	regfile = g_build_filename(SRCDIR, "data", "common", "bcp47", filename, NULL);
-	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
-		g_free(regfile);
+	LT_STMT_START {
+		struct stat st;
+
+		if (!lt_string_append_filename(regfile,
+					       SRCDIR, "data", "common", "bcp47", filename, NULL)) {
+			lt_error_set(&err, LT_ERR_OOM, "Unable to allocate a memory");
+			goto bail;
+		}
+		if (stat(lt_string_value(regfile), &st) == -1) {
+			lt_string_clear(regfile);
 #endif
-	regfile = g_build_filename(lt_db_get_datadir(), "common", "bcp47", filename, NULL);
-#ifdef GNOME_ENABLE_DEBUG
+	if (!lt_string_append_filename(regfile,
+				       lt_db_get_datadir(),
+				       "common", "bcp47", filename, NULL)) {
+		lt_error_set(&err, LT_ERR_OOM, "Unable to allocate a memory");
+		goto bail;
 	}
+#ifdef GNOME_ENABLE_DEBUG
+		}
+	} LT_STMT_END;
 #endif
 	xmlparser = xmlNewParserCtxt();
 	if (!xmlparser) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlParserCtxt.");
+		lt_error_set(&err, LT_ERR_OOM,
+			     "Unable to create an instance of xmlParserCtxt.");
 		goto bail;
 	}
-	*doc = xmlCtxtReadFile(xmlparser, regfile, "UTF-8", 0);
+	*doc = xmlCtxtReadFile(xmlparser, lt_string_value(regfile), "UTF-8", 0);
 	if (!*doc) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "Unable to read the xml file: %s",
-			    regfile);
+		lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+			     "Unable to read the xml file: %s",
+			     lt_string_value(regfile));
 		goto bail;
 	}
 	lt_mem_add_ref(&xml->parent, *doc,
 		       (lt_destroy_func_t)xmlFreeDoc);
 
   bail:
-	g_free(regfile);
+	lt_string_unref(regfile);
 	if (xmlparser)
 		xmlFreeParserCtxt(xmlparser);
 
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 
 		return FALSE;
 	}
@@ -150,54 +181,68 @@ lt_xml_read_cldr_bcp47(lt_xml_t     *xml,
 	return TRUE;
 }
 
-static gboolean
+static lt_bool_t
 lt_xml_read_cldr_supplemental(lt_xml_t     *xml,
-			      const gchar  *filename,
+			      const char   *filename,
 			      xmlDocPtr    *doc,
-			      GError      **error)
+			      lt_error_t  **error)
 {
-	gchar *regfile = NULL;
-	xmlParserCtxtPtr xmlparser;
-	GError *err = NULL;
+	lt_string_t *regfile = NULL;
+	xmlParserCtxtPtr xmlparser = NULL;
+	lt_error_t *err = NULL;
 
-	g_return_val_if_fail (xml != NULL, FALSE);
+	lt_return_val_if_fail (xml != NULL, FALSE);
 
+	regfile = lt_string_new(NULL);
 #ifdef GNOME_ENABLE_DEBUG
-	regfile = g_build_filename(SRCDIR, "data", "common", "supplemental", filename, NULL);
-	if (!g_file_test(regfile, G_FILE_TEST_EXISTS)) {
-		g_free(regfile);
+	LT_STMT_START {
+		struct stat st;
+
+		if (!lt_string_append_filename(regfile,
+					       SRCDIR, "data", "common", "supplemental", filename, NULL)) {
+			lt_error_set(&err, LT_ERR_OOM, "Unable to allocate a memory");
+			goto bail;
+		}
+		if (stat(lt_string_value(regfile), &st) == -1) {
+			lt_string_clear(regfile);
 #endif
-	regfile = g_build_filename(lt_db_get_datadir(), "common", "supplemental", filename, NULL);
-#ifdef GNOME_ENABLE_DEBUG
+	if (!lt_string_append_filename(regfile,
+				       lt_db_get_datadir(),
+				       "common", "supplemental", filename, NULL)) {
+		lt_error_set(&err, LT_ERR_OOM, "Unable to allocate a memory");
+		goto bail;
 	}
+#ifdef GNOME_ENABLE_DEBUG
+		}
+	} LT_STMT_END;
 #endif
 	xmlparser = xmlNewParserCtxt();
 	if (!xmlparser) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlParserCtxt.");
+		lt_error_set(&err, LT_ERR_OOM,
+			     "Unable to create an instance of xmlParserCtxt.");
 		goto bail;
 	}
-	*doc = xmlCtxtReadFile(xmlparser, regfile, "UTF-8", 0);
+	*doc = xmlCtxtReadFile(xmlparser, lt_string_value(regfile), "UTF-8", 0);
 	if (!*doc) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "Unable to read the xml file: %s",
-			    regfile);
+		lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+			     "Unable to read the xml file: %s",
+			     lt_string_value(regfile));
 		goto bail;
 	}
 	lt_mem_add_ref(&xml->parent, *doc,
 		       (lt_destroy_func_t)xmlFreeDoc);
 
   bail:
-	g_free(regfile);
+	lt_string_unref(regfile);
 	if (xmlparser)
 		xmlFreeParserCtxt(xmlparser);
 
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 
 		return FALSE;
 	}
@@ -209,7 +254,7 @@ lt_xml_read_cldr_supplemental(lt_xml_t     *xml,
 lt_xml_t *
 lt_xml_new(void)
 {
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 
 	G_LOCK (lt_xml);
 
@@ -221,7 +266,7 @@ lt_xml_new(void)
 
 	__xml = lt_mem_alloc_object(sizeof (lt_xml_t));
 	if (__xml) {
-		lt_mem_add_weak_pointer(&__xml->parent, (gpointer *)&__xml);
+		lt_mem_add_weak_pointer(&__xml->parent, (lt_pointer_t *)&__xml);
 		if (!lt_xml_read_subtag_registry(__xml, &err))
 			goto bail;
 		if (!lt_xml_read_cldr_bcp47(__xml, "calendar.xml",
@@ -259,9 +304,9 @@ lt_xml_new(void)
 	}
 
   bail:
-	if (err) {
-		g_warning(err->message);
-		g_error_free(err);
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
+		lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 		lt_xml_unref(__xml);
 	}
 
@@ -273,7 +318,7 @@ lt_xml_new(void)
 lt_xml_t *
 lt_xml_ref(lt_xml_t *xml)
 {
-	g_return_val_if_fail (xml != NULL, NULL);
+	lt_return_val_if_fail (xml != NULL, NULL);
 
 	return lt_mem_ref(&xml->parent);
 }
@@ -288,7 +333,7 @@ lt_xml_unref(lt_xml_t *xml)
 const xmlDocPtr
 lt_xml_get_subtag_registry(lt_xml_t *xml)
 {
-	g_return_val_if_fail (xml != NULL, NULL);
+	lt_return_val_if_fail (xml != NULL, NULL);
 
 	return xml->subtag_registry;
 }
@@ -297,7 +342,7 @@ const xmlDocPtr
 lt_xml_get_cldr(lt_xml_t      *xml,
 		lt_xml_cldr_t  type)
 {
-	g_return_val_if_fail (xml != NULL, NULL);
+	lt_return_val_if_fail (xml != NULL, NULL);
 
 	switch (type) {
 	    case LT_XML_CLDR_BCP47_CALENDAR:

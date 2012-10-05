@@ -7,6 +7,7 @@ INCLUDES =									\
 	-I$(top_srcdir)								\
 	-DTEST_DATADIR="\"$(abs_top_builddir)/data\""				\
 	-DTEST_MODDIR="\"$(abs_top_builddir)/liblangtag/extensions/.libs\""	\
+	-D__LANGTAG_COMPILATION							\
 	$(GLIB_CFLAGS)								\
 	$(CHECK_CFLAGS)								\
 	$(NULL)
@@ -56,6 +57,7 @@ testcases =					\
 	check-extlang				\
 	check-grandfathered			\
 	check-lang				\
+	check-list				\
 	check-region				\
 	check-script				\
 	check-tag				\
@@ -108,6 +110,10 @@ check_grandfathered_SOURCES =	\
 	$(NULL)
 check_lang_SOURCES =		\
 	check-lang.c		\
+	$(common_sources)	\
+	$(NULL)
+check_list_SOURCES =		\
+	check-list.c		\
 	$(common_sources)	\
 	$(NULL)
 check_region_SOURCES =		\

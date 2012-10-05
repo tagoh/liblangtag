@@ -14,9 +14,13 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <stdlib.h>
+#include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-mem.h"
+#include "lt-messages.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-script-private.h"
@@ -38,31 +42,31 @@ struct _lt_script_db_t {
 };
 
 /*< private >*/
-static gboolean
+static lt_bool_t
 lt_script_db_parse(lt_script_db_t  *scriptdb,
-		   GError         **error)
+		   lt_error_t     **error)
 {
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 	xmlDocPtr doc = NULL;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 	int i, n;
 
-	g_return_val_if_fail (scriptdb != NULL, FALSE);
+	lt_return_val_if_fail (scriptdb != NULL, FALSE);
 
 	doc = lt_xml_get_subtag_registry(scriptdb->xml);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
+		lt_error_set(&err, LT_ERR_OOM,
+			     "Unable to create an instance of xmlXPathContextPtr.");
 		goto bail;
 	}
 	xobj = xmlXPathEvalExpression((const xmlChar *)"/registry/script", xctxt);
 	if (!xobj) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s",
-			    doc->name);
+		lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+			     "No valid elements for %s",
+			     doc->name);
 		goto bail;
 	}
 	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
@@ -72,19 +76,19 @@ lt_script_db_parse(lt_script_db_t  *scriptdb,
 		xmlNodePtr cnode;
 		xmlChar *subtag = NULL, *desc = NULL;
 		lt_script_t *le = NULL;
-		gchar *s;
+		char *s;
 
 		if (!ent) {
-			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
+			lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+				     "Unable to obtain the xml node via XPath.");
 			goto bail;
 		}
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"subtag") == 0) {
 				if (subtag) {
-					g_warning("Duplicate subtag element in script: previous value was '%s'",
-						  subtag);
+					lt_warning("Duplicate subtag element in script: previous value was '%s'",
+						   subtag);
 				} else {
 					subtag = xmlNodeGetContent(cnode);
 				}
@@ -97,30 +101,30 @@ lt_script_db_parse(lt_script_db_t  *scriptdb,
 				if (!desc)
 					desc = xmlNodeGetContent(cnode);
 			} else {
-				g_warning("Unknown node under /registry/script: %s", cnode->name);
+				lt_warning("Unknown node under /registry/script: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 		if (!subtag) {
-			g_warning("No subtag node: description = '%s'",
-				  desc);
+			lt_warning("No subtag node: description = '%s'",
+				   desc);
 			goto bail1;
 		}
 		if (!desc) {
-			g_warning("No description node: subtag = '%s'",
-				  subtag);
+			lt_warning("No description node: subtag = '%s'",
+				   subtag);
 			goto bail1;
 		}
 		le = lt_script_create();
 		if (!le) {
-			g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-				    "Unable to create an instance of lt_script_t.");
+			lt_error_set(&err, LT_ERR_OOM,
+				     "Unable to create an instance of lt_script_t.");
 			goto bail1;
 		}
-		lt_script_set_tag(le, (const gchar *)subtag);
-		lt_script_set_name(le, (const gchar *)desc);
+		lt_script_set_tag(le, (const char *)subtag);
+		lt_script_set_name(le, (const char *)desc);
 
-		s = g_strdup(lt_script_get_tag(le));
+		s = strdup(lt_script_get_tag(le));
 		g_hash_table_replace(scriptdb->script_entries,
 				     lt_strlower(s),
 				     lt_script_ref(le));
@@ -132,12 +136,12 @@ lt_script_db_parse(lt_script_db_t  *scriptdb,
 		lt_script_unref(le);
 	}
   bail:
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 		retval = FALSE;
 	}
 
@@ -163,12 +167,12 @@ lt_script_db_new(void)
 	lt_script_db_t *retval = lt_mem_alloc_object(sizeof (lt_script_db_t));
 
 	if (retval) {
-		GError *err = NULL;
+		lt_error_t *err = NULL;
 		lt_script_t *le;
 
 		retval->script_entries = g_hash_table_new_full(g_str_hash,
 							       g_str_equal,
-							       g_free,
+							       free,
 							       (GDestroyNotify)lt_script_unref);
 		lt_mem_add_ref(&retval->parent, retval->script_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
@@ -177,13 +181,13 @@ lt_script_db_new(void)
 		lt_script_set_tag(le, "*");
 		lt_script_set_name(le, "Wildcard entry");
 		g_hash_table_replace(retval->script_entries,
-				     g_strdup(lt_script_get_tag(le)),
+				     strdup(lt_script_get_tag(le)),
 				     le);
 		le = lt_script_create();
 		lt_script_set_tag(le, "");
 		lt_script_set_name(le, "Empty entry");
 		g_hash_table_replace(retval->script_entries,
-				     g_strdup(lt_script_get_tag(le)),
+				     strdup(lt_script_get_tag(le)),
 				     le);
 
 		retval->xml = lt_xml_new();
@@ -196,11 +200,11 @@ lt_script_db_new(void)
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_script_db_parse(retval, &err);
-		if (err) {
-			g_printerr(err->message);
+		if (lt_error_is_set(err, LT_ERR_ANY)) {
+			lt_error_print(err, LT_ERR_ANY);
 			lt_script_db_unref(retval);
 			retval = NULL;
-			g_error_free(err);
+			lt_error_unref(err);
 		}
 	}
   bail:
@@ -219,7 +223,7 @@ lt_script_db_new(void)
 lt_script_db_t *
 lt_script_db_ref(lt_script_db_t *scriptdb)
 {
-	g_return_val_if_fail (scriptdb != NULL, NULL);
+	lt_return_val_if_fail (scriptdb != NULL, NULL);
 
 	return lt_mem_ref(&scriptdb->parent);
 }
@@ -250,18 +254,18 @@ lt_script_db_unref(lt_script_db_t *scriptdb)
  */
 lt_script_t *
 lt_script_db_lookup(lt_script_db_t *scriptdb,
-		    const gchar    *subtag)
+		    const char     *subtag)
 {
 	lt_script_t *retval;
-	gchar *s;
+	char *s;
 
-	g_return_val_if_fail (scriptdb != NULL, NULL);
-	g_return_val_if_fail (subtag != NULL, NULL);
+	lt_return_val_if_fail (scriptdb != NULL, NULL);
+	lt_return_val_if_fail (subtag != NULL, NULL);
 
-	s = g_strdup(subtag);
+	s = strdup(subtag);
 	retval = g_hash_table_lookup(scriptdb->script_entries,
 				     lt_strlower(s));
-	g_free(s);
+	free(s);
 	if (retval)
 		return lt_script_ref(retval);
 

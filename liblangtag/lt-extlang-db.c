@@ -14,11 +14,14 @@
 #include "config.h"
 #endif
 
+#include <glib.h> /* XXX: GHashTable dependency is still there */
+#include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-extlang.h"
 #include "lt-extlang-private.h"
 #include "lt-mem.h"
+#include "lt-messages.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
 #include "lt-extlang-db.h"
@@ -39,31 +42,31 @@ struct _lt_extlang_db_t {
 };
 
 /*< private >*/
-static gboolean
+static lt_bool_t
 lt_extlang_db_parse(lt_extlang_db_t  *extlangdb,
-		    GError          **error)
+		    lt_error_t      **error)
 {
-	gboolean retval = TRUE;
+	lt_bool_t retval = TRUE;
 	xmlDocPtr doc = NULL;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
-	GError *err = NULL;
+	lt_error_t *err = NULL;
 	int i, n;
 
-	g_return_val_if_fail (extlangdb != NULL, FALSE);
+	lt_return_val_if_fail (extlangdb != NULL, FALSE);
 
 	doc = lt_xml_get_subtag_registry(extlangdb->xml);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
-		g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
+		lt_error_set(&err, LT_ERR_OOM,
+			     "Unable to create an instance of xmlXPathContextPtr.");
 		goto bail;
 	}
 	xobj = xmlXPathEvalExpression((const xmlChar *)"/registry/extlang", xctxt);
 	if (!xobj) {
-		g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s",
-			    doc->name);
+		lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+			     "No valid elements for %s",
+			     doc->name);
 		goto bail;
 	}
 	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
@@ -73,19 +76,19 @@ lt_extlang_db_parse(lt_extlang_db_t  *extlangdb,
 		xmlNodePtr cnode;
 		xmlChar *subtag = NULL, *desc = NULL, *macrolang = NULL, *preferred = NULL, *prefix = NULL;
 		lt_extlang_t *le = NULL;
-		gchar *s;
+		char *s;
 
 		if (!ent) {
-			g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
+			lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+				     "Unable to obtain the xml node via XPath.");
 			goto bail;
 		}
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"subtag") == 0) {
 				if (subtag) {
-					g_warning("Duplicate subtag element in extlang: previous value was '%s'",
-						  subtag);
+					lt_warning("Duplicate subtag element in extlang: previous value was '%s'",
+						   subtag);
 				} else {
 					subtag = xmlNodeGetContent(cnode);
 				}
@@ -98,56 +101,56 @@ lt_extlang_db_parse(lt_extlang_db_t  *extlangdb,
 					desc = xmlNodeGetContent(cnode);
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"macrolanguage") == 0) {
 				if (macrolang) {
-					g_warning("Duplicate macrolanguage element in extlang: previous value was '%s'",
-						  macrolang);
+					lt_warning("Duplicate macrolanguage element in extlang: previous value was '%s'",
+						   macrolang);
 				} else {
 					macrolang = xmlNodeGetContent(cnode);
 				}
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"preferred-value") == 0) {
 				if (preferred) {
-					g_warning("Duplicate preferred-value element in extlang: previous value was '%s'",
-						  preferred);
+					lt_warning("Duplicate preferred-value element in extlang: previous value was '%s'",
+						   preferred);
 				} else {
 					preferred = xmlNodeGetContent(cnode);
 				}
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"prefix") == 0) {
 				if (prefix) {
-					g_warning("Duplicate prefix element in extlang: previous value was '%s'",
-						  prefix);
+					lt_warning("Duplicate prefix element in extlang: previous value was '%s'",
+						   prefix);
 				} else {
 					prefix = xmlNodeGetContent(cnode);
 				}
 			} else {
-				g_warning("Unknown node under /registry/extlang: %s", cnode->name);
+				lt_warning("Unknown node under /registry/extlang: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 		if (!subtag) {
-			g_warning("No subtag node: description = '%s', macrolanguage = '%s', preferred-value = '%s', prefix = '%s'",
-				  desc, macrolang, preferred, prefix);
+			lt_warning("No subtag node: description = '%s', macrolanguage = '%s', preferred-value = '%s', prefix = '%s'",
+				   desc, macrolang, preferred, prefix);
 			goto bail1;
 		}
 		if (!desc) {
-			g_warning("No description node: subtag = '%s', macrolanguage = '%s', preferred-value = '%s', prefix = '%s'",
-				  subtag, macrolang, preferred, prefix);
+			lt_warning("No description node: subtag = '%s', macrolanguage = '%s', preferred-value = '%s', prefix = '%s'",
+				   subtag, macrolang, preferred, prefix);
 			goto bail1;
 		}
 		le = lt_extlang_create();
 		if (!le) {
-			g_set_error(&err, LT_ERROR, LT_ERR_OOM,
-				    "Unable to create an instance of lt_extlang_t.");
+			lt_error_set(&err, LT_ERR_OOM,
+				     "Unable to create an instance of lt_extlang_t.");
 			goto bail1;
 		}
-		lt_extlang_set_tag(le, (const gchar *)subtag);
-		lt_extlang_set_name(le, (const gchar *)desc);
+		lt_extlang_set_tag(le, (const char *)subtag);
+		lt_extlang_set_name(le, (const char *)desc);
 		if (macrolang)
-			lt_extlang_set_macro_language(le, (const gchar *)macrolang);
+			lt_extlang_set_macro_language(le, (const char *)macrolang);
 		if (preferred)
-			lt_extlang_set_preferred_tag(le, (const gchar *)preferred);
+			lt_extlang_set_preferred_tag(le, (const char *)preferred);
 		if (prefix)
-			lt_extlang_add_prefix(le, (const gchar *)prefix);
+			lt_extlang_add_prefix(le, (const char *)prefix);
 
-		s = g_strdup(lt_extlang_get_tag(le));
+		s = strdup(lt_extlang_get_tag(le));
 		g_hash_table_replace(extlangdb->extlang_entries,
 				     lt_strlower(s),
 				     lt_extlang_ref(le));
@@ -165,12 +168,12 @@ lt_extlang_db_parse(lt_extlang_db_t  *extlangdb,
 		lt_extlang_unref(le);
 	}
   bail:
-	if (err) {
+	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
-			*error = g_error_copy(err);
+			*error = lt_error_ref(err);
 		else
-			g_warning(err->message);
-		g_error_free(err);
+			lt_error_print(err, LT_ERR_ANY);
+		lt_error_unref(err);
 		retval = FALSE;
 	}
 
@@ -196,12 +199,12 @@ lt_extlang_db_new(void)
 	lt_extlang_db_t *retval = lt_mem_alloc_object(sizeof (lt_extlang_db_t));
 
 	if (retval) {
-		GError *err = NULL;
+		lt_error_t *err = NULL;
 		lt_extlang_t *le;
 
 		retval->extlang_entries = g_hash_table_new_full(g_str_hash,
 								g_str_equal,
-								g_free,
+								free,
 								(GDestroyNotify)lt_extlang_unref);
 		lt_mem_add_ref(&retval->parent, retval->extlang_entries,
 			       (lt_destroy_func_t)g_hash_table_destroy);
@@ -210,13 +213,13 @@ lt_extlang_db_new(void)
 		lt_extlang_set_tag(le, "*");
 		lt_extlang_set_name(le, "Wildcard entry");
 		g_hash_table_replace(retval->extlang_entries,
-				     g_strdup(lt_extlang_get_tag(le)),
+				     strdup(lt_extlang_get_tag(le)),
 				     le);
 		le = lt_extlang_create();
 		lt_extlang_set_tag(le, "");
 		lt_extlang_set_name(le, "Empty entry");
 		g_hash_table_replace(retval->extlang_entries,
-				     g_strdup(lt_extlang_get_tag(le)),
+				     strdup(lt_extlang_get_tag(le)),
 				     le);
 
 		retval->xml = lt_xml_new();
@@ -229,10 +232,10 @@ lt_extlang_db_new(void)
 			       (lt_destroy_func_t)lt_xml_unref);
 		lt_extlang_db_parse(retval, &err);
 		if (err) {
-			g_printerr(err->message);
+			lt_error_print(err, LT_ERR_ANY);
 			lt_extlang_db_unref(retval);
 			retval = NULL;
-			g_error_free(err);
+			lt_error_unref(err);
 		}
 	}
   bail:
@@ -251,7 +254,7 @@ lt_extlang_db_new(void)
 lt_extlang_db_t *
 lt_extlang_db_ref(lt_extlang_db_t *extlangdb)
 {
-	g_return_val_if_fail (extlangdb != NULL, NULL);
+	lt_return_val_if_fail (extlangdb != NULL, NULL);
 
 	return lt_mem_ref(&extlangdb->parent);
 }
@@ -282,18 +285,18 @@ lt_extlang_db_unref(lt_extlang_db_t *extlangdb)
  */
 lt_extlang_t *
 lt_extlang_db_lookup(lt_extlang_db_t *extlangdb,
-		     const gchar     *subtag)
+		     const char      *subtag)
 {
 	lt_extlang_t *retval;
-	gchar *s;
+	char *s;
 
-	g_return_val_if_fail (extlangdb != NULL, NULL);
-	g_return_val_if_fail (subtag != NULL, NULL);
+	lt_return_val_if_fail (extlangdb != NULL, NULL);
+	lt_return_val_if_fail (subtag != NULL, NULL);
 
-	s = g_strdup(subtag);
+	s = strdup(subtag);
 	retval = g_hash_table_lookup(extlangdb->extlang_entries,
 				     lt_strlower(s));
-	g_free(s);
+	free(s);
 	if (retval)
 		return lt_extlang_ref(retval);
 

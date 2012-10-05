@@ -13,19 +13,12 @@
 #ifndef __LT_ERROR_H__
 #define __LT_ERROR_H__
 
-#include <glib.h>
+#include <liblangtag/lt-macros.h>
 
-G_BEGIN_DECLS
-
-/**
- * LT_ERROR:
- *
- * A #GQuark value being used in this library.
- */
-#define LT_ERROR	(lt_error_get_quark())
+LT_BEGIN_DECLS
 
 /**
- * lt_error_t:
+ * lt_error_type_t:
  * @LT_ERR_UNKNOWN: unknown error happened.
  * @LT_ERR_SUCCESS: an operation is succeeded.
  * @LT_ERR_OOM: Out of memory occurred.
@@ -38,7 +31,7 @@ G_BEGIN_DECLS
  *
  * Error code used in this library.
 */
-enum _lt_error_t {
+enum _lt_error_type_t {
 	LT_ERR_UNKNOWN = -1,
 	LT_ERR_SUCCESS = 0,
 	LT_ERR_OOM,
@@ -47,14 +40,25 @@ enum _lt_error_t {
 	LT_ERR_FAIL_ON_SCANNER,
 	LT_ERR_NO_TAG,
 	LT_ERR_INVALID,
-	LT_ERR_END
+	LT_ERR_ANY
 };
 
-typedef enum _lt_error_t	lt_error_t;
+typedef struct _lt_error_t	lt_error_t;
+typedef enum _lt_error_type_t	lt_error_type_t;
 
+lt_error_t *lt_error_new   (void);
+lt_error_t *lt_error_ref   (lt_error_t       *error);
+void        lt_error_unref (lt_error_t       *error);
+lt_error_t *lt_error_set   (lt_error_t      **error,
+			    lt_error_type_t   type,
+                            const char       *message,
+			    ...);
+void        lt_error_clear (lt_error_t       *error);
+lt_bool_t   lt_error_is_set(lt_error_t       *error,
+			    lt_error_type_t   type);
+void        lt_error_print (lt_error_t       *error,
+			    lt_error_type_t   type);
 
-GQuark lt_error_get_quark(void);
-
-G_END_DECLS
+LT_END_DECLS
 
 #endif /* __LT_ERROR_H__ */

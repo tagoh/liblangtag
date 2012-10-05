@@ -18,6 +18,9 @@
 #include <libxml/xpath.h>
 #include "lt-error.h"
 #include "lt-ext-module.h"
+#include "lt-list.h"
+#include "lt-messages.h"
+#include "lt-string.h"
 #include "lt-tag.h"
 #include "lt-utils.h"
 #include "lt-xml.h"
@@ -38,49 +41,49 @@ typedef struct _lt_ext_ldml_t_data_t {
 	lt_ext_module_data_t   parent;
 	lt_ext_ldml_t_state_t  state;
 	lt_tag_t              *tag;
-	GList                 *fields;
+	lt_list_t             *fields;
 } lt_ext_ldml_t_data_t;
 
 /*< private >*/
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_t_lookup_type(lt_ext_ldml_t_data_t  *data,
-			   const gchar           *subtag,
-			   GError               **error)
+			   const char            *subtag,
+			   lt_error_t           **error)
 {
 	lt_xml_t *xml = NULL;
 	xmlDocPtr doc;
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
-	gint i, n;
-	gchar key[4], *xpath_string = NULL;
-	GList *l;
-	GString *s;
-	gboolean retval = FALSE;
+	int i, n;
+	char key[4], *xpath_string = NULL;
+	lt_list_t *l;
+	lt_string_t *s;
+	lt_bool_t retval = FALSE;
 
-	l = g_list_last(data->fields);
+	l = lt_list_last(data->fields);
 	if (l == NULL) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-			    "Invalid internal state. failed to find a key container.");
+		lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+			     "Invalid internal state. failed to find a key container.");
 		goto bail;
 	}
-	s = l->data;
-	strncpy(key, s->str, 2);
+	s = lt_list_value(l);
+	strncpy(key, lt_string_value(s), 2);
 	key[2] = 0;
 
 	xml = lt_xml_new();
 	doc = lt_xml_get_cldr(xml, LT_XML_CLDR_BCP47_TRANSFORM);
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
-		g_set_error(error, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
+		lt_error_set(error, LT_ERR_OOM,
+			     "Unable to create an instance of xmlXPathContextPtr.");
 		goto bail;
 	}
-	xpath_string = g_strdup_printf("/ldmlBCP47/keyword/key[@extension = 't' and @name = '%s']", key);
+	xpath_string = lt_strdup_printf("/ldmlBCP47/keyword/key[@extension = 't' and @name = '%s']", key);
 	xobj = xmlXPathEvalExpression((const xmlChar *)xpath_string, xctxt);
 	if (!xobj) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s: %s",
-			    doc->name, xpath_string);
+		lt_error_set(error, LT_ERR_FAIL_ON_XML,
+			     "No valid elements for %s: %s",
+			     doc->name, xpath_string);
 		goto bail;
 	}
 	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
@@ -91,15 +94,15 @@ _lt_ext_ldml_t_lookup_type(lt_ext_ldml_t_data_t  *data,
 		xmlChar *name;
 
 		if (!ent) {
-			g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
+			lt_error_set(error, LT_ERR_FAIL_ON_XML,
+				     "Unable to obtain the xml node via XPath.");
 			goto bail;
 		}
 		cnode = ent->children;
 		while (cnode != NULL) {
 			if (xmlStrcmp(cnode->name, (const xmlChar *)"type") == 0) {
 				name = xmlGetProp(cnode, (const xmlChar *)"name");
-				if (name && g_ascii_strcasecmp((const gchar *)name, subtag) == 0) {
+				if (name && lt_strcasecmp((const char *)name, subtag) == 0) {
 					retval = TRUE;
 					xmlFree(name);
 					goto bail;
@@ -108,13 +111,13 @@ _lt_ext_ldml_t_lookup_type(lt_ext_ldml_t_data_t  *data,
 			} else if (xmlStrcmp(cnode->name, (const xmlChar *)"text") == 0) {
 				/* ignore */
 			} else {
-				g_warning("Unknown node under /ldmlBCP47/keyword/key: %s", cnode->name);
+				lt_warning("Unknown node under /ldmlBCP47/keyword/key: %s", cnode->name);
 			}
 			cnode = cnode->next;
 		}
 	}
   bail:
-	g_free(xpath_string);
+	free(xpath_string);
 	if (xobj)
 		xmlXPathFreeObject(xobj);
 	if (xctxt)
@@ -125,14 +128,14 @@ _lt_ext_ldml_t_lookup_type(lt_ext_ldml_t_data_t  *data,
 	return retval;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_t_lookup_key(lt_ext_ldml_t_data_t  *data,
-			  const gchar           *subtag,
-			  GError               **error)
+			  const char            *subtag,
+			  lt_error_t           **error)
 {
-	gint i, n;
+	int i, n;
 	lt_xml_t *xml = lt_xml_new();
-	gboolean retval = FALSE;
+	lt_bool_t retval = FALSE;
 	xmlDocPtr doc = lt_xml_get_cldr(xml, LT_XML_CLDR_BCP47_TRANSFORM);
 	xmlXPathContextPtr xctxt = NULL;
 	xmlXPathObjectPtr xobj = NULL;
@@ -140,15 +143,15 @@ _lt_ext_ldml_t_lookup_key(lt_ext_ldml_t_data_t  *data,
 
 	xctxt = xmlXPathNewContext(doc);
 	if (!xctxt) {
-		g_set_error(error, LT_ERROR, LT_ERR_OOM,
-			    "Unable to create an instance of xmlXPathContextPtr.");
+		lt_error_set(error, LT_ERR_OOM,
+			     "Unable to create an instance of xmlXPathContextPtr.");
 		goto bail;
 	}
 	xobj = xmlXPathEvalExpression((const xmlChar *)"/ldmlBCP47/keyword/key[@extension = 't']", xctxt);
 	if (!xobj) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-			    "No valid elements for %s",
-			    doc->name);
+		lt_error_set(error, LT_ERR_FAIL_ON_XML,
+			     "No valid elements for %s",
+			     doc->name);
 		goto bail;
 	}
 	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
@@ -157,14 +160,14 @@ _lt_ext_ldml_t_lookup_key(lt_ext_ldml_t_data_t  *data,
 		xmlNodePtr ent = xmlXPathNodeSetItem(xobj->nodesetval, i);
 
 		if (!ent) {
-			g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_XML,
-				    "Unable to obtain the xml node via XPath.");
+			lt_error_set(error, LT_ERR_FAIL_ON_XML,
+				     "Unable to obtain the xml node via XPath.");
 			goto bail;
 		}
 		if (name)
 			xmlFree(name);
 		name = xmlGetProp(ent, (const xmlChar *)"name");
-		if (g_ascii_strcasecmp((const gchar *)name, subtag) == 0) {
+		if (lt_strcasecmp((const char *)name, subtag) == 0) {
 			retval = TRUE;
 			break;
 		}
@@ -182,22 +185,15 @@ _lt_ext_ldml_t_lookup_key(lt_ext_ldml_t_data_t  *data,
 }
 
 static void
-_lt_ext_ldml_t_destroy_data(gpointer data)
+_lt_ext_ldml_t_destroy_data(lt_pointer_t data)
 {
 	lt_ext_ldml_t_data_t *d = (lt_ext_ldml_t_data_t *)data;
 
 	lt_tag_unref(d->tag);
-	if (d->fields) {
-		GList *l;
-
-		for (l = d->fields; l != NULL; l = g_list_next(l)) {
-			g_string_free(l->data, TRUE);
-		}
-		g_list_free(d->fields);
-	}
+	lt_list_free(d->fields);
 }
 
-static gchar
+static char
 _lt_ext_ldml_t_get_singleton(void)
 {
 	return 't';
@@ -219,62 +215,61 @@ _lt_ext_ldml_t_create_data(void)
 	return retval;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_t_precheck_tag(lt_ext_module_data_t  *data,
 			    const lt_tag_t        *tag,
-			    GError               **error)
+			    lt_error_t           **error)
 {
 	if (lt_tag_get_grandfathered(tag)) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-			    "Grandfathered tags aren't allowed to have LDML.");
+		lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+			     "Grandfathered tags aren't allowed to have LDML.");
 		return FALSE;
 	}
 	if (lt_tag_get_extlang(tag)) {
-		g_set_error(error, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-			    "Extlang tags aren't allowed to have LDML.");
+		lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+			     "Extlang tags aren't allowed to have LDML.");
 		return FALSE;
 	}
 
 	return TRUE;
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_t_parse_tag(lt_ext_module_data_t  *data,
-			 const gchar           *subtag,
-			 GError               **error)
+			 const char            *subtag,
+			 lt_error_t           **error)
 {
 	lt_ext_ldml_t_data_t *d = (lt_ext_ldml_t_data_t *)data;
-	GError *err = NULL;
-	gboolean retval = TRUE;
-	gsize len = strlen(subtag);
-	const GString *s;
+	lt_bool_t retval = TRUE;
+	size_t len = strlen(subtag);
+	const lt_string_t *s;
 
 	if (d->state != STATE_FIELD && d->state != STATE_FIELD2) {
-		if (_lt_ext_ldml_t_lookup_key(d, subtag, &err)) {
+		if (_lt_ext_ldml_t_lookup_key(d, subtag, error)) {
 			goto setup_field_key;
-		} else if (err) {
+		} else if (lt_error_is_set(*error, LT_ERR_ANY)) {
 			goto bail;
 		}
 	}
 	switch (d->state) {
 	    case STATE_NONE:
-		    if (!lt_tag_parse(d->tag, subtag, &err))
+		    if (!lt_tag_parse(d->tag, subtag, error))
 			    break;
 		    if (lt_tag_get_language(d->tag) == NULL) {
-			    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-					"No such language subtag: %s",
-					subtag);
+			    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+					 "No such language subtag: %s",
+					 subtag);
 			    break;
 		    }
 		    d->state = STATE_LANG;
 		    break;
 	    case STATE_LANG:
-		    if (!lt_tag_parse_with_extra_token(d->tag, subtag, &err))
+		    if (!lt_tag_parse_with_extra_token(d->tag, subtag, error))
 			    break;
 		    if (lt_tag_get_extlang(d->tag)) {
-			    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-					"Extlang tag isn't allowed: %s",
-					subtag);
+			    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+					 "Extlang tag isn't allowed: %s",
+					 subtag);
 			    break;
 		    } else if (lt_tag_get_script(d->tag)) {
 			    d->state = STATE_SCRIPT;
@@ -283,7 +278,7 @@ _lt_ext_ldml_t_parse_tag(lt_ext_module_data_t  *data,
 		    }
 		    break;
 	    case STATE_SCRIPT:
-		    if (!lt_tag_parse_with_extra_token(d->tag, subtag, &err))
+		    if (!lt_tag_parse_with_extra_token(d->tag, subtag, error))
 			    break;
 	    check_region:
 		    if (lt_tag_get_region(d->tag)) {
@@ -294,103 +289,99 @@ _lt_ext_ldml_t_parse_tag(lt_ext_module_data_t  *data,
 		    break;
 	    case STATE_REGION:
 	    case STATE_VARIANT:
-		    if (!lt_tag_parse_with_extra_token(d->tag, subtag, &err))
+		    if (!lt_tag_parse_with_extra_token(d->tag, subtag, error))
 			    break;
 	    check_variant:
 		    if (lt_tag_get_extension(d->tag)) {
-			    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-					"Extension tag isn't allowed");
+			    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+					 "Extension tag isn't allowed");
 			    break;
-		    } else if ((s = lt_tag_get_privateuse(d->tag)) && s->len > 0) {
-			    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-					"PrivateUse tag isn't allowed");
+		    } else if ((s = lt_tag_get_privateuse(d->tag)) && lt_string_length(s) > 0) {
+			    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+					 "PrivateUse tag isn't allowed");
 			    break;
 		    } else if (lt_tag_get_variants(d->tag)) {
 			    d->state = STATE_VARIANT;
 		    } else {
-			    g_warn_if_reached();
+			    lt_warn_if_reached();
 		    }
 		    break;
 	    case STATE_FIELD2:
 		    if (!lt_tag_get_language(d->tag)) {
-			    if (_lt_ext_ldml_t_lookup_key(d, subtag, &err)) {
+			    if (_lt_ext_ldml_t_lookup_key(d, subtag, error)) {
 			      setup_field_key:
 				    d->state = STATE_FIELD;
-				    d->fields = g_list_append(d->fields, g_string_new(subtag));
+				    d->fields = lt_list_append(d->fields,
+							       lt_string_new(subtag),
+							       (lt_destroy_func_t)lt_string_unref);
 				    break;
-			    } else if (err) {
+			    } else if (lt_error_is_set(*error, LT_ERR_ANY)) {
 				    break;
 			    }
 		    }
 	    case STATE_FIELD:
 		    if (len >= 3 && len <= 8) {
-			    GList *l;
-			    GString *s;
+			    lt_list_t *l;
+			    lt_string_t *s;
 
-			    if (!_lt_ext_ldml_t_lookup_type(d, subtag, &err)) {
-				    if (!err) {
-					    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-							"Unknown -t- extension type: %s", subtag);
+			    if (!_lt_ext_ldml_t_lookup_type(d, subtag, error)) {
+				    if (!lt_error_is_set(*error, LT_ERR_ANY)) {
+					    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+							 "Unknown -t- extension type: %s", subtag);
 				    }
 				    break;
 			    }
-			    l = g_list_last(d->fields);
+			    l = lt_list_last(d->fields);
 			    if (l == NULL) {
-				    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-						"Invalid internal state. failed to find a key container.");
+				    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+						 "Invalid internal state. failed to find a key container.");
 				    break;
 			    }
-			    s = l->data;
-			    g_string_append_printf(s, "-%s", subtag);
+			    s = lt_list_value(l);
+			    lt_string_append_printf(s, "-%s", subtag);
 			    d->state = STATE_FIELD2;
 		    } else {
-			    g_set_error(&err, LT_ERROR, LT_ERR_FAIL_ON_SCANNER,
-					"Invalid syntax: expected to see an field value, but `%s'", subtag);
+			    lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+					 "Invalid syntax: expected to see an field value, but `%s'", subtag);
 		    }
 		    break;
 	    default:
-		    g_warn_if_reached();
+		    lt_warn_if_reached();
 		    break;
 	}
   bail:
-	if (err) {
-		if (error)
-			*error = g_error_copy(err);
-		else
-			g_warning(err->message);
-		g_error_free(err);
+	if (lt_error_is_set(*error, LT_ERR_ANY))
 		retval = FALSE;
-	}
 
 	return retval;
 }
 
-static gchar *
+static char *
 _lt_ext_ldml_t_get_tag(lt_ext_module_data_t *data)
 {
 	lt_ext_ldml_t_data_t *d = (lt_ext_ldml_t_data_t *)data;
-	GString *s = g_string_new(lt_tag_get_string(d->tag));
-	GList *l;
+	lt_string_t *s = lt_string_new(lt_tag_get_string(d->tag));
+	lt_list_t *l;
 
 	if (d->fields) {
-		for (l = d->fields; l != NULL; l = g_list_next(l)) {
-			const GString *t = l->data;
-			gchar *ts = g_strdup(t->str);
+		for (l = d->fields; l != NULL; l = lt_list_next(l)) {
+			const lt_string_t *t = lt_list_value(l);
+			char *ts = strdup(lt_string_value(t));
 
-			if (s->len > 0)
-				g_string_append_c(s, '-');
-			if (t->len == 2) {
+			if (lt_string_length(s) > 0)
+				lt_string_append_c(s, '-');
+			if (lt_string_length(t) == 2) {
 				/* XXX: do we need to auto-complete the clipped type here? */
 			}
-			g_string_append(s, lt_strlower(ts));
-			g_free(ts);
+			lt_string_append(s, lt_strlower(ts));
+			free(ts);
 		}
 	}
 
-	return g_string_free(s, FALSE);
+	return lt_string_free(s, FALSE);
 }
 
-static gboolean
+static lt_bool_t
 _lt_ext_ldml_t_validate_tag(lt_ext_module_data_t *data)
 {
 	return TRUE;
@@ -406,7 +397,7 @@ static const lt_ext_module_funcs_t __funcs = {
 };
 
 /*< public >*/
-gint
+int
 module_get_version(void)
 {
 	return LT_EXT_MODULE_VERSION;
