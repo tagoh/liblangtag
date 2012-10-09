@@ -13,13 +13,11 @@ INCLUDES =							\
 	-DREGDATADIR="\"$(datadir)/liblangtag\""		\
 	-DLANGTAG_EXT_MODULE_PATH="\"$(LANGTAG_MODULEDIR)\""	\
 	$(GLIB_CFLAGS)						\
-	$(GMODULE_CFLAGS)					\
 	$(LIBXML2_CFLAGS)					\
 	$(PTHREAD_CFLAGS)					\
 	$(NULL)
 LIBS =						\
 	@LDFLAGS@				\
-	$(GMODULE_LIBS)				\
 	$(LIBXML2_LIBS)				\
 	$(PTHREAD_LIBS)				\
 	$(NULL)

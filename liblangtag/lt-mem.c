@@ -14,7 +14,7 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: GHashTable and atomic functions are used */
+#include <glib.h> /* XXX: atomic functions is still used */
 #include <stdlib.h>
 #include "lt-mem.h"
 #include "lt-messages.h"

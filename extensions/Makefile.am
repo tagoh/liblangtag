@@ -34,15 +34,29 @@ BUILT_FILES =					\
 ##
 # Target platform
 moduledir = $(LANGTAG_MODULEDIR)
-module_LTLIBRARIES =			\
+module_LTLIBRARIES = $(NULL)
+noinst_LTLIBRARIES = $(NULL)
+#
+modules =				\
 	liblangtag-ext-ldml-t.la	\
 	liblangtag-ext-ldml-u.la	\
 	$(NULL)
+#
+if ENABLE_MODULE
+module_LTLIBRARIES += $(modules)
+module_t_cflags =
+module_u_cflags =
+else
+noinst_LTLIBRARIES += $(modules)
+module_t_cflags = -DLT_MODULE_PREFIX=lt_module_ext_t_
+module_u_cflags = -DLT_MODULE_PREFIX=lt_module_ext_u_
+endif
 #
 liblangtag_ext_ldml_t_la_SOURCES =	\
 	lt-ext-ldml-t.c			\
 	$(NULL)
 liblangtag_ext_ldml_t_la_CFLAGS =		\
+	$(module_t_cflags)			\
 	$(NULL)
 liblangtag_ext_ldml_t_la_LDFLAGS =		\
 	-avoid-version				\
@@ -53,6 +67,7 @@ liblangtag_ext_ldml_u_la_SOURCES =	\
 	lt-ext-ldml-u.c			\
 	$(NULL)
 liblangtag_ext_ldml_u_la_CFLAGS =		\
+	$(module_u_cflags)			\
 	$(NULL)
 liblangtag_ext_ldml_u_la_LDFLAGS =		\
 	-avoid-version				\

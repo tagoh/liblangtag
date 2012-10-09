@@ -93,13 +93,11 @@ reg2xml_SOURCES =	\
 	$(NULL)
 reg2xml_CFLAGS =			\
 	$(LIBXML2_CFLAGS)		\
-	$(GLIB_CFLAGS)			\
 	-I$(top_srcdir)/liblangtag	\
 	-D__LANGTAG_COMPILATION		\
 	$(NULL)
 reg2xml_LDFLAGS =					\
 	$(LIBXML2_LIBS)					\
-	$(GLIB_LIBS)					\
 	$(top_builddir)/liblangtag/liblangtag.la	\
 	$(NULL)
 reg2xml_DEPENDENCIES =					\

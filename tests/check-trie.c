@@ -14,7 +14,6 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
 #include <liblangtag/langtag.h>
 #include "lt-mem.h"
 #include "lt-trie.h"

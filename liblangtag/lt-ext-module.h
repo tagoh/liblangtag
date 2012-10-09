@@ -157,6 +157,13 @@ void             lt_ext_modules_unload(void);
 lt_ext_module_t *lt_ext_module_ref    (lt_ext_module_t *module);
 void             lt_ext_module_unref  (lt_ext_module_t *module);
 
+#ifdef LT_MODULE_PREFIX
+#  define LT_MODULE_SYMBOL(__sym__)	LT_MODULE_SYMBOL_(LT_MODULE_PREFIX, __sym__)
+#  define LT_MODULE_SYMBOL_(__prefix__,__sym__)	__prefix__##_module_##__sym__
+#else
+#  define LT_MODULE_SYMBOL(__sym__)	module_##__sym__
+#endif
+
 /**
  * module_get_version:
  *

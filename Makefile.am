@@ -1,12 +1,9 @@
 NULL =
 AUTOMAKE_OPTIONS = dist-bzip2
-SUBDIRS = liblangtag data docs
+SUBDIRS = liblangtag extensions data docs
 
 if ENABLE_GOBJECT
 SUBDIRS += liblangtag-gobject
-endif
-if ENABLE_GMODULE
-SUBDIRS += extensions
 endif
 #SUBDIRS += docs tests
 SUBDIRS += tests

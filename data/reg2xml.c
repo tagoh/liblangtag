@@ -15,18 +15,18 @@
 #endif
 
 #include <string.h>
-#include <glib.h>
 #include <libxml/tree.h>
+#include "lt-messages.h"
 #include "lt-utils.h"
 
 /*< private >*/
-static gchar *
-_drop_crlf(gchar *string)
+static char *
+_drop_crlf(char *string)
 {
-	gsize len, i;
+	size_t len, i;
 
-	g_return_val_if_fail (string != NULL, NULL);
-	g_return_val_if_fail (string[0] != 0, NULL);
+	lt_return_val_if_fail (string != NULL, NULL);
+	lt_return_val_if_fail (string[0] != 0, NULL);
 
 	len = strlen(string);
 	for (i = len - 1; i > 0; i--) {
@@ -41,17 +41,17 @@ _drop_crlf(gchar *string)
 	return string;
 }
 
-static gboolean
-_parse(const gchar *filename,
-       xmlNodePtr   root)
+static lt_bool_t
+_parse(const char *filename,
+       xmlNodePtr  root)
 {
 	FILE *fp;
-	gchar buffer[1024];
-	gboolean in_entry = FALSE;
+	char buffer[1024];
+	lt_bool_t in_entry = FALSE;
 	xmlNodePtr ent = NULL;
 
 	if ((fp = fopen(filename, "rb")) == NULL) {
-		g_printerr("Unable to open %s\n", filename);
+		lt_critical("Unable to open %s", filename);
 		return FALSE;
 	}
 	while (1) {
@@ -59,7 +59,7 @@ _parse(const gchar *filename,
 		if (feof(fp))
 			break;
 		_drop_crlf(buffer);
-		if (g_strcmp0(buffer, "%%") == 0) {
+		if (lt_strcmp0(buffer, "%%") == 0) {
 			if (in_entry) {
 				if (ent) {
 					xmlAddChild(root, ent);
@@ -74,27 +74,27 @@ _parse(const gchar *filename,
 			}
 			if (strncmp(buffer, "Type: ", 6) == 0) {
 				if (ent) {
-					g_warning("Duplicate entry type: line = '%s', current type = '%s'",
-						  buffer, ent->name);
+					lt_warning("Duplicate entry type: line = '%s', current type = '%s'",
+						   buffer, ent->name);
 				} else {
 					ent = xmlNewNode(NULL, (const xmlChar *)&buffer[6]);
 				}
 			} else {
 				if (!ent) {
-					g_warning("No entry type: line = '%s'",
-						  buffer);
+					lt_warning("No entry type: line = '%s'",
+						   buffer);
 					in_entry = FALSE;
 				} else {
-					gchar **tokens, *tag;
+					char *token, *tag;
 					fpos_t pos;
-					gsize len;
+					size_t len;
 
 				  multiline:
 					fgetpos(fp, &pos);
 					len = strlen(buffer);
 					fgets(&buffer[len], 1024 - len, fp);
 					if (buffer[len] == ' ') {
-						gsize l, i;
+						size_t l, i;
 
 						_drop_crlf(&buffer[len]);
 						l = strlen(&buffer[len]);
@@ -110,13 +110,13 @@ _parse(const gchar *filename,
 						buffer[len] = 0;
 						fsetpos(fp, &pos);
 					}
-					tokens = g_strsplit(buffer, ": ", 2);
-					tag = g_strdup(tokens[0]);
+					token = strstr(buffer, ": ");
+					tag = strndup(buffer, token - buffer);
+					token += 2;
 					xmlNewChild(ent, NULL,
 						    (const xmlChar *)lt_strlower(tag),
-						    (const xmlChar *)tokens[1]);
-					g_strfreev(tokens);
-					g_free(tag);
+						    (const xmlChar *)token);
+					free(tag);
 				}
 			}
 		}
@@ -125,13 +125,13 @@ _parse(const gchar *filename,
 	return TRUE;
 }
 
-static gboolean
-_output_xml(const gchar *filename,
-	    const gchar *out_filename)
+static lt_bool_t
+_output_xml(const char *filename,
+	    const char *out_filename)
 {
 	xmlDocPtr doc;
 	xmlNodePtr root;
-	gboolean retval;
+	lt_bool_t retval;
 
 	doc = xmlNewDoc((const xmlChar *)"1.0");
 	doc->encoding = xmlStrdup((const xmlChar *)"UTF-8");

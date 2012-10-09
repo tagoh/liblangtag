@@ -188,6 +188,10 @@ AC_ARG_ENABLE([test],
 	[AC_HELP_STRING([--disable-test], [Disable tests])],
 	[enable_test="$enableval"],
 	[enable_test=yes])
+AC_ARG_ENABLE([modules],
+	[AC_HELP_STRING([--disable-modules], [Disable modules])],
+	[enable_modules="$enableval"],
+	[enable_modules=yes])
 
 dnl ======================================================================
 dnl options - locale-alias
@@ -221,11 +225,34 @@ fi
 AC_SUBST(BUILD_LOCALEALIAS)
 
 dnl ======================================================================
+dnl options - modules
+dnl ======================================================================
+MODULE_LIBS=
+if test "x$enable_modules" != "xno"; then
+	AC_MSG_CHECKING(for the suffix of module shared libraries)
+	export SED
+	shrext_cmds=`./libtool --config | grep '^shrext_cmds='`
+	eval $shrext_cmds
+	module=yes eval std_shrext=$shrext_cmds
+	lt_module_suffix=`echo $std_shrext | sed 's/^\.//'`
+	AC_MSG_RESULT(.$lt_module_suffix)
+	if test "x$lt_module_suffix" = x; then
+		AC_MSG_ERROR(Unable to determine shared libreary suffix from libtool)
+	fi
+	AC_CHECK_LIB(dl, dlopen,
+		[AC_CHECK_LIB(dl, dlsym, [MODULE_LIBS=-ldl])])
+
+	AC_SUBST(MODULE_LIBS)
+	AC_DEFINE(ENABLE_MODULE, 1, [Use modules])
+	AC_DEFINE_UNQUOTED(LT_MODULE_SUFFIX, "$lt_module_suffix", [Shared library suffix])
+fi
+AM_CONDITIONAL(ENABLE_MODULE, test x$MODULE_LIBS != x)
+
+dnl ======================================================================
 dnl check pkg-config stuff
 dnl ======================================================================
 PKG_CHECK_MODULES(LIBXML2, libxml-2.0 >= $LIBXML2_REQUIRED)
 PKG_CHECK_MODULES(GOBJECT, gobject-2.0 >= $GOBJECT_REQUIRED, has_gobject=yes, has_gobject=no)
-PKG_CHECK_MODULES(GMODULE, gmodule-2.0, has_gmodule=yes, has_gmodule=no)
 
 if test x$enable_test != xno; then
 	PKG_CHECK_MODULES(CHECK, check >= $CHECK_REQUIRED,
@@ -235,10 +262,6 @@ else
 	use_check=no
 fi
 
-if test x$has_gmodule != xno; then
-	AC_DEFINE(ENABLE_GMODULE,, [Using gmodule])
-fi
-AM_CONDITIONAL(ENABLE_GMODULE, test x$has_gmodule != xno)
 AM_CONDITIONAL(ENABLE_GOBJECT, test x$has_gobject != xno)
 AM_CONDITIONAL(ENABLE_UNIT_TEST, test x$use_check != xno)
 

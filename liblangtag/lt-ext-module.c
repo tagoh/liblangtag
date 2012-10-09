@@ -16,11 +16,13 @@
 
 #include <ctype.h>
 #include <dirent.h>
+#ifdef HAVE_DLFCN_H
+#include <dlfcn.h>
+#endif
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <gmodule.h>
 #include "lt-mem.h"
 #include "lt-messages.h"
 #include "lt-ext-module-data.h"
@@ -40,7 +42,7 @@
 struct _lt_ext_module_t {
 	lt_mem_t                     parent;
 	char                        *name;
-	GModule                     *module;
+	lt_pointer_t                 module;
 	const lt_ext_module_funcs_t *funcs;
 };
 
@@ -91,7 +93,7 @@ static const lt_ext_module_funcs_t __empty_and_wildcard_funcs = {
 
 /*< private >*/
 static void
-_lt_ext_default_destroy_data(gpointer data)
+_lt_ext_default_destroy_data(lt_pointer_t data)
 {
 	lt_ext_default_data_t *d = data;
 
@@ -151,7 +153,7 @@ _lt_ext_default_validate_tag(lt_ext_module_data_t *data)
 }
 
 static void
-_lt_ext_eaw_destroy_data(gpointer data)
+_lt_ext_eaw_destroy_data(lt_pointer_t data)
 {
 }
 
@@ -199,12 +201,13 @@ _lt_ext_eaw_validate_tag(lt_ext_module_data_t *data)
 static lt_bool_t
 lt_ext_module_load(lt_ext_module_t *module)
 {
+	lt_bool_t retval = FALSE;
+#if ENABLE_MODULE
 	lt_string_t *fullname = lt_string_new(NULL);
-	char *filename = lt_strdup_printf("liblangtag-ext-%s." G_MODULE_SUFFIX,
+	char *filename = lt_strdup_printf("liblangtag-ext-%s." LT_MODULE_SUFFIX,
 					  module->name);
 	char *path_list, *p, *s, *path;
 	const char *env = getenv("LANGTAG_EXT_MODULE_PATH");
-	lt_bool_t retval = FALSE;
 	size_t len;
 
 	if (!env) {
@@ -245,18 +248,16 @@ lt_ext_module_load(lt_ext_module_t *module)
 				lt_critical("Unable to allocate a memory");
 				break;
 			}
-			module->module = g_module_open(lt_string_value(fullname),
-						       G_MODULE_BIND_LAZY|G_MODULE_BIND_LOCAL);
+			module->module = dlopen(lt_string_value(fullname),
+						RTLD_LAZY|RTLD_LOCAL);
 			if (module->module) {
-				gpointer func;
+				lt_pointer_t func;
 
 				lt_mem_add_ref(&module->parent, module->module,
-					       (lt_destroy_func_t)g_module_close);
-				g_module_symbol(module->module,
-						"module_get_version",
-						&func);
+					       (lt_destroy_func_t)dlclose);
+				func = dlsym(module->module, "module_get_version");
 				if (!func) {
-					lt_warning(g_module_error());
+					lt_warning(dlerror());
 					break;
 				}
 				if (((lt_ext_module_version_func_t)func)() != LT_EXT_MODULE_VERSION) {
@@ -264,11 +265,9 @@ lt_ext_module_load(lt_ext_module_t *module)
 						   filename);
 					break;
 				}
-				g_module_symbol(module->module,
-						"module_get_funcs",
-						&func);
+				func = dlsym(module->module, "module_get_funcs");
 				if (!func) {
-					lt_warning(g_module_error());
+					lt_warning(dlerror());
 					break;
 				}
 				if (!(module->funcs = ((lt_ext_module_get_funcs_func_t)func)())) {
@@ -289,6 +288,7 @@ lt_ext_module_load(lt_ext_module_t *module)
 	lt_string_unref(fullname);
 	free(filename);
 	free(path_list);
+#endif /* ENABLE_MODULE */
 
 	return retval;
 }
@@ -393,10 +393,10 @@ lt_ext_module_new(const char *name)
 
 		if (strncmp(filename, prefix, prefix_len) == 0) {
 			size_t len = strlen(&filename[prefix_len]);
-			size_t suffix_len = strlen(G_MODULE_SUFFIX) + 1;
+			size_t suffix_len = strlen(LT_MODULE_SUFFIX) + 1;
 
 			if (len > suffix_len &&
-			    lt_strcmp0(&filename[prefix_len + len - suffix_len], "." G_MODULE_SUFFIX) == 0) {
+			    lt_strcmp0(&filename[prefix_len + len - suffix_len], "." LT_MODULE_SUFFIX) == 0) {
 				module = strndup(&filename[prefix_len], len - suffix_len);
 				module[len - suffix_len] = 0;
 			}
@@ -561,10 +561,10 @@ lt_ext_module_precheck_tag(lt_ext_module_t       *module,
 void
 lt_ext_modules_load(void)
 {
-#ifdef ENABLE_GMODULE
+#ifdef ENABLE_MODULE
 	const char *env = getenv("LANGTAG_EXT_MODULE_PATH");
 	char *path_list, *s, *p, *path;
-	size_t suffix_len = strlen(G_MODULE_SUFFIX) + 1;
+	size_t suffix_len = strlen(LT_MODULE_SUFFIX) + 1;
 
 	if (__lt_ext_module_initialized)
 		return;
@@ -608,7 +608,7 @@ lt_ext_modules_load(void)
 				len = strlen(dent.d_name);
 				if (len > suffix_len &&
 				    lt_strcmp0(&dent.d_name[len - suffix_len],
-					       "." G_MODULE_SUFFIX) == 0) {
+					       "." LT_MODULE_SUFFIX) == 0) {
 					lt_ext_module_new(dent.d_name);
 				}
 			}
@@ -617,19 +617,19 @@ lt_ext_modules_load(void)
 	} while (1);
 
 	free(path_list);
-#endif /* ENABLE_GMODULE */
+#endif /* ENABLE_MODULE */
 	__lt_ext_default_handler = lt_ext_module_new_with_data("default",
 							       &__default_funcs);
 	lt_mem_add_weak_pointer(&__lt_ext_default_handler->parent,
-				(gpointer *)&__lt_ext_default_handler);
+				(lt_pointer_t *)&__lt_ext_default_handler);
 	__lt_ext_modules[LT_MAX_EXT_MODULES - 2] = lt_ext_module_new_with_data("empty",
 									       &__empty_and_wildcard_funcs);
 	lt_mem_add_weak_pointer(&__lt_ext_modules[LT_MAX_EXT_MODULES - 2]->parent,
-				(gpointer *)&__lt_ext_modules[LT_MAX_EXT_MODULES - 2]);
+				(lt_pointer_t *)&__lt_ext_modules[LT_MAX_EXT_MODULES - 2]);
 	__lt_ext_modules[LT_MAX_EXT_MODULES - 1] = lt_ext_module_new_with_data("wildcard",
 									   &__empty_and_wildcard_funcs);
 	lt_mem_add_weak_pointer(&__lt_ext_modules[LT_MAX_EXT_MODULES - 1]->parent,
-				(gpointer *)&__lt_ext_modules[LT_MAX_EXT_MODULES - 1]);
+				(lt_pointer_t *)&__lt_ext_modules[LT_MAX_EXT_MODULES - 1]);
 	__lt_ext_module_initialized = TRUE;
 }
 

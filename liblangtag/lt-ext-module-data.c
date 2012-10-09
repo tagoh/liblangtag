@@ -14,7 +14,7 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: just shut up GHashTable and atomic function dependency in lt-mem.h and here */
+#include <glib.h> /* XXX: atomic function is still used */
 #include <stdlib.h>
 #include "lt-mem.h"
 #include "lt-messages.h"

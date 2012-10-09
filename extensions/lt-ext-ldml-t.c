@@ -398,13 +398,13 @@ static const lt_ext_module_funcs_t __funcs = {
 
 /*< public >*/
 int
-module_get_version(void)
+LT_MODULE_SYMBOL (get_version) (void)
 {
 	return LT_EXT_MODULE_VERSION;
 }
 
 const lt_ext_module_funcs_t *
-module_get_funcs(void)
+LT_MODULE_SYMBOL (get_funcs) (void)
 {
 	return &__funcs;
 }
