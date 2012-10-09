@@ -39,10 +39,10 @@ lt_bool_t    lt_string_append         (lt_string_t       *string,
                                        const char        *str);
 lt_bool_t    lt_string_append_filename(lt_string_t       *string,
                                        const char        *path,
-				       ...);
+				       ...) LT_GNUC_NULL_TERMINATED;
 lt_bool_t    lt_string_append_printf  (lt_string_t       *string,
                                        const char        *format,
-				       ...);
+				       ...) LT_GNUC_PRINTF (2, 3);
 lt_string_t *lt_string_replace_c      (lt_string_t       *string,
                                        size_t             pos,
                                        char               c);

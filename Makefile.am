@@ -5,7 +5,9 @@ SUBDIRS = liblangtag data docs
 if ENABLE_GOBJECT
 SUBDIRS += liblangtag-gobject
 endif
-
+if ENABLE_GMODULE
+SUBDIRS += extensions
+endif
 #SUBDIRS += docs tests
 SUBDIRS += tests
 

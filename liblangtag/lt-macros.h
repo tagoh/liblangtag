@@ -64,6 +64,19 @@
 #  define LT_INLINE_FUNC
 #endif
 
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
+#  define LT_GNUC_PRINTF(format_idx, arg_idx)	\
+	__attribute__((__format__ (__printf__, format_idx, arg_idx)))
+#else /* !__GNUC__ */
+#  define LT_GNUC_PRINTF(format_idx, arg_idx)
+#endif
+#if __GNUC__ >= 4
+#  define LT_GNUC_NULL_TERMINATED		\
+	__attribute__((__sentinel__))
+#else /* !__GNUC__ */
+#  define LT_GNUC_NULL_TERMINATED
+#endif
+
 /*
  * The LT_LIKELY and LT_UNLIKELY macros let the programmer give hints to
  * the compiler about the expected result of an expression. Some compilers
@@ -121,6 +134,9 @@
 #else
 #  define LT_MIN(a,b)		(((a)<(b))?(a):(b))
 #endif
+
+/* maybe 512 should be enough */
+#define LT_PATH_MAX	512
 
 /* Macros to adjust an alignment */
 #define LT_ALIGNED_TO(_x_,_y_)		(((_x_) + (_y_) - 1) & ~((_y_) - 1))

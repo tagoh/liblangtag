@@ -7,13 +7,12 @@ INCLUDES =						\
 	-D__LANGTAG_COMPILATION				\
 	-DBUILDDIR="\"$(abs_top_builddir)\""		\
 	-DREGDATADIR="\"$(datadir)/liblangtag\""	\
-	$(GLIB_CFLAGS)					\
 	$(LIBXML2_CFLAGS)				\
 	$(NULL)
-LIBS =						\
-	@LDFLAGS@				\
-	$(GLIB_LIBS)				\
-	$(LIBXML2_LIBS)				\
+LIBS =							\
+	@LDFLAGS@					\
+	$(top_builddir)/liblangtag/liblangtag.la	\
+	$(LIBXML2_LIBS)					\
 	$(NULL)
 EXTRA_DIST =					\
 	$(NULL)
@@ -44,7 +43,6 @@ liblangtag_ext_ldml_t_la_SOURCES =	\
 	lt-ext-ldml-t.c			\
 	$(NULL)
 liblangtag_ext_ldml_t_la_CFLAGS =		\
-	-DG_LOG_DOMAIN="\"LangTag-Ext-LDML-T\""	\
 	$(NULL)
 liblangtag_ext_ldml_t_la_LDFLAGS =		\
 	-avoid-version				\
@@ -55,7 +53,6 @@ liblangtag_ext_ldml_u_la_SOURCES =	\
 	lt-ext-ldml-u.c			\
 	$(NULL)
 liblangtag_ext_ldml_u_la_CFLAGS =		\
-	-DG_LOG_DOMAIN="\"LangTag-Ext-LDML-U\""	\
 	$(NULL)
 liblangtag_ext_ldml_u_la_LDFLAGS =		\
 	-avoid-version				\

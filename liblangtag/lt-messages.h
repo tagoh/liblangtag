@@ -65,7 +65,7 @@ void              lt_message_printf             (lt_message_type_t      type,
 						 lt_message_flags_t     flags,
                                                  lt_message_category_t  category,
                                                  const char            *format,
-						 ...);
+						 ...) LT_GNUC_PRINTF(4, 5);
 void              lt_message_vprintf            (lt_message_type_t      type,
 						 lt_message_flags_t     flags,
                                                  lt_message_category_t  category,

@@ -245,6 +245,9 @@ AM_CONDITIONAL(ENABLE_UNIT_TEST, test x$use_check != xno)
 dnl ======================================================================
 dnl check another libraries
 dnl ======================================================================
+AX_PTHREAD([],
+	[AC_MSG_ERROR([*** pthread library are required])])
+
 AM_PATH_GLIB_2_0($GLIB_REQUIRED, :,
 	AC_MSG_ERROR([
 *** GLIB $GLIB_REQUIRED_VERSION or better is required. The latest version of
@@ -262,8 +265,8 @@ AC_CONFIG_FILES([
 	data/Makefile
 	docs/Makefile
 	docs/version.xml
+	extensions/Makefile
 	liblangtag/Makefile
-	liblangtag/extensions/Makefile
 	liblangtag-gobject/Makefile
 	liblangtag.pc
 	liblangtag-uninstalled.pc

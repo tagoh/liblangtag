@@ -56,7 +56,7 @@ void        lt_error_unref (lt_error_t       *error);
 lt_error_t *lt_error_set   (lt_error_t      **error,
 			    lt_error_type_t   type,
                             const char       *message,
-			    ...);
+			    ...) LT_GNUC_PRINTF (3, 4);
 void        lt_error_clear (lt_error_t       *error);
 lt_bool_t   lt_error_is_set(lt_error_t       *error,
 			    lt_error_type_t   type);

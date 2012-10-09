@@ -2,14 +2,14 @@
 # Global definitions
 NULL =
 SUBDIRS =
-INCLUDES =									\
-	-I$(top_srcdir)/liblangtag						\
-	-I$(top_srcdir)								\
-	-DTEST_DATADIR="\"$(abs_top_builddir)/data\""				\
-	-DTEST_MODDIR="\"$(abs_top_builddir)/liblangtag/extensions/.libs\""	\
-	-D__LANGTAG_COMPILATION							\
-	$(GLIB_CFLAGS)								\
-	$(CHECK_CFLAGS)								\
+INCLUDES =								\
+	-I$(top_srcdir)/liblangtag					\
+	-I$(top_srcdir)							\
+	-DTEST_DATADIR="\"$(abs_top_builddir)/data\""			\
+	-DTEST_MODDIR="\"$(abs_top_builddir)/extensions/.libs\""	\
+	-D__LANGTAG_COMPILATION						\
+	$(GLIB_CFLAGS)							\
+	$(CHECK_CFLAGS)							\
 	$(NULL)
 DEPS =							\
 	$(top_builddir)/liblangtag/liblangtag.la	\

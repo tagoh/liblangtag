@@ -15,12 +15,13 @@ INCLUDES =							\
 	$(GLIB_CFLAGS)						\
 	$(GMODULE_CFLAGS)					\
 	$(LIBXML2_CFLAGS)					\
+	$(PTHREAD_CFLAGS)					\
 	$(NULL)
 LIBS =						\
 	@LDFLAGS@				\
-	$(GLIB_LIBS)				\
 	$(GMODULE_LIBS)				\
 	$(LIBXML2_LIBS)				\
+	$(PTHREAD_LIBS)				\
 	$(NULL)
 EXTRA_DIST =					\
 	buildaliastbl.sh			\
@@ -123,9 +124,6 @@ liblangtag_sources =				\
 	lt-variant-db.c				\
 	lt-xml.c				\
 	$(NULL)
-if ENABLE_GMODULE
-SUBDIRS += extensions
-endif
 #
 stamp_files =					\
 	$(NULL)

@@ -210,8 +210,8 @@ lt_ext_module_load(lt_ext_module_t *module)
 	if (!env) {
 		path_list = strdup(
 #ifdef GNOME_ENABLE_DEBUG
-			BUILDDIR LT_DIR_SEPARATOR_S "liblangtag" LT_DIR_SEPARATOR_S "extensions" LT_SEARCHPATH_SEPARATOR_S
-			BUILDDIR LT_DIR_SEPARATOR_S "liblangtag" LT_DIR_SEPARATOR_S "extensions" LT_DIR_SEPARATOR_S ".libs" LT_SEARCHPATH_SEPARATOR_S
+			BUILDDIR LT_DIR_SEPARATOR_S "extensions" LT_SEARCHPATH_SEPARATOR_S
+			BUILDDIR LT_DIR_SEPARATOR_S "extensions" LT_DIR_SEPARATOR_S ".libs" LT_SEARCHPATH_SEPARATOR_S
 #endif
 			LANGTAG_EXT_MODULE_PATH);
 	} else {
@@ -278,7 +278,7 @@ lt_ext_module_load(lt_ext_module_t *module)
 				}
 				lt_debug(LT_MSGCAT_MODULE,
 					 "Loading the external extension handler module: %s",
-					 fullname);
+					 lt_string_value(fullname));
 				retval = TRUE;
 			}
 		}
@@ -571,8 +571,8 @@ lt_ext_modules_load(void)
 	if (!env) {
 		path_list = strdup(
 #ifdef GNOME_ENABLE_DEBUG
-			BUILDDIR LT_DIR_SEPARATOR_S "liblangtag" LT_DIR_SEPARATOR_S "extensions" LT_SEARCHPATH_SEPARATOR_S
-			BUILDDIR LT_DIR_SEPARATOR_S "liblangtag" LT_DIR_SEPARATOR_S "extensions" LT_DIR_SEPARATOR_S ".libs" LT_SEARCHPATH_SEPARATOR_S
+			BUILDDIR LT_DIR_SEPARATOR_S "extensions" LT_SEARCHPATH_SEPARATOR_S
+			BUILDDIR LT_DIR_SEPARATOR_S "extensions" LT_DIR_SEPARATOR_S ".libs" LT_SEARCHPATH_SEPARATOR_S
 #endif
 			LANGTAG_EXT_MODULE_PATH);
 	} else {

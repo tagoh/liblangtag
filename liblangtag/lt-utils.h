@@ -18,9 +18,6 @@
 
 LT_BEGIN_DECLS
 
-/* maybe 512 should be enough */
-#define LT_PATH_MAX	512
-
 int   lt_strcmp0       (const char *v1,
                         const char *v2);
 int   lt_strcasecmp    (const char *s1,
@@ -30,7 +27,7 @@ int   lt_strncasecmp   (const char *s1,
 			size_t      len);
 char *lt_strlower      (char       *string);
 char *lt_strdup_printf (const char *format,
-			...);
+			...) LT_GNUC_PRINTF (1, 2);
 char *lt_strdup_vprintf(const char *format,
                         va_list     args);
 
