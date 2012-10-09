@@ -60,7 +60,7 @@ while [ 1 ]; do
     _n=1
     _tt=
     while [ 1 ]; do
-	_ll=`echo $line|sed -e 's/[ \t]*//'|cut -d' ' -f$_n`
+	_ll=`echo $line|sed -e 's/[()].*/ /g' -e 's/^[ \t].*//'|cut -d' ' -f$_n`
 	_tt=`echo $_ll|sed -n -f $_tmpsed`
 	if [ "x$_ll" = "x" ]; then
 	    break
