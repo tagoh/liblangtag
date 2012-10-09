@@ -14,7 +14,6 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
 #include <stdlib.h>
 #include "lt-mem.h"
 #include "lt-messages.h"
@@ -304,4 +303,18 @@ lt_list_sort(lt_list_t         *list,
 	return _lt_list_sort_merge(lt_list_sort(list, func),
 				   lt_list_sort(b, func),
 				   func);
+}
+
+lt_list_t *
+lt_list_pop(lt_list_t    *list,
+	    lt_pointer_t *value)
+{
+	lt_return_val_if_fail (list != NULL, NULL);
+
+	lt_mem_delete_ref(&list->parent, list->value);
+	if (value)
+		*value = list->value;
+	list = lt_list_delete_link(list, list);
+
+	return list;
 }

@@ -14,17 +14,17 @@
 #define __LT_MEM_H__
 
 #include "lt-macros.h"
-#include "lt-list.h"
 
 LT_BEGIN_DECLS
 
 typedef struct _lt_mem_t		lt_mem_t;
+typedef struct _lt_mem_slist_t		lt_mem_slist_t;
 
 struct _lt_mem_t {
 	volatile unsigned int  ref_count;
 	size_t                 size;
-	GHashTable            *refs;
-	lt_list_t             *weak_pointers;
+	lt_mem_slist_t        *refs;
+	lt_mem_slist_t        *weak_pointers;
 };
 
 lt_pointer_t lt_mem_alloc_object       (size_t             size);

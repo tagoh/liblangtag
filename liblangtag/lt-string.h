@@ -31,7 +31,7 @@ char        *lt_string_free           (lt_string_t       *string,
 size_t       lt_string_length         (const lt_string_t *string);
 const char  *lt_string_value          (const lt_string_t *string);
 lt_string_t *lt_string_truncate       (lt_string_t       *string,
-                                       size_t             len);
+                                       ssize_t            len);
 void         lt_string_clear          (lt_string_t       *string);
 lt_bool_t    lt_string_append_c       (lt_string_t       *string,
                                        char               c);

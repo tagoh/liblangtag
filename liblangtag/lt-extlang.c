@@ -14,7 +14,6 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* just shut up GHashTable dependency in lt-mem.h */
 #include <stdlib.h>
 #include <string.h>
 #include "lt-macros.h"

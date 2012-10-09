@@ -14,7 +14,6 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: just shut up GHashTable dependency in lt-mem.h */
 #include <stdlib.h>
 #include <string.h>
 #include "lt-mem.h"
@@ -127,10 +126,13 @@ lt_string_value(const lt_string_t *string)
 
 lt_string_t *
 lt_string_truncate(lt_string_t *string,
-		   size_t       len)
+		   ssize_t      len)
 {
 	lt_return_val_if_fail (string != NULL, NULL);
 
+	if (len < 0)
+		len = string->len + len;
+	len = LT_MAX (len, 0);
 	string->len = LT_MIN (len, string->len);
 	string->string[string->len] = 0;
 

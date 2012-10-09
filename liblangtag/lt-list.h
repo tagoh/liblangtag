@@ -50,6 +50,8 @@ lt_list_t    *lt_list_find_custom(lt_list_t          *list,
                                   lt_compare_func_t   func);
 lt_list_t    *lt_list_sort       (lt_list_t          *list,
 				  lt_compare_func_t   func);
+lt_list_t    *lt_list_pop        (lt_list_t          *list,
+				  lt_pointer_t       *value);
 
 LT_END_DECLS
 
