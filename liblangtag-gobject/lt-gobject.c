@@ -31,6 +31,7 @@
 		return type;						\
 	}
 
+LT_DEFINE_BOXED_TYPE(error, Error)
 LT_DEFINE_BOXED_TYPE(ext_module, ExtModule)
 LT_DEFINE_BOXED_TYPE(ext_module_data, ExtModuleData)
 LT_DEFINE_BOXED_TYPE(extension, Extension)
@@ -40,12 +41,14 @@ LT_DEFINE_BOXED_TYPE(grandfathered_db, GrandfatheredDb)
 LT_DEFINE_BOXED_TYPE(grandfathered, Grandfathered)
 LT_DEFINE_BOXED_TYPE(lang_db, LangDb)
 LT_DEFINE_BOXED_TYPE(lang, Lang)
+LT_DEFINE_BOXED_TYPE(list, List)
 LT_DEFINE_BOXED_TYPE(redundant_db, RedundantDb)
 LT_DEFINE_BOXED_TYPE(redundant, Redundant)
 LT_DEFINE_BOXED_TYPE(region_db, RegionDb)
 LT_DEFINE_BOXED_TYPE(region, Region)
 LT_DEFINE_BOXED_TYPE(script_db, ScriptDb)
 LT_DEFINE_BOXED_TYPE(script, Script)
+LT_DEFINE_BOXED_TYPE(string, String)
 LT_DEFINE_BOXED_TYPE(tag, Tag)
 LT_DEFINE_BOXED_TYPE(variant_db, VariantDb)
 LT_DEFINE_BOXED_TYPE(variant, Variant)
