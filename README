@@ -23,7 +23,6 @@ Requirements
 ===============
 
 - libxml2
-- GLib 2.0
 - GObject Introspection (if you like)
 
 Licensing
