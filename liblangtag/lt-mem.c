@@ -14,8 +14,8 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: atomic functions is still used */
 #include <stdlib.h>
+#include "lt-atomic.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
 
@@ -168,7 +168,7 @@ lt_mem_ref(lt_mem_t *object)
 {
 	lt_return_val_if_fail (object != NULL, NULL);
 
-	g_atomic_int_inc(&object->ref_count);
+	lt_atomic_int_inc((volatile int *)&object->ref_count);
 
 	return object;
 }
@@ -178,7 +178,7 @@ lt_mem_unref(lt_mem_t *object)
 {
 	lt_return_if_fail (object != NULL);
 
-	if (g_atomic_int_dec_and_test(&object->ref_count)) {
+	if (lt_atomic_int_dec_and_test((volatile int *)&object->ref_count)) {
 		lt_mem_slist_t *ll, *l;
 
 		if (object->refs) {

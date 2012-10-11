@@ -14,8 +14,8 @@
 #include "config.h"
 #endif
 
-#include <glib.h> /* XXX: atomic function is still used */
 #include <stdlib.h>
+#include "lt-atomic.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
 #include "lt-ext-module-data.h"
@@ -104,7 +104,7 @@ lt_ext_module_data_unref(lt_ext_module_data_t *data)
 	lt_ext_module_data_private_t *priv = (lt_ext_module_data_private_t *)data;
 
 	if (data) {
-		volatile int ref_count = g_atomic_int_get(&priv->parent.ref_count);
+		volatile int ref_count = lt_atomic_int_get((volatile int *)&priv->parent.ref_count);
 
 		if (ref_count == 1) {
 			if (priv->finalizer) {

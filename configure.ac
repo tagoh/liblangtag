@@ -93,41 +93,41 @@ CFLAGS=$_save_cflags
 AC_MSG_RESULT($have_gnuc_varargs)
 
 dnl inline
-AC_CACHE_CHECK([for __inline],lt_cv_has__inline,[
-	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_CACHE_CHECK([for __inline], [lt_cv_has__inline],
+	[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 	__inline int foo(void);
 	__inline int foo() {return 0;}
 	int main() {return foo();}
 	]])],
-	lt_cv_has__inline=yes,
-	lt_cv_has__inline=no,)
+	[lt_cv_has__inline=yes],
+	[lt_cv_has__inline=no], [])
 ])
 case x$lt_cv_has__inline in
 xyes)
 	AC_DEFINE(LT_HAVE___INLINE,1,[Have __inline keyword])
 esac
-AC_CACHE_CHECK([for __inline__],lt_cv_has__inline__,[
-	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_CACHE_CHECK([for __inline__], [lt_cv_has__inline__],
+	[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 	__inline__ int foo(void);
 	__inline__ int foo() {return 0;}
 	int main() {return foo();}
 	]])],
-	lt_cv_has__inline__=yes,
-	lt_cv_has__inline__=no,)
+	[lt_cv_has__inline__=yes],
+	[lt_cv_has__inline__=no], [])
 ])
 case x$lt_cv_has__inline__ in
 xyes)
 	AC_DEFINE(LT_HAVE___INLINE__,1,[Have __inline__ keyword])
 esac
-AC_CACHE_CHECK([for inline],lt_cv_hasinline,[
-	AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+AC_CACHE_CHECK([for inline], [lt_cv_hasinline],
+	[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 	#undef inline
 	inline int foo(void);
 	inline int foo() {return 0;}
 	int main() {return foo();}
 	]])],
-	lt_cv_hasinline=yes,
-	lt_cv_hasinline=no,)
+	[lt_cv_hasinline=yes],
+	[lt_cv_hasinline=no], [])
 ])
 case x$lt_cv_hasinline in
 xyes)
@@ -156,6 +156,30 @@ lt_test_func1(void) {
 int main(void) {int i = 1; return --i;}]])],[lt_can_inline=yes;AC_DEFINE(LT_CAN_INLINE, 1, [Wheter inline statement can be used])],[lt_can_inline=no])
 AC_MSG_RESULT($lt_can_inline)
 
+dnl ---build-in atomic functions---
+AC_CACHE_CHECK([for gcc atomic builtins], [lt_cv_has_atomic],
+	[AC_LINK_IFELSE([AC_LANG_PROGRAM([], [[
+int i, j = 0;
+i = __sync_fetch_and_add(&j, 1);
+__sync_synchronize();
+j = __sync_fetch_and_sub(&i, 1);
+return j;
+       ]])], [lt_cv_has_atomic=yes],
+       [_save_cflags="$CFLAGS"
+       CFLAGS="$CFLAGS -march=i486"
+       AC_LINK_IFELSE([AC_LANG_PROGRAM([], [[
+int i, j = 0;
+i = __sync_fetch_and_add(&j, 1);
+__sync_synchronize();
+j = __sync_fetch_and_sub(&i, 1);
+return j;
+       ]])], [AC_MSG_ERROR([liblangtag has to be built with -march=i486 or later.])]
+       [lt_cv_has_atomic=no])])
+])
+if test "x$lt_cv_has_atomic" = "xyes"; then
+	AC_DEFINE(LT_HAVE_ATOMIC_BUILTINS, 1, [Have buit-in atomic functions])
+fi
+
 dnl ---alignment---
 AC_CHECK_ALIGNOF(void *)
 
@@ -166,11 +190,11 @@ dnl ======================================================================
 dnl ======================================================================
 dnl gettext stuff
 dnl ======================================================================
-GETTEXT_PACKAGE=$PACKAGE
-AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Gettext package])
-
-AM_GLIB_GNU_GETTEXT
+dnl GETTEXT_PACKAGE=$PACKAGE
+dnl AC_SUBST(GETTEXT_PACKAGE)
+dnl AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Gettext package])
+dnl 
+dnl AM_GLIB_GNU_GETTEXT
 
 dnl ======================================================================
 dnl options
@@ -270,12 +294,6 @@ dnl check another libraries
 dnl ======================================================================
 AX_PTHREAD([],
 	[AC_MSG_ERROR([*** pthread library are required])])
-
-AM_PATH_GLIB_2_0($GLIB_REQUIRED, :,
-	AC_MSG_ERROR([
-*** GLIB $GLIB_REQUIRED_VERSION or better is required. The latest version of
-*** GLIB is always available from ftp://ftp.gtk.org/.]),
-    glib)
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
 GTK_DOC_CHECK(1.0)

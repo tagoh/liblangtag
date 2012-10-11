@@ -12,7 +12,6 @@ INCLUDES =							\
 	-DSRCDIR="\"$(abs_top_srcdir)\""			\
 	-DREGDATADIR="\"$(datadir)/liblangtag\""		\
 	-DLANGTAG_EXT_MODULE_PATH="\"$(LANGTAG_MODULEDIR)\""	\
-	$(GLIB_CFLAGS)						\
 	$(LIBXML2_CFLAGS)					\
 	$(PTHREAD_CFLAGS)					\
 	$(NULL)
@@ -68,6 +67,7 @@ liblangtag_public_headers =			\
 	lt-variant-db.h				\
 	$(NULL)
 liblangtag_private_headers =			\
+	lt-atomic.h				\
 	lt-ext-module-private.h			\
 	lt-extension-private.h			\
 	lt-extlang-private.h			\
