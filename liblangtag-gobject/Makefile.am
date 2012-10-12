@@ -17,8 +17,9 @@ LIBS =							\
 	$(GOBJECT_LIBS)					\
 	$(top_builddir)/liblangtag/liblangtag.la	\
 	$(NULL)
-EXTRA_DIST =					\
-	gengir.sh				\
+EXTRA_DIST =						\
+	gengir.sh					\
+	gendeps.sh					\
 	$(NULL)
 MAINTAINERCLEANFILES =					\
 	$(stamp_files)					\
@@ -29,11 +30,13 @@ CLEANFILES =						\
 	$(liblangtag_gobject_built_sources)		\
 	xgen-lefh					\
 	xgen-lefc					\
+	gir.deps					\
 	$(NULL)
 BUILT_FILES =						\
 	$(liblangtag_gobject_built_public_headers)	\
 	$(liblangtag_gobject_built_private_headers)	\
 	$(liblangtag_gobject_built_sources)		\
+	gir.deps					\
 	$(NULL)
 
 INTROSPECTION_GIRS =
@@ -145,7 +148,7 @@ liblangtag_gobject_la_LDFLAGS =						\
 	$(NULL)
 #
 if HAVE_INTROSPECTION
-lt_headers = $(liblangtag_gobject_private_headers:.gir.h=.h)
+lt_headers = $(liblangtag_gobject_built_private_headers:.gir.h=.h)
 lt_sources = $(liblangtag_gobject_built_sources:.gir.c=.c)
 introspection_sources =					\
 	$(liblangtag_gobject_built_private_headers)	\
@@ -154,12 +157,14 @@ introspection_sources =					\
 	$(liblangtag_gobject_sources)			\
 	$(NULL)
 
-%.gir.h: $(top_builddir)/liblangtag/liblangtag.la gengir.sh Makefile
-	$(AM_V_GEN) $(srcdir)/gengir.sh $(top_srcdir)/liblangtag $@
-%.gir.c: $(top_builddir)/liblangtag/liblangtag.la gengir.sh Makefile
-	$(AM_V_GEN) $(srcdir)/gengir.sh $(top_srcdir)/liblangtag $@
+SUFFIXES = .gir.h .gir.c
 
-LangTag-0.2.gir: liblangtag-gobject.la Makefile
+gir.deps: $(srcdir)/gendeps.sh Makefile
+	$(AM_V_GEN) $(srcdir)/gendeps.sh $(top_srcdir)/liblangtag $(lt_headers) $(lt_sources) > $@
+
+-include gir.deps
+
+LangTag-0.2.gir: gir.deps liblangtag-gobject.la Makefile
 LangTag_0_2_gir_INCLUDES =		\
 	GLib-2.0			\
 	GObject-2.0			\
