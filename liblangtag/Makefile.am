@@ -125,7 +125,13 @@ liblangtag_sources =				\
 #
 stamp_files =					\
 	$(NULL)
-
+included_modules = $(NULL)
+if !ENABLE_MODULE
+included_modules +=						\
+	$(top_builddir)/extensions/liblangtag-ext-ldml-t.la	\
+	$(top_builddir)/extensions/liblangtag-ext-ldml-u.la	\
+	$(NULL)
+endif
 
 ##
 # Local Rules
@@ -135,6 +141,14 @@ lt-localealias.h: @BUILD_LOCALEALIAS@ Makefile
 		echo "Failed to generate $@.";			\
 		exit 1;						\
 	fi
+if !ENABLE_MODULE
+included-modules:
+	$(AM_V_GEN) cd $(top_builddir)/extensions && $(MAKE) $(AM_MAKEFLAGS)
+$(included_modules): included-modules
+	$(AM_V_GEN) true
+
+.PHONY: included-modules
+endif
 
 ##
 # Target platform
@@ -159,6 +173,13 @@ liblangtag_la_SOURCES =			\
 	$(NULL)
 liblangtag_la_CFLAGS =				\
 	-DG_LOG_DOMAIN="\"LangTag\""		\
+	$(NULL)
+liblangtag_la_LIBADD =						\
+	$(LIBS)							\
+	$(included_modules)					\
+	$(NULL)
+liblangtag_la_DEPENDENCIES =					\
+	$(included_modules)					\
 	$(NULL)
 liblangtag_la_LDFLAGS =						\
 	$(LDFLAGS)						\

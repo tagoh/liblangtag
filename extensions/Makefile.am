@@ -11,7 +11,6 @@ INCLUDES =						\
 	$(NULL)
 LIBS =							\
 	@LDFLAGS@					\
-	$(top_builddir)/liblangtag/liblangtag.la	\
 	$(LIBXML2_LIBS)					\
 	$(NULL)
 EXTRA_DIST =					\
@@ -46,10 +45,11 @@ if ENABLE_MODULE
 module_LTLIBRARIES += $(modules)
 module_t_cflags =
 module_u_cflags =
+LIBS += $(top_builddir)/liblangtag/liblangtag.la
 else
 noinst_LTLIBRARIES += $(modules)
-module_t_cflags = -DLT_MODULE_PREFIX=lt_module_ext_t_
-module_u_cflags = -DLT_MODULE_PREFIX=lt_module_ext_u_
+module_t_cflags = -DLT_MODULE_PREFIX=lt_module_ext_t
+module_u_cflags = -DLT_MODULE_PREFIX=lt_module_ext_u
 endif
 #
 liblangtag_ext_ldml_t_la_SOURCES =	\

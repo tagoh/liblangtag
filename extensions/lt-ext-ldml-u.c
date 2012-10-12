@@ -41,6 +41,9 @@ typedef struct _lt_ext_ldml_u_data_t {
 	lt_list_t             *tags;
 } lt_ext_ldml_u_data_t;
 
+int                          LT_MODULE_SYMBOL (get_version) (void);
+const lt_ext_module_funcs_t *LT_MODULE_SYMBOL (get_funcs) (void);
+
 /*< private >*/
 static int
 _lt_ext_ldml_u_sort_attributes(const lt_pointer_t a,
@@ -417,13 +420,13 @@ static const lt_ext_module_funcs_t __funcs = {
 
 /*< public >*/
 int
-module_get_version(void)
+LT_MODULE_SYMBOL (get_version) (void)
 {
 	return LT_EXT_MODULE_VERSION;
 }
 
 const lt_ext_module_funcs_t *
-module_get_funcs(void)
+LT_MODULE_SYMBOL (get_funcs) (void)
 {
 	return &__funcs;
 }

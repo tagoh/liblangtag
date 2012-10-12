@@ -70,6 +70,10 @@ static lt_bool_t             _lt_ext_eaw_parse_tag       (lt_ext_module_data_t  
 static char                 *_lt_ext_eaw_get_tag         (lt_ext_module_data_t  *data);
 static lt_bool_t             _lt_ext_eaw_validate_tag    (lt_ext_module_data_t  *data);
 
+#ifndef ENABLE_MODULE
+extern const lt_ext_module_funcs_t *LT_MODULE_SYMBOL_ (lt_module_ext_t, get_funcs) (void);
+extern const lt_ext_module_funcs_t *LT_MODULE_SYMBOL_ (lt_module_ext_u, get_funcs) (void);
+#endif
 
 static lt_ext_module_t *__lt_ext_modules[LT_MAX_EXT_MODULES + 1];
 static lt_ext_module_t *__lt_ext_default_handler;
@@ -198,11 +202,11 @@ _lt_ext_eaw_validate_tag(lt_ext_module_data_t *data)
 	return TRUE;
 }
 
+#if ENABLE_MODULE
 static lt_bool_t
 lt_ext_module_load(lt_ext_module_t *module)
 {
 	lt_bool_t retval = FALSE;
-#if ENABLE_MODULE
 	lt_string_t *fullname = lt_string_new(NULL);
 	char *filename = lt_strdup_printf("liblangtag-ext-%s." LT_MODULE_SUFFIX,
 					  module->name);
@@ -288,10 +292,10 @@ lt_ext_module_load(lt_ext_module_t *module)
 	lt_string_unref(fullname);
 	free(filename);
 	free(path_list);
-#endif /* ENABLE_MODULE */
 
 	return retval;
 }
+#endif /* ENABLE_MODULE */
 
 static lt_ext_module_t *
 lt_ext_module_new_with_data(const char                  *name,
@@ -374,10 +378,11 @@ lt_ext_module_singleton_int_to_char(int singleton)
 lt_ext_module_t *
 lt_ext_module_new(const char *name)
 {
-	lt_ext_module_t *retval;
+	lt_ext_module_t *retval = NULL;
 
 	lt_return_val_if_fail (name != NULL, NULL);
 
+#ifdef ENABLE_MODULE
 	retval = lt_mem_alloc_object(sizeof (lt_ext_module_t));
 
 	if (retval) {
@@ -438,6 +443,7 @@ lt_ext_module_new(const char *name)
 		lt_mem_add_weak_pointer(&retval->parent,
 					(lt_pointer_t *)&__lt_ext_modules[singleton]);
 	}
+#endif /* ENABLE_MODULE */
 
 	return retval;
 }
@@ -617,6 +623,21 @@ lt_ext_modules_load(void)
 	} while (1);
 
 	free(path_list);
+#else /* !ENABLE_MODULE */
+	const lt_ext_module_funcs_t *f;
+	int c;
+
+#define REGISTER(_ext_)							\
+	f = LT_MODULE_SYMBOL_ (lt_module_ext_##_ext_, get_funcs) ();	\
+	c = lt_ext_module_singleton_char_to_int(f->get_singleton());	\
+	__lt_ext_modules[c] = lt_ext_module_new_with_data(#_ext_, f);	\
+	lt_mem_add_weak_pointer(&__lt_ext_modules[c]->parent,		\
+				(lt_pointer_t *)&__lt_ext_modules[c]);
+
+	REGISTER (t);
+	REGISTER (u);
+
+#undef REGISTER
 #endif /* ENABLE_MODULE */
 	__lt_ext_default_handler = lt_ext_module_new_with_data("default",
 							       &__default_funcs);

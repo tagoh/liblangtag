@@ -44,6 +44,9 @@ typedef struct _lt_ext_ldml_t_data_t {
 	lt_list_t             *fields;
 } lt_ext_ldml_t_data_t;
 
+int                          LT_MODULE_SYMBOL (get_version) (void);
+const lt_ext_module_funcs_t *LT_MODULE_SYMBOL (get_funcs) (void);
+
 /*< private >*/
 static lt_bool_t
 _lt_ext_ldml_t_lookup_type(lt_ext_ldml_t_data_t  *data,
