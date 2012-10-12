@@ -194,13 +194,13 @@ lt_string_append_filename(lt_string_t *string,
 	lt_return_val_if_fail (string != NULL, FALSE);
 	lt_return_val_if_fail (path != NULL, FALSE);
 
-	if (lt_string_length(string) == 0)
+	if (lt_string_length(string) == 0 && path[0] != LT_DIR_SEPARATOR)
 		retval |= !lt_string_append(string, LT_DIR_SEPARATOR_S);
 
 	va_start(ap, path);
 	p = path;
 	while (p && !retval) {
-		if (lt_string_at(string, -1) != LT_DIR_SEPARATOR)
+		if (lt_string_length(string) > 0 && lt_string_at(string, -1) != LT_DIR_SEPARATOR)
 			retval |= !lt_string_append(string, LT_DIR_SEPARATOR_S);
 		retval |= !lt_string_append(string, p);
 		p = (const char *)va_arg(ap, const char *);
