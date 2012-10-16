@@ -14,6 +14,7 @@
 #include "config.h"
 #endif
 
+#include <ctype.h>
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
@@ -72,6 +73,19 @@ _lt_ext_ldml_t_lookup_type(lt_ext_ldml_t_data_t  *data,
 	s = lt_list_value(l);
 	strncpy(key, lt_string_value(s), 2);
 	key[2] = 0;
+	if (lt_strcasecmp(key, "x0") == 0) {
+		size_t len = strlen(subtag);
+
+		for (i = 0; i < len; i++) {
+			if (!isalnum(subtag[i])) {
+				lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
+					     "subtag for -t-x0- has to be 3-8 alphanum characters but: %s", subtag);
+				goto bail;
+			}
+		}
+		retval = TRUE;
+		goto bail;
+	}
 
 	xml = lt_xml_new();
 	doc = lt_xml_get_cldr(xml, LT_XML_CLDR_BCP47_TRANSFORM);
@@ -120,7 +134,8 @@ _lt_ext_ldml_t_lookup_type(lt_ext_ldml_t_data_t  *data,
 		}
 	}
   bail:
-	free(xpath_string);
+	if (xpath_string)
+		free(xpath_string);
 	if (xobj)
 		xmlXPathFreeObject(xobj);
 	if (xctxt)

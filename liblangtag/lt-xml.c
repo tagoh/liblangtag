@@ -366,6 +366,12 @@ lt_xml_new(void)
 			goto bail;
 		if (!_lt_xml_merge_keys(__xml, __xml->cldr_bcp47_transform, doc, &err))
 			goto bail;
+		if (!lt_xml_read_cldr_bcp47(__xml, "transform_private_use.xml",
+					    &doc,
+					    &err))
+			goto bail;
+		if (!_lt_xml_merge_keys(__xml, __xml->cldr_bcp47_transform, doc, &err))
+			goto bail;
 		if (!lt_xml_read_cldr_bcp47(__xml, "variant.xml",
 					    &__xml->cldr_bcp47_variant,
 					    &err))
