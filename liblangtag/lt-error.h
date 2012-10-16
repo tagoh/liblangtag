@@ -31,7 +31,8 @@ LT_BEGIN_DECLS
  * @LT_ERR_FAIL_ON_SCANNER: an error happened in the scanner.
  * @LT_ERR_NO_TAG: No tags to process.
  * @LT_ERR_INVALID: Invalid operation.
- * @LT_ERR_END: No real error, but just a terminator.
+ * @LT_ERR_ANY: No real error, but just a flag to query all of errors or ask
+ *              if any errors happen
  *
  * Error code used in this library.
 */
@@ -47,6 +48,12 @@ enum _lt_error_type_t {
 	LT_ERR_ANY
 };
 
+/**
+ * lt_error_t:
+ *
+ * All the fields in the <structname>lt_error_t</structname>
+ * structure are private to the #lt_error_t implementation.
+ */
 typedef struct _lt_error_t	lt_error_t;
 typedef enum _lt_error_type_t	lt_error_type_t;
 
