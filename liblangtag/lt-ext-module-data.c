@@ -41,7 +41,7 @@ typedef struct _lt_ext_module_data_private_t {
 /**
  * lt_ext_module_data_new:
  * @size: real size to allocate memory for the object.
- * @finalizer: a callback function to destroy the content.
+ * @finalizer: (scope async): a callback function to destroy the content.
  *
  * Create a new instance of #lt_ext_module_data_t. this function allows
  * to create an inherited instance like:
