@@ -21,6 +21,12 @@
 
 LT_BEGIN_DECLS
 
+/**
+ * lt_string_t:
+ *
+ * All the fields in the <structname>lt_string_t</structname>
+ * structure are private to the #lt_string_t implementation.
+ */
 typedef struct _lt_string_t	lt_string_t;
 
 lt_string_t *lt_string_new            (const char        *string);
@@ -33,14 +39,14 @@ const char  *lt_string_value          (const lt_string_t *string);
 lt_string_t *lt_string_truncate       (lt_string_t       *string,
                                        ssize_t            len);
 void         lt_string_clear          (lt_string_t       *string);
-lt_bool_t    lt_string_append_c       (lt_string_t       *string,
+lt_string_t *lt_string_append_c       (lt_string_t       *string,
                                        char               c);
-lt_bool_t    lt_string_append         (lt_string_t       *string,
+lt_string_t *lt_string_append         (lt_string_t       *string,
                                        const char        *str);
-lt_bool_t    lt_string_append_filename(lt_string_t       *string,
+lt_string_t *lt_string_append_filename(lt_string_t       *string,
                                        const char        *path,
 				       ...) LT_GNUC_NULL_TERMINATED;
-lt_bool_t    lt_string_append_printf  (lt_string_t       *string,
+void         lt_string_append_printf  (lt_string_t       *string,
                                        const char        *format,
 				       ...) LT_GNUC_PRINTF (2, 3);
 lt_string_t *lt_string_replace_c      (lt_string_t       *string,

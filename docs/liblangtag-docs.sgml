@@ -47,7 +47,13 @@
       <xi:include href="xml/lt-ext-module.xml"/>
       <xi:include href="xml/lt-ext-module-data.xml"/>
     </section>
-    <xi:include href="xml/lt-error.xml"/>
+    <section id="Utilities">
+      <title>Utilities APIs</title>
+      <xi:include href="xml/lt-macros.xml"/>
+      <xi:include href="xml/lt-error.xml"/>
+      <xi:include href="xml/lt-list.xml"/>
+      <xi:include href="xml/lt-string.xml"/>
+    </section>
 
   </chapter>
   <chapter id="object-tree">

@@ -19,7 +19,30 @@
 #ifndef __LT_MACROS_H__
 #define __LT_MACROS_H__
 
+/**
+ * SECTION:lt-macros
+ * @Short_Description: macros used in liblangtag
+ * @Title: Miscellaneous Macros
+ *
+ * These macros provide more specialized features which are not needed so often
+ * by application programmers.
+ */
+
 /* Guard C code in headers, while including them from C++ */
+/**
+ * LT_BEGIN_DECLS:
+ *
+ * Used (along with #LT_END_DECLS) to bracket header files. If the
+ * compiler in use is a C++ compiler, adds <literal>extern "C"</literal>
+ * around the header.
+ */
+/**
+ * LT_END_DECLS:
+ *
+ * Used (along with #LT_BEGIN_DECLS) to bracket header files. If the
+ * compiler in use is a C++ compiler, adds <literal>extern "C"</literal>
+ * around the header.
+ */
 #ifdef __cplusplus
 #  define LT_BEGIN_DECLS	extern "C" {
 #  define LT_END_DECLS		}
@@ -29,6 +52,18 @@
 #endif
 
 /* statement wrappers */
+/**
+ * LT_STMT_START:
+ *
+ * Used within multi-statement macros so that they can be used in places where
+ * only on statement is expected by the compiler.
+ */
+/**
+ * LT_STMT_END:
+ *
+ * Used within multi-statement macros so that they can be used in places where
+ * only on statement is expected by the compiler.
+ */
 #if !(defined (LT_STMT_START) && defined (LT_STMT_END))
 #  define LT_STMT_START		do
 #  define LT_STMT_END		while (0)
@@ -56,6 +91,12 @@
 #    define inline /* don't inline, then */
 #  endif
 #endif
+/**
+ * LT_INLINE_FUNC:
+ *
+ * This macro is used to export function prototypes so they can be linked
+ * with an external version when no inlining is performed.
+ */
 #if defined (__GNUC__)
 #  define LT_INLINE_FUNC	static __inline __attribute__ ((unused))
 #elif defined (LT_CAN_INLINE)

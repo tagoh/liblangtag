@@ -21,6 +21,12 @@
 
 LT_BEGIN_DECLS
 
+/**
+ * lt_list_t:
+ *
+ * All the fields in the <structname>lt_list_t</structname>
+ * structure are private to the #lt_list_t implementation.
+ */
 typedef struct _lt_list_t	lt_list_t;
 
 lt_list_t    *lt_list_new        (void);
@@ -37,21 +43,20 @@ lt_list_t    *lt_list_append     (lt_list_t          *list,
                                   lt_pointer_t        data,
                                   lt_destroy_func_t   func);
 lt_list_t    *lt_list_remove     (lt_list_t          *list,
-                                  lt_pointer_t        value);
+                                  lt_pointer_t        data);
 lt_list_t    *lt_list_delete     (lt_list_t          *list,
-				  lt_pointer_t        value);
+				  lt_pointer_t        data);
 lt_list_t    *lt_list_delete_link(lt_list_t          *list,
 				  lt_list_t          *link_);
-lt_list_t    *lt_list_copy       (lt_list_t          *list);
 lt_list_t    *lt_list_find       (lt_list_t          *list,
-                                  const lt_pointer_t  value);
+                                  const lt_pointer_t  data);
 lt_list_t    *lt_list_find_custom(lt_list_t          *list,
                                   const lt_pointer_t  data,
                                   lt_compare_func_t   func);
 lt_list_t    *lt_list_sort       (lt_list_t          *list,
 				  lt_compare_func_t   func);
 lt_list_t    *lt_list_pop        (lt_list_t          *list,
-				  lt_pointer_t       *value);
+				  lt_pointer_t       *data);
 
 LT_END_DECLS
 

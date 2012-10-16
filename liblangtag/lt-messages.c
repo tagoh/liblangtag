@@ -145,15 +145,6 @@ _lt_message_default_handler(lt_message_type_t      type,
 
 /*< public >*/
 
-/**
- * lt_message_set_default_handler:
- * @func:
- * @user_data:
- *
- * FIXME
- *
- * Returns:
- */
 lt_message_func_t
 lt_message_set_default_handler(lt_message_func_t func,
 			       lt_pointer_t      user_data)
@@ -166,16 +157,6 @@ lt_message_set_default_handler(lt_message_func_t func,
 	return retval;
 }
 
-/**
- * lt_message_set_handler:
- * @type:
- * @func:
- * @user_data:
- *
- * FIXME
- *
- * Returns:
- */
 lt_message_func_t
 lt_message_set_handler(lt_message_type_t type,
 		       lt_message_func_t func,
@@ -195,14 +176,6 @@ lt_message_set_handler(lt_message_type_t type,
 	return retval;
 }
 
-/**
- * lt_message_is_masked:
- * @category:
- *
- * FIXME
- *
- * Returns:
- */
 lt_bool_t
 lt_message_is_enabled(lt_message_category_t category)
 {
@@ -220,14 +193,6 @@ lt_message_is_enabled(lt_message_category_t category)
 	return ((1 << (category - 1)) & mask) != 0;
 }
 
-/**
- * lt_message_printf:
- * @type:
- * @category:
- * @format:
- *
- * FIXME
- */
 void
 lt_message_printf(lt_message_type_t      type,
 		  lt_message_flags_t     flags,
@@ -244,15 +209,6 @@ lt_message_printf(lt_message_type_t      type,
 	va_end(args);
 }
 
-/**
- * lt_message_vprintf:
- * @type:
- * @category:
- * @format:
- * @args:
- *
- * FIXME
- */
 void
 lt_message_vprintf(lt_message_type_t      type,
 		   lt_message_flags_t     flags,
@@ -285,13 +241,6 @@ lt_message_vprintf(lt_message_type_t      type,
 		abort();
 }
 
-/**
- * lt_return_if_fail_warning:
- * @pretty_function:
- * @expression:
- *
- * FIXME
- */
 void
 lt_return_if_fail_warning(const char *pretty_function,
 			  const char *expression)

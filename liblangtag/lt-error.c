@@ -49,6 +49,15 @@ lt_error_new(void)
 }
 
 /*< public >*/
+
+/**
+ * lt_error_ref:
+ * @error: a #lt_error_t
+ *
+ * Inscreases the reference count of @error.
+ *
+ * Returns: (transfer none): the same @error object.
+ */
 lt_error_t *
 lt_error_ref(lt_error_t *error)
 {
@@ -57,6 +66,13 @@ lt_error_ref(lt_error_t *error)
 	return lt_mem_ref(&error->parent);
 }
 
+/**
+ * lt_error_unref:
+ * @error: a #lt_error_t
+ *
+ * Decreases the reference count of @error. when its reference count
+ * drops to 0, the object is finalized (i.e. its memory is freed).
+ */
 void
 lt_error_unref(lt_error_t *error)
 {
@@ -64,6 +80,17 @@ lt_error_unref(lt_error_t *error)
 		lt_mem_unref(&error->parent);
 }
 
+/**
+ * lt_error_set:
+ * @error: a return location for a #lt_error_t
+ * @type: a #lt_error_type_t
+ * @message: the string format to output the error messages
+ * @...: the parameters to insert into the format string
+ *
+ * Sets the error into @error according to the given parameters.
+ *
+ * Returns: an instance of #lt_error_t
+ */
 lt_error_t *
 lt_error_set(lt_error_t      **error,
 	     lt_error_type_t   type,
@@ -112,15 +139,32 @@ lt_error_set(lt_error_t      **error,
 	return *error;
 }
 
+/**
+ * lt_error_clear:
+ * @error: a #lt_error_t
+ *
+ * Clean up all of the errors in @error.
+ */
 void
 lt_error_clear(lt_error_t *error)
 {
 	if (error) {
-		lt_mem_remove_ref(&error->parent, error->data);
+		lt_mem_delete_ref(&error->parent, error->data);
 		error->data = NULL;
 	}
 }
 
+/**
+ * lt_error_is_set:
+ * @error: a #lt_error_t
+ * @type: a #lt_error_type_t
+ *
+ * Checks if @error contains @type of errors. if #LT_ERR_ANY is set to @type,
+ * all the types of the errors are targeted. otherwise the result is filtered
+ * out by @type.
+ *
+ * Returns: %TRUE if any, otherwise %FALSE
+ */
 lt_bool_t
 lt_error_is_set(lt_error_t      *error,
 		lt_error_type_t  type)
@@ -143,6 +187,13 @@ lt_error_is_set(lt_error_t      *error,
 	return FALSE;
 }
 
+/**
+ * lt_error_print:
+ * @error: a #lt_error_t
+ * @type: a #lt_error_type_t
+ *
+ * Output the error messages in @error according to @type.
+ */
 void
 lt_error_print(lt_error_t      *error,
 	       lt_error_type_t  type)
