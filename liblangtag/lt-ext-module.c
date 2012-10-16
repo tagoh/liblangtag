@@ -248,10 +248,7 @@ lt_ext_module_load(lt_ext_module_t *module)
 		path[len] = 0;
 		if (path[0] != 0) {
 			lt_string_clear(fullname);
-			if (!lt_string_append_filename(fullname, path, filename, NULL)) {
-				lt_critical("Unable to allocate a memory");
-				break;
-			}
+			lt_string_append_filename(fullname, path, filename, NULL);
 			module->module = dlopen(lt_string_value(fullname),
 						RTLD_LAZY|RTLD_LOCAL);
 			if (module->module) {
