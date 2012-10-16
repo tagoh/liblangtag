@@ -60,7 +60,7 @@ lt_variant_set_tag(lt_variant_t *variant,
 	lt_return_if_fail (subtag != NULL);
 
 	if (variant->tag)
-		lt_mem_remove_ref(&variant->parent, variant->tag);
+		lt_mem_delete_ref(&variant->parent, variant->tag);
 	variant->tag = strdup(subtag);
 	lt_mem_add_ref(&variant->parent, variant->tag, free);
 }
@@ -73,7 +73,7 @@ lt_variant_set_preferred_tag(lt_variant_t *variant,
 	lt_return_if_fail (subtag != NULL);
 
 	if (variant->preferred_tag)
-		lt_mem_remove_ref(&variant->parent, variant->preferred_tag);
+		lt_mem_delete_ref(&variant->parent, variant->preferred_tag);
 	variant->preferred_tag = strdup(subtag);
 	lt_mem_add_ref(&variant->parent, variant->preferred_tag, free);
 }
@@ -86,7 +86,7 @@ lt_variant_set_name(lt_variant_t *variant,
 	lt_return_if_fail (description != NULL);
 
 	if (variant->description)
-		lt_mem_remove_ref(&variant->parent, variant->description);
+		lt_mem_delete_ref(&variant->parent, variant->description);
 	variant->description = strdup(description);
 	lt_mem_add_ref(&variant->parent, variant->description, free);
 }
@@ -215,8 +215,7 @@ lt_variant_get_name(const lt_variant_t *variant)
  * subtags for forming (with other subtags, as appropriate) a language
  * tag when using the variant.
  *
- * Returns: (element-type utf8) (transfer none): a #lt_list_t contains prefix
- *          strings or %NULL.
+ * Returns: (transfer none): a #lt_list_t contains prefix strings or %NULL.
  */
 const lt_list_t *
 lt_variant_get_prefix(const lt_variant_t *variant)

@@ -56,7 +56,7 @@ lt_script_set_name(lt_script_t *script,
 	lt_return_if_fail (description != NULL);
 
 	if (script->description)
-		lt_mem_remove_ref(&script->parent, script->description);
+		lt_mem_delete_ref(&script->parent, script->description);
 	script->description = strdup(description);
 	lt_mem_add_ref(&script->parent, script->description, free);
 }
@@ -69,7 +69,7 @@ lt_script_set_tag(lt_script_t *script,
 	lt_return_if_fail (subtag != NULL);
 
 	if (script->tag)
-		lt_mem_remove_ref(&script->parent, script->tag);
+		lt_mem_delete_ref(&script->parent, script->tag);
 	script->tag = strdup(subtag);
 	lt_mem_add_ref(&script->parent, script->tag, free);
 }

@@ -59,7 +59,7 @@ lt_redundant_set_tag(lt_redundant_t *redundant,
 	lt_return_if_fail (tag != NULL);
 
 	if (redundant->tag)
-		lt_mem_remove_ref(&redundant->parent, redundant->tag);
+		lt_mem_delete_ref(&redundant->parent, redundant->tag);
 	redundant->tag = strdup(tag);
 	lt_mem_add_ref(&redundant->parent, redundant->tag, free);
 }
@@ -72,7 +72,7 @@ lt_redundant_set_name(lt_redundant_t *redundant,
 	lt_return_if_fail (description != NULL);
 
 	if (redundant->description)
-		lt_mem_remove_ref(&redundant->parent, redundant->description);
+		lt_mem_delete_ref(&redundant->parent, redundant->description);
 	redundant->description = strdup(description);
 	lt_mem_add_ref(&redundant->parent, redundant->description, free);
 }
@@ -85,7 +85,7 @@ lt_redundant_set_preferred_tag(lt_redundant_t *redundant,
 	lt_return_if_fail (subtag != NULL);
 
 	if (redundant->preferred_tag)
-		lt_mem_remove_ref(&redundant->parent, redundant->preferred_tag);
+		lt_mem_delete_ref(&redundant->parent, redundant->preferred_tag);
 	redundant->preferred_tag = strdup(subtag);
 	lt_mem_add_ref(&redundant->parent, redundant->preferred_tag, free);
 }

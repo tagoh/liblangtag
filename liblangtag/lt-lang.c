@@ -60,7 +60,7 @@ lt_lang_set_name(lt_lang_t  *lang,
 	lt_return_if_fail (description != NULL);
 
 	if (lang->description)
-		lt_mem_remove_ref(&lang->parent, lang->description);
+		lt_mem_delete_ref(&lang->parent, lang->description);
 	lang->description = strdup(description);
 	lt_mem_add_ref(&lang->parent, lang->description, free);
 }
@@ -73,7 +73,7 @@ lt_lang_set_tag(lt_lang_t  *lang,
 	lt_return_if_fail (subtag != NULL);
 
 	if (lang->tag)
-		lt_mem_remove_ref(&lang->parent, lang->tag);
+		lt_mem_delete_ref(&lang->parent, lang->tag);
 	lang->tag = strdup(subtag);
 	lt_mem_add_ref(&lang->parent, lang->tag, free);
 }
@@ -86,7 +86,7 @@ lt_lang_set_preferred_tag(lt_lang_t  *lang,
 	lt_return_if_fail (subtag != NULL);
 
 	if (lang->preferred_tag)
-		lt_mem_remove_ref(&lang->parent, lang->preferred_tag);
+		lt_mem_delete_ref(&lang->parent, lang->preferred_tag);
 	lang->preferred_tag = strdup(subtag);
 	lt_mem_add_ref(&lang->parent, lang->preferred_tag, free);
 }
@@ -99,7 +99,7 @@ lt_lang_set_suppress_script(lt_lang_t  *lang,
 	lt_return_if_fail (script != NULL);
 
 	if (lang->suppress_script)
-		lt_mem_remove_ref(&lang->parent, lang->suppress_script);
+		lt_mem_delete_ref(&lang->parent, lang->suppress_script);
 	lang->suppress_script = strdup(script);
 	lt_mem_add_ref(&lang->parent, lang->suppress_script, free);
 }
@@ -112,7 +112,7 @@ lt_lang_set_macro_language(lt_lang_t  *lang,
 	lt_return_if_fail (macrolanguage != NULL);
 
 	if (lang->macrolanguage)
-		lt_mem_remove_ref(&lang->parent, lang->macrolanguage);
+		lt_mem_delete_ref(&lang->parent, lang->macrolanguage);
 	lang->macrolanguage = strdup(macrolanguage);
 	lt_mem_add_ref(&lang->parent, lang->macrolanguage, free);
 }
@@ -125,7 +125,7 @@ lt_lang_set_scope(lt_lang_t  *lang,
 	lt_return_if_fail (scope != NULL);
 
 	if (lang->scope)
-		lt_mem_remove_ref(&lang->parent, lang->scope);
+		lt_mem_delete_ref(&lang->parent, lang->scope);
 	lang->scope = strdup(scope);
 	lt_mem_add_ref(&lang->parent, lang->scope, free);
 }

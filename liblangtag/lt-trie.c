@@ -82,7 +82,7 @@ lt_trie_node_add(lt_trie_node_t    *node,
 			return FALSE;
 		} else {
 			if (node->data) {
-				lt_mem_delete_ref(&node->parent, node->data);
+				lt_mem_remove_ref(&node->parent, node->data);
 				if (node->destroy_func)
 					node->destroy_func(node->data);
 			}
@@ -121,7 +121,7 @@ lt_trie_node_remove(lt_trie_node_t *node,
 	if (*key == 0) {
 		if (!node->data)
 			return FALSE;
-		lt_mem_delete_ref(&node->parent, node->data);
+		lt_mem_remove_ref(&node->parent, node->data);
 		if (node->destroy_func)
 			node->destroy_func(node->data);
 		node->data = NULL;

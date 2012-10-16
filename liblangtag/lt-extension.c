@@ -104,7 +104,7 @@ lt_extension_add_singleton(lt_extension_t  *extension,
 		goto bail;
 	}
 	if (extension->module)
-		lt_mem_remove_ref(&extension->parent, extension->module);
+		lt_mem_delete_ref(&extension->parent, extension->module);
 	extension->module = m;
 	lt_mem_add_ref(&extension->parent, extension->module,
 		       (lt_destroy_func_t)lt_ext_module_unref);
@@ -173,9 +173,9 @@ lt_extension_cancel_tag(lt_extension_t *extension)
 		char *tags, singleton[4], *p, *lastp;
 		lt_list_t *l = NULL, *ll;
 
-		lt_mem_remove_ref(&extension->parent, extension->module);
+		lt_mem_delete_ref(&extension->parent, extension->module);
 		extension->module = NULL;
-		lt_mem_remove_ref(&extension->parent, extension->extensions[extension->singleton]);
+		lt_mem_delete_ref(&extension->parent, extension->extensions[extension->singleton]);
 		extension->extensions[extension->singleton] = NULL;
 
 		lastp = p = tags = strdup(lt_string_value(extension->cached_tag));
@@ -464,7 +464,7 @@ lt_extension_truncate(lt_extension_t  *extension)
 
 	for (i = LT_MAX_EXT_MODULES - 1; i >= 0; i--) {
 		if (extension->extensions[i]) {
-			lt_mem_remove_ref(&extension->parent, extension->extensions[i]);
+			lt_mem_delete_ref(&extension->parent, extension->extensions[i]);
 			extension->extensions[i] = NULL;
 			retval = TRUE;
 			break;

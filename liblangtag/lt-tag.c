@@ -204,7 +204,7 @@ _lt_tag_variant_compare(const lt_pointer_t a,
 	lt_tag_free_ ##__func__ (lt_tag_t *tag)				\
 	{								\
 		if (tag->__func__) {					\
-			lt_mem_remove_ref(&tag->parent, tag->__func__);	\
+			lt_mem_delete_ref(&tag->parent, tag->__func__);	\
 			tag->__func__ = NULL;				\
 		}							\
 	}
@@ -1462,7 +1462,7 @@ lt_tag_truncate(lt_tag_t    *tag,
 			lt_list_t *l = lt_list_last(tag->variants);
 
 			if (tag->variants == l) {
-				lt_mem_delete_ref(&tag->parent, tag->variants);
+				lt_mem_remove_ref(&tag->parent, tag->variants);
 				tag->variants = lt_list_delete_link(tag->variants, l);
 				if (tag->variants)
 					lt_mem_add_ref(&tag->parent, tag->variants, lt_list_free);
@@ -2158,7 +2158,7 @@ DEFUNC_GET_SUBTAG (region, lt_region_t)
  *
  * Obtain a list of #lt_variant_t instance in @tag.
  *
- * Returns: (element-type lt_variant_t) (transfer none): a #lt_list_t containing #lt_variant_t.
+ * Returns: (transfer none): a #lt_list_t containing #lt_variant_t.
  */
 DEFUNC_GET_SUBTAG (variants, lt_list_t)
 /**

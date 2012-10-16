@@ -229,8 +229,6 @@ lt_mem_remove_ref(lt_mem_t     *object,
 	lt_return_if_fail (p != NULL);
 
 	if ((l = lt_mem_slist_find(object->refs, p)) != NULL) {
-		if (l->func)
-			l->func(l->key);
 		object->refs = lt_mem_slist_delete_link(object->refs, l);
 	}
 }
@@ -245,6 +243,8 @@ lt_mem_delete_ref(lt_mem_t     *object,
 	lt_return_if_fail (p != NULL);
 
 	if ((l = lt_mem_slist_find(object->refs, p)) != NULL) {
+		if (l->func)
+			l->func(l->key);
 		object->refs = lt_mem_slist_delete_link(object->refs, l);
 	}
 }

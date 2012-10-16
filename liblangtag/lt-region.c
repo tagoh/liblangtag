@@ -58,7 +58,7 @@ lt_region_set_name(lt_region_t *region,
 	lt_return_if_fail (description != NULL);
 
 	if (region->description)
-		lt_mem_remove_ref(&region->parent, region->description);
+		lt_mem_delete_ref(&region->parent, region->description);
 	region->description = strdup(description);
 	lt_mem_add_ref(&region->parent, region->description, free);
 }
@@ -71,7 +71,7 @@ lt_region_set_tag(lt_region_t *region,
 	lt_return_if_fail (subtag != NULL);
 
 	if (region->tag)
-		lt_mem_remove_ref(&region->parent, region->tag);
+		lt_mem_delete_ref(&region->parent, region->tag);
 	region->tag = strdup(subtag);
 	lt_mem_add_ref(&region->parent, region->tag, free);
 }
@@ -84,7 +84,7 @@ lt_region_set_preferred_tag(lt_region_t *region,
 	lt_return_if_fail (subtag != NULL);
 
 	if (region->preferred_tag)
-		lt_mem_remove_ref(&region->parent, region->preferred_tag);
+		lt_mem_delete_ref(&region->parent, region->preferred_tag);
 	region->preferred_tag = strdup(subtag);
 	lt_mem_add_ref(&region->parent, region->preferred_tag, free);
 }

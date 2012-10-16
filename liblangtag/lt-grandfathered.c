@@ -59,7 +59,7 @@ lt_grandfathered_set_tag(lt_grandfathered_t *grandfathered,
 	lt_return_if_fail (tag != NULL);
 
 	if (grandfathered->tag)
-		lt_mem_remove_ref(&grandfathered->parent, grandfathered->tag);
+		lt_mem_delete_ref(&grandfathered->parent, grandfathered->tag);
 	grandfathered->tag = strdup(tag);
 	lt_mem_add_ref(&grandfathered->parent, grandfathered->tag, free);
 }
@@ -72,7 +72,7 @@ lt_grandfathered_set_name(lt_grandfathered_t *grandfathered,
 	lt_return_if_fail (description != NULL);
 
 	if (grandfathered->description)
-		lt_mem_remove_ref(&grandfathered->parent, grandfathered->description);
+		lt_mem_delete_ref(&grandfathered->parent, grandfathered->description);
 	grandfathered->description = strdup(description);
 	lt_mem_add_ref(&grandfathered->parent, grandfathered->description, free);
 }
@@ -85,7 +85,7 @@ lt_grandfathered_set_preferred_tag(lt_grandfathered_t *grandfathered,
 	lt_return_if_fail (subtag != NULL);
 
 	if (grandfathered->preferred_tag)
-		lt_mem_remove_ref(&grandfathered->parent, grandfathered->preferred_tag);
+		lt_mem_delete_ref(&grandfathered->parent, grandfathered->preferred_tag);
 	grandfathered->preferred_tag = strdup(subtag);
 	lt_mem_add_ref(&grandfathered->parent, grandfathered->preferred_tag, free);
 }

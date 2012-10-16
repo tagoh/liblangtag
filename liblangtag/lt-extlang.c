@@ -62,7 +62,7 @@ lt_extlang_set_tag(lt_extlang_t *extlang,
 	lt_return_if_fail (subtag != NULL);
 
 	if (extlang->tag)
-		lt_mem_remove_ref(&extlang->parent, extlang->tag);
+		lt_mem_delete_ref(&extlang->parent, extlang->tag);
 	extlang->tag = strdup(subtag);
 	lt_mem_add_ref(&extlang->parent, extlang->tag, free);
 }
@@ -75,7 +75,7 @@ lt_extlang_set_preferred_tag(lt_extlang_t *extlang,
 	lt_return_if_fail (subtag != NULL);
 
 	if (extlang->preferred_tag)
-		lt_mem_remove_ref(&extlang->parent, extlang->preferred_tag);
+		lt_mem_delete_ref(&extlang->parent, extlang->preferred_tag);
 	extlang->preferred_tag = strdup(subtag);
 	lt_mem_add_ref(&extlang->parent, extlang->preferred_tag, free);
 }
@@ -88,7 +88,7 @@ lt_extlang_set_name(lt_extlang_t *extlang,
 	lt_return_if_fail (description != NULL);
 
 	if (extlang->description)
-		lt_mem_remove_ref(&extlang->parent, extlang->description);
+		lt_mem_delete_ref(&extlang->parent, extlang->description);
 	extlang->description = strdup(description);
 	lt_mem_add_ref(&extlang->parent, extlang->description, free);
 }
@@ -101,7 +101,7 @@ lt_extlang_set_macro_language(lt_extlang_t *extlang,
 	lt_return_if_fail (macrolanguage != NULL);
 
 	if (extlang->macrolanguage)
-		lt_mem_remove_ref(&extlang->parent, extlang->macrolanguage);
+		lt_mem_delete_ref(&extlang->parent, extlang->macrolanguage);
 	extlang->macrolanguage = strdup(macrolanguage);
 	lt_mem_add_ref(&extlang->parent, extlang->macrolanguage, free);
 }
@@ -114,7 +114,7 @@ lt_extlang_add_prefix(lt_extlang_t *extlang,
 	lt_return_if_fail (prefix != NULL);
 
 	if (extlang->prefix)
-		lt_mem_remove_ref(&extlang->parent, extlang->prefix);
+		lt_mem_delete_ref(&extlang->parent, extlang->prefix);
 	extlang->prefix = strdup(prefix);
 	lt_mem_add_ref(&extlang->parent, extlang->prefix, free);
 }
