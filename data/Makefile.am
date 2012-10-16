@@ -29,14 +29,18 @@ ldml_xml_files =			\
 	$(bcp47_xml_files)		\
 	$(supplemental_xml_files)	\
 	$(NULL)
-bcp47_xml_files =			\
-	common/bcp47/calendar.xml	\
-	common/bcp47/collation.xml	\
-	common/bcp47/currency.xml	\
-	common/bcp47/number.xml		\
-	common/bcp47/timezone.xml	\
-	common/bcp47/transform.xml	\
-	common/bcp47/variant.xml	\
+bcp47_xml_files =				\
+	common/bcp47/calendar.xml		\
+	common/bcp47/collation.xml		\
+	common/bcp47/currency.xml		\
+	common/bcp47/number.xml			\
+	common/bcp47/timezone.xml		\
+	common/bcp47/transform.xml		\
+	common/bcp47/transform_ime.xml		\
+	common/bcp47/transform_keyboard.xml	\
+	common/bcp47/transform_mt.xml		\
+	common/bcp47/transform_private_use.xml	\
+	common/bcp47/variant.xml		\
 	$(NULL)
 supplemental_xml_files =		\
 	common/supplemental/likelySubtags.xml	\
