@@ -40,14 +40,12 @@ _ns=`echo $_cl|cut -d'_' -f1`
 
 _tmpgen=`mktemp gengir.XXXXXXXX`
 capitalize "$srcdir/$target" $_tmpgen $_cl
-# special case for pointer
-sed -i -e "s,${_ns}_pointer_t\([ \t)]*\),gpointer\1,g" $_tmpgen
 
 sed -i -e 's,^\(#include[ \t]<\)liblangtag\(/lt-.*\)\(\.h>\),\1liblangtag-gobject\2.gir\3,' $_tmpgen
 
 while [ 1 ]; do
     if [ "x$type" = "xh" ]; then
-	line=`grep -E "${_ns}_[a-z_].*_t[ \t;].*" $_tmpgen`
+	line=`grep -E "${_ns}_[a-z_].*_t[ \t;)].*" $_tmpgen`
     elif [ "x$type" = "xc" ]; then
 	line=`sed -n -e '/\/\*< public >\*\//{:a p;n;b a};{d}' $_tmpgen|grep "[^#]${_ns}_.*_t[^a-z]"|grep -v -E "(func)"`
     else
@@ -62,7 +60,7 @@ while [ 1 ]; do
     _n=1
     _tt=
     while [ 1 ]; do
-	_ll=`echo $line|sed -e 's/[()]/ /g' -e 's/^[ \t].*//'|cut -d' ' -f$_n`
+	_ll=`echo $line|sed -e 's/[()]/ /g' -e 's/^[ \t].*//' -e 's/[ \t][ \t]*/ /g'|cut -d' ' -f$_n`
 	_tt=`echo $_ll|sed -n -f $_tmpsed`
 	if [ "x$_ll" = "x" ]; then
 	    break
