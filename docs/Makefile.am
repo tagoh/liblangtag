@@ -62,6 +62,7 @@ EXTRA_HFILES=
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h private_code
 IGNORE_HFILES=				\
 	langtag.h			\
+	lt-atomic.h			\
 	lt-ext-module-private.h		\
 	lt-extension-private.h		\
 	lt-extlang-private.h		\
@@ -69,10 +70,12 @@ IGNORE_HFILES=				\
 	lt-lang-private.h		\
 	lt-localealias.h		\
 	lt-mem.h			\
+	lt-messages.h			\
 	lt-redundant-private.h		\
 	lt-region-private.h		\
 	lt-script-private.h		\
 	lt-tag-private.h		\
+	lt-trie.h			\
 	lt-utils.h			\
 	lt-variant-private.h		\
 	lt-xml.h			\
