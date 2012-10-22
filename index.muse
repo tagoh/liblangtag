@@ -10,6 +10,30 @@ Index
 liblangtag is an interface library to access/deal with tags
 for identifying languages, which is described in RFC 5646.
 
+* Features
+ - several subtag registry database supports:
+   - language
+   - extlang
+   - script
+   - region
+   - variant
+   - extension
+     - RFC6067
+     - RFC6497
+     - New T Extensions for language/locale identifier in CLDR 21.0.2
+   - grandfathered
+   - redundant
+ - handling of the language tags
+   - parser
+   - matching
+   - canonicalizing
+
+* Licensing
+This library is free software; you can redistribute it and/or modify it under the terms of either:
+
+ - the GNU Lesser General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+ - the Mozilla Public License, v. 2.0.
+
 * Requirements
 
  - libxml2
