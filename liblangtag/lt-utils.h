@@ -14,7 +14,7 @@
 #define __LT_UTILS_H__
 
 #include <stdarg.h>
-#include <liblangtag/lt-macros.h>
+#include "lt-macros.h"
 
 LT_BEGIN_DECLS
 

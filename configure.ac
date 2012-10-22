@@ -255,7 +255,7 @@ MODULE_LIBS=
 if test "x$enable_modules" != "xno"; then
 	AC_MSG_CHECKING(for the suffix of module shared libraries)
 	export SED
-	shrext_cmds=`./libtool --config | grep '^shrext_cmds='`
+	shrext_cmds=`libtool --config | grep '^shrext_cmds='`
 	eval $shrext_cmds
 	module=yes eval std_shrext=$shrext_cmds
 	lt_module_suffix=`echo $std_shrext | sed 's/^\.//'`
