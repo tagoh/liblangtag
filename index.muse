@@ -13,7 +13,6 @@ for identifying languages, which is described in RFC 5646.
 * Requirements
 
  - libxml2
- - GLib 2.0
  - GObject Introspection (optional)
 
 * Download

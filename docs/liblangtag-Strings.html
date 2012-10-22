@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Strings</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="liblangtag Documentation">
+<link rel="up" href="Utilities.html" title="Utilities APIs">
+<link rel="prev" href="liblangtag-Doubly-Linked-Lists.html" title="Doubly-Linked Lists">
+<link rel="next" href="object-tree.html" title="Object Hierarchy">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="liblangtag-Doubly-Linked-Lists.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Utilities.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">liblangtag Documentation</th>
+<td><a accesskey="n" href="object-tree.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#liblangtag-Strings.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#liblangtag-Strings.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="liblangtag-Strings"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="liblangtag-Strings.top_of_page"></a>Strings</span></h2>
+<p>Strings — text buffers which grow automatically as text is added</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="liblangtag-Strings.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       <a class="link" href="liblangtag-Strings.html#lt-string-append" title="lt_string_append ()">lt_string_append</a>                    (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *str</code></em>);
+<a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       <a class="link" href="liblangtag-Strings.html#lt-string-append-c" title="lt_string_append_c ()">lt_string_append_c</a>                  (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> c</code></em>);
+<a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       <a class="link" href="liblangtag-Strings.html#lt-string-append-filename" title="lt_string_append_filename ()">lt_string_append_filename</a>           (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *path</code></em>);
+<span class="returnvalue">char</span>                <a class="link" href="liblangtag-Strings.html#lt-string-at" title="lt_string_at ()">lt_string_at</a>                        (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><span class="type">ssize_t</span> pos</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Strings.html#lt-string-clear" title="lt_string_clear ()">lt_string_clear</a>                     (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="liblangtag-Strings.html#lt-string-free" title="lt_string_free ()">lt_string_free</a>                      (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-bool-t" title="lt_bool_t"><span class="type">lt_bool_t</span></a> free_segment</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="liblangtag-Strings.html#lt-string-length" title="lt_string_length ()">lt_string_length</a>                    (<em class="parameter"><code>const <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);
+<a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       <a class="link" href="liblangtag-Strings.html#lt-string-new" title="lt_string_new ()">lt_string_new</a>                       (<em class="parameter"><code>const <span class="type">char</span> *string</code></em>);
+<a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       <a class="link" href="liblangtag-Strings.html#lt-string-ref" title="lt_string_ref ()">lt_string_ref</a>                       (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);
+<a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       <a class="link" href="liblangtag-Strings.html#lt-string-replace-c" title="lt_string_replace_c ()">lt_string_replace_c</a>                 (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> pos</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> c</code></em>);
+                    <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t">lt_string_t</a>;
+<a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       <a class="link" href="liblangtag-Strings.html#lt-string-truncate" title="lt_string_truncate ()">lt_string_truncate</a>                  (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><span class="type">ssize_t</span> len</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Strings.html#lt-string-unref" title="lt_string_unref ()">lt_string_unref</a>                     (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="liblangtag-Strings.html#lt-string-value" title="lt_string_value ()">lt_string_value</a>                     (<em class="parameter"><code>const <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Strings.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> is an object that handles the memory management of a C
+string.
+</p>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Strings.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="lt-string-append"></a><h3>lt_string_append ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       lt_string_append                    (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *str</code></em>);</pre>
+<p>
+Adds a string onto the end of a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>, expanding
+it if necessary.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>str</code></em> :</span></p></td>
+<td>the string to append onto the end of <em class="parameter"><code>string</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>string</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-append-c"></a><h3>lt_string_append_c ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       lt_string_append_c                  (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> c</code></em>);</pre>
+<p>
+Adds a byte onto the end of a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>, expanding
+it if necessary.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>c</code></em> :</span></p></td>
+<td>the byte to append onto the end of <em class="parameter"><code>string</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>string</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-append-filename"></a><h3>lt_string_append_filename ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       lt_string_append_filename           (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *path</code></em>);</pre>
+<p>
+Adds a string onto the end of a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> as a file path.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>path</code></em> :</span></p></td>
+<td>the string to append onto the end of <em class="parameter"><code>string</code></em> as a file path</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>string</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-at"></a><h3>lt_string_at ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span>                lt_string_at                        (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><span class="type">ssize_t</span> pos</code></em>);</pre>
+<p>
+Obtain a byte in a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> at <em class="parameter"><code>pos</code></em>. If <em class="parameter"><code>pos</code></em> is a negative,
+the position is calculated from current size. i.e. if the buffer
+contains "abc", and <em class="parameter"><code>pos</code></em> is -1, this will returns 'c' then.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pos</code></em> :</span></p></td>
+<td>position in <em class="parameter"><code>string</code></em> where to obtain the byte</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the byte in <em class="parameter"><code>string</code></em> at <em class="parameter"><code>pos</code></em>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-clear"></a><h3>lt_string_clear ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_string_clear                     (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);</pre>
+<p>
+Clean up the buffer in <em class="parameter"><code>string</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-free"></a><h3>lt_string_free ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              lt_string_free                      (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-bool-t" title="lt_bool_t"><span class="type">lt_bool_t</span></a> free_segment</code></em>);</pre>
+<p>
+Frees the memory allocated for the <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>.
+If <em class="parameter"><code>free_segment</code></em> is <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> it also frees the character data.  If
+it's <a href="../glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>, the caller gains ownership of the buffer and must
+free it after use with <code class="function">free()</code>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>free_segment</code></em> :</span></p></td>
+<td>if <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>, the actual character data is freed as well</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the character data of <em class="parameter"><code>string</code></em>
+(i.e. <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> if <em class="parameter"><code>free_segment</code></em> is <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a>)</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-length"></a><h3>lt_string_length ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              lt_string_length                    (<em class="parameter"><code>const <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);</pre>
+<p>
+Returns the number of characters in buffer for <em class="parameter"><code>string</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of characters</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-new"></a><h3>lt_string_new ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       lt_string_new                       (<em class="parameter"><code>const <span class="type">char</span> *string</code></em>);</pre>
+<p>
+Creates an instance of <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> with <em class="parameter"><code>string</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>an initial string to set</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new instance of <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-ref"></a><h3>lt_string_ref ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       lt_string_ref                       (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);</pre>
+<p>
+Increases the reference count of <em class="parameter"><code>string</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>string</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-replace-c"></a><h3>lt_string_replace_c ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       lt_string_replace_c                 (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> pos</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> c</code></em>);</pre>
+<p>
+Replaces a character in <em class="parameter"><code>string</code></em> at <em class="parameter"><code>pos</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pos</code></em> :</span></p></td>
+<td>position in <em class="parameter"><code>string</code></em> where replacement should happen</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>c</code></em> :</span></p></td>
+<td>the byte to replace</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>string</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-t"></a><h3>lt_string_t</h3>
+<pre class="programlisting">typedef struct _lt_string_t lt_string_t;</pre>
+<p>
+All the fields in the <span class="structname">lt_string_t</span>
+structure are private to the <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> implementation.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-truncate"></a><h3>lt_string_truncate ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="returnvalue">lt_string_t</span></a> *       lt_string_truncate                  (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>,
+                                                         <em class="parameter"><code><span class="type">ssize_t</span> len</code></em>);</pre>
+<p>
+Truncates the characters in the buffer according to <em class="parameter"><code>len</code></em>. if <em class="parameter"><code>len</code></em> is
+a negative, how many characters is truncated will be calculated from
+current size. i.e. if the buffer contains "abc", and <em class="parameter"><code>len</code></em> is -1,
+the buffer will be "ab" after this call.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>len</code></em> :</span></p></td>
+<td>the number of characters to be truncated from the buffer.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the same <em class="parameter"><code>string</code></em> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-unref"></a><h3>lt_string_unref ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_string_unref                     (<em class="parameter"><code><a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);</pre>
+<p>
+Decreases the reference count of <em class="parameter"><code>string</code></em>. when its reference count
+drops to 0, the object is finalized (i.e. its memory is freed).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-string-value"></a><h3>lt_string_value ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        lt_string_value                     (<em class="parameter"><code>const <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a> *string</code></em>);</pre>
+<p>
+Returns the buffer in <em class="parameter"><code>string</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>string</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Strings.html#lt-string-t" title="lt_string_t"><span class="type">lt_string_t</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a string which <em class="parameter"><code>string</code></em> has.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

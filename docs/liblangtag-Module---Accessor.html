@@ -38,20 +38,28 @@
 <div class="refsynopsisdiv">
 <a name="liblangtag-Module---Accessor.synopsis"></a><h2>Synopsis</h2>
 <pre class="synopsis">#define             <a class="link" href="liblangtag-Module---Accessor.html#LT-EXT-MODULE-VERSION:CAPS" title="LT_EXT_MODULE_VERSION">LT_EXT_MODULE_VERSION</a>
+#define             <a class="link" href="liblangtag-Module---Accessor.html#LT-MODULE-SYMBOL:CAPS" title="LT_MODULE_SYMBOL()">LT_MODULE_SYMBOL</a>                    (__sym__)
+#define             <a class="link" href="liblangtag-Module---Accessor.html#LT-MODULE-SYMBOL-:CAPS" title="LT_MODULE_SYMBOL_()">LT_MODULE_SYMBOL_</a>                   (__prefix__,
+                                                         __sym__)
+#define             <a class="link" href="liblangtag-Module---Accessor.html#LT-MODULE-SYMBOL--:CAPS" title="LT_MODULE_SYMBOL__()">LT_MODULE_SYMBOL__</a>                  (__prefix__,
+                                                         __sym__)
 <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-data-new-func-t" title="lt_ext_module_data_new_func_t ()">*lt_ext_module_data_new_func_t</a>) (<em class="parameter"><code><span class="type">void</span></code></em>);
 struct              <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-funcs-t" title="struct lt_ext_module_funcs_t">lt_ext_module_funcs_t</a>;
 const <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-funcs-t" title="struct lt_ext_module_funcs_t"><span class="returnvalue">lt_ext_module_funcs_t</span></a> * (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-get-funcs-func-t" title="lt_ext_module_get_funcs_func_t ()">*lt_ext_module_get_funcs_func_t</a>)
                                                         (<em class="parameter"><code><span class="type">void</span></code></em>);
-<a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-get-tag-func-t" title="lt_ext_module_get_tag_func_t ()">*lt_ext_module_get_tag_func_t</a>)     (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);
-<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-parse-func-t" title="lt_ext_module_parse_func_t ()">*lt_ext_module_parse_func_t</a>)       (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>,
-                                                         <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *subtag</code></em>,
-                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
+<span class="returnvalue">char</span> *              (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-get-tag-func-t" title="lt_ext_module_get_tag_func_t ()">*lt_ext_module_get_tag_func_t</a>)     (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);
+<a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-bool-t" title="lt_bool_t"><span class="returnvalue">lt_bool_t</span></a>           (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-parse-func-t" title="lt_ext_module_parse_func_t ()">*lt_ext_module_parse_func_t</a>)       (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *subtag</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="liblangtag-Error.html#lt-error-t" title="lt_error_t"><span class="type">lt_error_t</span></a> **error</code></em>);
+<a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-bool-t" title="lt_bool_t"><span class="returnvalue">lt_bool_t</span></a>           (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-precheck-func-t" title="lt_ext_module_precheck_func_t ()">*lt_ext_module_precheck_func_t</a>)    (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="liblangtag-Error.html#lt-error-t" title="lt_error_t"><span class="type">lt_error_t</span></a> **error</code></em>);
 <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-t" title="lt_ext_module_t"><span class="returnvalue">lt_ext_module_t</span></a> *   <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-ref" title="lt_ext_module_ref ()">lt_ext_module_ref</a>                   (<em class="parameter"><code><a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-t" title="lt_ext_module_t"><span class="type">lt_ext_module_t</span></a> *module</code></em>);
-<a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a>               (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-singleton-func-t" title="lt_ext_module_singleton_func_t ()">*lt_ext_module_singleton_func_t</a>)   (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">char</span>                (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-singleton-func-t" title="lt_ext_module_singleton_func_t ()">*lt_ext_module_singleton_func_t</a>)   (<em class="parameter"><code><span class="type">void</span></code></em>);
                     <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-t" title="lt_ext_module_t">lt_ext_module_t</a>;
 <span class="returnvalue">void</span>                <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-unref" title="lt_ext_module_unref ()">lt_ext_module_unref</a>                 (<em class="parameter"><code><a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-t" title="lt_ext_module_t"><span class="type">lt_ext_module_t</span></a> *module</code></em>);
-<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-validate-func-t" title="lt_ext_module_validate_func_t ()">*lt_ext_module_validate_func_t</a>)    (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);
-<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-version-func-t" title="lt_ext_module_version_func_t ()">*lt_ext_module_version_func_t</a>)     (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-bool-t" title="lt_bool_t"><span class="returnvalue">lt_bool_t</span></a>           (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-validate-func-t" title="lt_ext_module_validate_func_t ()">*lt_ext_module_validate_func_t</a>)    (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);
+<span class="returnvalue">int</span>                 (<a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-version-func-t" title="lt_ext_module_version_func_t ()">*lt_ext_module_version_func_t</a>)     (<em class="parameter"><code><span class="type">void</span></code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-modules-load" title="lt_ext_modules_load ()">lt_ext_modules_load</a>                 (<em class="parameter"><code><span class="type">void</span></code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-modules-unload" title="lt_ext_modules_unload ()">lt_ext_modules_unload</a>               (<em class="parameter"><code><span class="type">void</span></code></em>);
 const <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-funcs-t" title="struct lt_ext_module_funcs_t"><span class="returnvalue">lt_ext_module_funcs_t</span></a> * <a class="link" href="liblangtag-Module---Accessor.html#module-get-funcs" title="module_get_funcs ()">module_get_funcs</a>          (<em class="parameter"><code><span class="type">void</span></code></em>);
@@ -74,6 +82,30 @@ such as validating tags more strictly.
 <p>
 Static variable for the module version. this is used to ensure if the built
 module is compatible with the runtime library.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-MODULE-SYMBOL:CAPS"></a><h3>LT_MODULE_SYMBOL()</h3>
+<pre class="programlisting">#  define LT_MODULE_SYMBOL(__sym__)		LT_MODULE_SYMBOL_(LT_MODULE_PREFIX, __sym__)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-MODULE-SYMBOL-:CAPS"></a><h3>LT_MODULE_SYMBOL_()</h3>
+<pre class="programlisting">#define LT_MODULE_SYMBOL_(__prefix__,__sym__) LT_MODULE_SYMBOL__(__prefix__, __sym__)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-MODULE-SYMBOL--:CAPS"></a><h3>LT_MODULE_SYMBOL__()</h3>
+<pre class="programlisting">#define LT_MODULE_SYMBOL__(__prefix__,__sym__) __prefix__##_module_##__sym__
+</pre>
+<p>
 </p>
 </div>
 <hr>
@@ -124,7 +156,7 @@ that are supposed in the module.</td>
 <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> for the module.</td>
 </tr>
 <tr>
-<td><p><span class="term">const <span class="type">lt_ext_module_precheck_func_t</span> <em class="structfield"><code><a name="lt-ext-module-funcs-t.precheck-tag"></a>precheck_tag</code></em>;</span></p></td>
+<td><p><span class="term">const <a class="link" href="liblangtag-Module---Accessor.html#lt-ext-module-precheck-func-t" title="lt_ext_module_precheck_func_t ()"><span class="type">lt_ext_module_precheck_func_t</span></a> <em class="structfield"><code><a name="lt-ext-module-funcs-t.precheck-tag"></a>precheck_tag</code></em>;</span></p></td>
 <td>A callback function to check tags prior to parse subtags.</td>
 </tr>
 <tr>
@@ -163,7 +195,7 @@ an extension module.
 <hr>
 <div class="refsect2">
 <a name="lt-ext-module-get-tag-func-t"></a><h3>lt_ext_module_get_tag_func_t ()</h3>
-<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             (*lt_ext_module_get_tag_func_t)     (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">char</span> *              (*lt_ext_module_get_tag_func_t)     (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);</pre>
 <p>
 The type of the callback function used to obtain the tag.
 </p>
@@ -184,9 +216,9 @@ The type of the callback function used to obtain the tag.
 <hr>
 <div class="refsect2">
 <a name="lt-ext-module-parse-func-t"></a><h3>lt_ext_module_parse_func_t ()</h3>
-<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            (*lt_ext_module_parse_func_t)       (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>,
-                                                         <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *subtag</code></em>,
-                                                         <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-bool-t" title="lt_bool_t"><span class="returnvalue">lt_bool_t</span></a>           (*lt_ext_module_parse_func_t)       (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *subtag</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="liblangtag-Error.html#lt-error-t" title="lt_error_t"><span class="type">lt_error_t</span></a> **error</code></em>);</pre>
 <p>
 The type of the callback function used to parse tags.
 </p>
@@ -203,13 +235,48 @@ The type of the callback function used to parse tags.
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>error</code></em> :</span></p></td>
-<td>a <a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a>. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+<td>a <a class="link" href="liblangtag-Error.html#lt-error-t" title="lt_error_t"><span class="type">lt_error_t</span></a>. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>
 <a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the <em class="parameter"><code>subtag</code></em> is valid for Extension. otherwise <a href="../glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-ext-module-precheck-func-t"></a><h3>lt_ext_module_precheck_func_t ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-bool-t" title="lt_bool_t"><span class="returnvalue">lt_bool_t</span></a>           (*lt_ext_module_precheck_func_t)    (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a> *tag</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="liblangtag-Error.html#lt-error-t" title="lt_error_t"><span class="type">lt_error_t</span></a> **error</code></em>);</pre>
+<p>
+The type of the callback function used to check <em class="parameter"><code>tag</code></em> prior to process
+parsing subtags for the extension.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>data</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tag</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Container---Tag.html#lt-tag-t" title="lt_tag_t"><span class="type">lt_tag_t</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>error</code></em> :</span></p></td>
+<td>a <a class="link" href="liblangtag-Error.html#lt-error-t" title="lt_error_t"><span class="type">lt_error_t</span></a>. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<a href="../glib/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if <em class="parameter"><code>tag</code></em> is valid to process parsing subtags for the extension.
+otherwise <a href="../glib/glib-Standard-Macros.html#FALSE:CAPS"><code class="literal">FALSE</code></a>.</td>
 </tr>
 </tbody>
 </table></div>
@@ -239,7 +306,7 @@ Increases the reference count of <em class="parameter"><code>module</code></em>.
 <hr>
 <div class="refsect2">
 <a name="lt-ext-module-singleton-func-t"></a><h3>lt_ext_module_singleton_func_t ()</h3>
-<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a>               (*lt_ext_module_singleton_func_t)   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">char</span>                (*lt_ext_module_singleton_func_t)   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <p>
 The type of the callback function used to obtain a singleton character
 for Extension subtag that the module would support.
@@ -280,7 +347,7 @@ drops to 0, the object is finalized (i.e. its memory is freed).
 <hr>
 <div class="refsect2">
 <a name="lt-ext-module-validate-func-t"></a><h3>lt_ext_module_validate_func_t ()</h3>
-<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            (*lt_ext_module_validate_func_t)    (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-bool-t" title="lt_bool_t"><span class="returnvalue">lt_bool_t</span></a>           (*lt_ext_module_validate_func_t)    (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);</pre>
 <p>
 The type of the callback function used to validate the tags in <em class="parameter"><code>data</code></em>.
 </p>
@@ -302,7 +369,7 @@ The type of the callback function used to validate the tags in <em class="parame
 <hr>
 <div class="refsect2">
 <a name="lt-ext-module-version-func-t"></a><h3>lt_ext_module_version_func_t ()</h3>
-<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                (*lt_ext_module_version_func_t)     (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">int</span>                 (*lt_ext_module_version_func_t)     (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <p>
 The type of the <a class="link" href="liblangtag-Module---Accessor.html#module-get-version" title="module_get_version ()"><code class="function">module_get_version()</code></a> that is required to implement
 an extension module.

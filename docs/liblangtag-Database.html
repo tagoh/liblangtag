@@ -38,6 +38,7 @@
 <div class="refsynopsisdiv">
 <a name="liblangtag-Database.synopsis"></a><h2>Synopsis</h2>
 <pre class="synopsis"><span class="returnvalue">void</span>                <a class="link" href="liblangtag-Database.html#lt-db-finalize" title="lt_db_finalize ()">lt_db_finalize</a>                      (<em class="parameter"><code><span class="type">void</span></code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="liblangtag-Database.html#lt-db-get-datadir" title="lt_db_get_datadir ()">lt_db_get_datadir</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="liblangtag-Database---Extlang.html#lt-extlang-db-t" title="lt_extlang_db_t"><span class="returnvalue">lt_extlang_db_t</span></a> *   <a class="link" href="liblangtag-Database.html#lt-db-get-extlang" title="lt_db_get_extlang ()">lt_db_get_extlang</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="liblangtag-Database---Grandfathered.html#lt-grandfathered-db-t" title="lt_grandfathered_db_t"><span class="returnvalue">lt_grandfathered_db_t</span></a> * <a class="link" href="liblangtag-Database.html#lt-db-get-grandfathered" title="lt_db_get_grandfathered ()">lt_db_get_grandfathered</a>         (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="liblangtag-Database---Language.html#lt-lang-db-t" title="lt_lang_db_t"><span class="returnvalue">lt_lang_db_t</span></a> *      <a class="link" href="liblangtag-Database.html#lt-db-get-lang" title="lt_db_get_lang ()">lt_db_get_lang</a>                      (<em class="parameter"><code><span class="type">void</span></code></em>);
@@ -46,6 +47,7 @@
 <a class="link" href="liblangtag-Database---Script.html#lt-script-db-t" title="lt_script_db_t"><span class="returnvalue">lt_script_db_t</span></a> *    <a class="link" href="liblangtag-Database.html#lt-db-get-script" title="lt_db_get_script ()">lt_db_get_script</a>                    (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="liblangtag-Database---Variant.html#lt-variant-db-t" title="lt_variant_db_t"><span class="returnvalue">lt_variant_db_t</span></a> *   <a class="link" href="liblangtag-Database.html#lt-db-get-variant" title="lt_db_get_variant ()">lt_db_get_variant</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()">lt_db_initialize</a>                    (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="liblangtag-Database.html#lt-db-set-datadir" title="lt_db_set_datadir ()">lt_db_set_datadir</a>                   (<em class="parameter"><code>const <span class="type">char</span> *path</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -63,6 +65,21 @@ This section describes convenient functions to obtain the database instance.
 Decreases the reference count of the language tags database, which was
 increased with <a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a>.
 </p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-get-datadir"></a><h3>lt_db_get_datadir ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        lt_db_get_datadir                   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Obtain the directory where database files are installed.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the directory name.</td>
+</tr></tbody>
+</table></div>
 </div>
 <hr>
 <div class="refsect2">
@@ -190,6 +207,23 @@ the memory every time.
 <p>
 Initialize all of the language tags database instance.
 </p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-db-set-datadir"></a><h3>lt_db_set_datadir ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                lt_db_set_datadir                   (<em class="parameter"><code>const <span class="type">char</span> *path</code></em>);</pre>
+<p>
+Set <em class="parameter"><code>path</code></em> as the default location of the database files.
+This has to be called before <a class="link" href="liblangtag-Database.html#lt-db-initialize" title="lt_db_initialize ()"><code class="function">lt_db_initialize()</code></a> or any
+initialization for each databases.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>path</code></em> :</span></p></td>
+<td>the directory where database files are installed.</td>
+</tr></tbody>
+</table></div>
 </div>
 </div>
 </div>

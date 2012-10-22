@@ -1,0 +1,300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Miscellaneous Macros</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="liblangtag Documentation">
+<link rel="up" href="Utilities.html" title="Utilities APIs">
+<link rel="prev" href="Utilities.html" title="Utilities APIs">
+<link rel="next" href="liblangtag-Error.html" title="Error">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="Utilities.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Utilities.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">liblangtag Documentation</th>
+<td><a accesskey="n" href="liblangtag-Error.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#liblangtag-Miscellaneous-Macros.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#liblangtag-Miscellaneous-Macros.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="liblangtag-Miscellaneous-Macros"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="liblangtag-Miscellaneous-Macros.top_of_page"></a>Miscellaneous Macros</span></h2>
+<p>Miscellaneous Macros — macros used in liblangtag</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="liblangtag-Miscellaneous-Macros.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-ALIGNED-TO:CAPS" title="LT_ALIGNED_TO()">LT_ALIGNED_TO</a>                       (_x_,
+                                                         _y_)
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-ALIGNED-TO-POINTER:CAPS" title="LT_ALIGNED_TO_POINTER()">LT_ALIGNED_TO_POINTER</a>               (_x_)
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-BEGIN-DECLS:CAPS" title="LT_BEGIN_DECLS">LT_BEGIN_DECLS</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-BREAKPOINT:CAPS" title="LT_BREAKPOINT">LT_BREAKPOINT</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-DIR-SEPARATOR:CAPS" title="LT_DIR_SEPARATOR">LT_DIR_SEPARATOR</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-DIR-SEPARATOR-S:CAPS" title="LT_DIR_SEPARATOR_S">LT_DIR_SEPARATOR_S</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-END-DECLS:CAPS" title="LT_END_DECLS">LT_END_DECLS</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-GNUC-NULL-TERMINATED:CAPS" title="LT_GNUC_NULL_TERMINATED">LT_GNUC_NULL_TERMINATED</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-GNUC-PRINTF:CAPS" title="LT_GNUC_PRINTF()">LT_GNUC_PRINTF</a>                      (format_idx,
+                                                         arg_idx)
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-INLINE-FUNC:CAPS" title="LT_INLINE_FUNC">LT_INLINE_FUNC</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-LIKELY:CAPS" title="LT_LIKELY()">LT_LIKELY</a>                           (_e_)
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-MAX:CAPS" title="LT_MAX">LT_MAX</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-MIN:CAPS" title="LT_MIN">LT_MIN</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-N-ELEMENTS:CAPS" title="LT_N_ELEMENTS()">LT_N_ELEMENTS</a>                       (_x_)
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-PATH-MAX:CAPS" title="LT_PATH_MAX">LT_PATH_MAX</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-SEARCHPATH-SEPARATOR:CAPS" title="LT_SEARCHPATH_SEPARATOR">LT_SEARCHPATH_SEPARATOR</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-SEARCHPATH-SEPARATOR-S:CAPS" title="LT_SEARCHPATH_SEPARATOR_S">LT_SEARCHPATH_SEPARATOR_S</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-STMT-END:CAPS" title="LT_STMT_END">LT_STMT_END</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-STMT-START:CAPS" title="LT_STMT_START">LT_STMT_START</a>
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-UNLIKELY:CAPS" title="LT_UNLIKELY()">LT_UNLIKELY</a>                         (_e_)
+#define             <a class="link" href="liblangtag-Miscellaneous-Macros.html#inline" title="inline">inline</a>
+typedef             <a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-bool-t" title="lt_bool_t">lt_bool_t</a>;
+<span class="returnvalue">int</span>                 (<a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-compare-func-t" title="lt_compare_func_t ()">*lt_compare_func_t</a>)                (<em class="parameter"><code>const <a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="type">lt_pointer_t</span></a> v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="type">lt_pointer_t</span></a> v2</code></em>);
+<a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="returnvalue">lt_pointer_t</span></a>        (<a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-copy-func-t" title="lt_copy_func_t ()">*lt_copy_func_t</a>)                   (<em class="parameter"><code><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="type">lt_pointer_t</span></a> data</code></em>);
+<span class="returnvalue">void</span>                (<a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-destroy-func-t" title="lt_destroy_func_t ()">*lt_destroy_func_t</a>)                (<em class="parameter"><code><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="type">lt_pointer_t</span></a> data</code></em>);
+typedef             <a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t">lt_pointer_t</a>;
+</pre>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Miscellaneous-Macros.description"></a><h2>Description</h2>
+<p>
+These macros provide more specialized features which are not needed so often
+by application programmers.
+</p>
+</div>
+<div class="refsect1">
+<a name="liblangtag-Miscellaneous-Macros.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="LT-ALIGNED-TO:CAPS"></a><h3>LT_ALIGNED_TO()</h3>
+<pre class="programlisting">#define LT_ALIGNED_TO(_x_,_y_)		(((_x_) + (_y_) - 1) &amp; ~((_y_) - 1))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-ALIGNED-TO-POINTER:CAPS"></a><h3>LT_ALIGNED_TO_POINTER()</h3>
+<pre class="programlisting">#define LT_ALIGNED_TO_POINTER(_x_) LT_ALIGNED_TO ((_x_), ALIGNOF_VOID_P)
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-BEGIN-DECLS:CAPS"></a><h3>LT_BEGIN_DECLS</h3>
+<pre class="programlisting">#  define LT_BEGIN_DECLS extern "C" {
+</pre>
+<p>
+Used (along with <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-END-DECLS:CAPS" title="LT_END_DECLS"><span class="type">LT_END_DECLS</span></a>) to bracket header files. If the
+compiler in use is a C++ compiler, adds <code class="literal">extern "C"</code>
+around the header.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-BREAKPOINT:CAPS"></a><h3>LT_BREAKPOINT</h3>
+<pre class="programlisting">#define             LT_BREAKPOINT()</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-DIR-SEPARATOR:CAPS"></a><h3>LT_DIR_SEPARATOR</h3>
+<pre class="programlisting">#  define LT_DIR_SEPARATOR		'\\'
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-DIR-SEPARATOR-S:CAPS"></a><h3>LT_DIR_SEPARATOR_S</h3>
+<pre class="programlisting">#  define LT_DIR_SEPARATOR_S		"\\"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-END-DECLS:CAPS"></a><h3>LT_END_DECLS</h3>
+<pre class="programlisting">#  define LT_END_DECLS		}
+</pre>
+<p>
+Used (along with <a class="link" href="liblangtag-Miscellaneous-Macros.html#LT-BEGIN-DECLS:CAPS" title="LT_BEGIN_DECLS"><span class="type">LT_BEGIN_DECLS</span></a>) to bracket header files. If the
+compiler in use is a C++ compiler, adds <code class="literal">extern "C"</code>
+around the header.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-GNUC-NULL-TERMINATED:CAPS"></a><h3>LT_GNUC_NULL_TERMINATED</h3>
+<pre class="programlisting">#define             LT_GNUC_NULL_TERMINATED</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-GNUC-PRINTF:CAPS"></a><h3>LT_GNUC_PRINTF()</h3>
+<pre class="programlisting">#define             LT_GNUC_PRINTF(format_idx, arg_idx)</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-INLINE-FUNC:CAPS"></a><h3>LT_INLINE_FUNC</h3>
+<pre class="programlisting">#  define LT_INLINE_FUNC static __inline __attribute__ ((unused))
+</pre>
+<p>
+This macro is used to export function prototypes so they can be linked
+with an external version when no inlining is performed.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-LIKELY:CAPS"></a><h3>LT_LIKELY()</h3>
+<pre class="programlisting">#  define LT_LIKELY(_e_) (__builtin_expect (_LT_BOOLEAN_EXPR (_e_), 1))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-MAX:CAPS"></a><h3>LT_MAX</h3>
+<pre class="programlisting">#  define LT_MAX		MAX
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-MIN:CAPS"></a><h3>LT_MIN</h3>
+<pre class="programlisting">#  define LT_MIN		MIN
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-N-ELEMENTS:CAPS"></a><h3>LT_N_ELEMENTS()</h3>
+<pre class="programlisting">#define LT_N_ELEMENTS(_x_)		(sizeof (_x_) / sizeof ((_x_)[0]))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-PATH-MAX:CAPS"></a><h3>LT_PATH_MAX</h3>
+<pre class="programlisting">#define LT_PATH_MAX 512
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-SEARCHPATH-SEPARATOR:CAPS"></a><h3>LT_SEARCHPATH_SEPARATOR</h3>
+<pre class="programlisting">#  define LT_SEARCHPATH_SEPARATOR ';'
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-SEARCHPATH-SEPARATOR-S:CAPS"></a><h3>LT_SEARCHPATH_SEPARATOR_S</h3>
+<pre class="programlisting">#  define LT_SEARCHPATH_SEPARATOR_S ";"
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-STMT-END:CAPS"></a><h3>LT_STMT_END</h3>
+<pre class="programlisting">#  define LT_STMT_END		while (0)
+</pre>
+<p>
+Used within multi-statement macros so that they can be used in places where
+only on statement is expected by the compiler.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-STMT-START:CAPS"></a><h3>LT_STMT_START</h3>
+<pre class="programlisting">#  define LT_STMT_START		do
+</pre>
+<p>
+Used within multi-statement macros so that they can be used in places where
+only on statement is expected by the compiler.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LT-UNLIKELY:CAPS"></a><h3>LT_UNLIKELY()</h3>
+<pre class="programlisting">#  define LT_UNLIKELY(_e_) (__builtin_expect (_LT_BOOLEAN_EXPR (_e_), 0))
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="inline"></a><h3>inline</h3>
+<pre class="programlisting">#  define inline __inline__
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-bool-t"></a><h3>lt_bool_t</h3>
+<pre class="programlisting">typedef int		lt_bool_t;
+</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-compare-func-t"></a><h3>lt_compare_func_t ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 (*lt_compare_func_t)                (<em class="parameter"><code>const <a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="type">lt_pointer_t</span></a> v1</code></em>,
+                                                         <em class="parameter"><code>const <a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="type">lt_pointer_t</span></a> v2</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-copy-func-t"></a><h3>lt_copy_func_t ()</h3>
+<pre class="programlisting"><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="returnvalue">lt_pointer_t</span></a>        (*lt_copy_func_t)                   (<em class="parameter"><code><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="type">lt_pointer_t</span></a> data</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-destroy-func-t"></a><h3>lt_destroy_func_t ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                (*lt_destroy_func_t)                (<em class="parameter"><code><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="type">lt_pointer_t</span></a> data</code></em>);</pre>
+<p>
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="lt-pointer-t"></a><h3>lt_pointer_t</h3>
+<pre class="programlisting">typedef void *		lt_pointer_t;
+</pre>
+<p>
+</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

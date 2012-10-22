@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="liblangtag Documentation">
 <link rel="up" href="Module.html" title="Module APIs">
 <link rel="prev" href="liblangtag-Module---Accessor.html" title="Module - Accessor">
-<link rel="next" href="liblangtag-Error.html" title="Error">
+<link rel="next" href="Utilities.html" title="Utilities APIs">
 <meta name="generator" content="GTK-Doc V1.18 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -18,7 +18,7 @@
 <td><a accesskey="u" href="Module.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">liblangtag Documentation</th>
-<td><a accesskey="n" href="liblangtag-Error.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="Utilities.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
 <tr><td colspan="5" class="shortcuts">
 <a href="#liblangtag-Module---Data.synopsis" class="shortcut">Top</a>
@@ -37,8 +37,8 @@
 </tr></table></div>
 <div class="refsynopsisdiv">
 <a name="liblangtag-Module---Data.synopsis"></a><h2>Synopsis</h2>
-<pre class="synopsis"><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-new" title="lt_ext_module_data_new ()">lt_ext_module_data_new</a>           (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gsize"><span class="type">gsize</span></a> size</code></em>,
-                                                         <em class="parameter"><code><a href="../glib/glib-Datasets.html#GDestroyNotify"><span class="type">GDestroyNotify</span></a> finalizer</code></em>);
+<pre class="synopsis"><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-new" title="lt_ext_module_data_new ()">lt_ext_module_data_new</a>           (<em class="parameter"><code><span class="type">size_t</span> size</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-destroy-func-t" title="lt_destroy_func_t ()"><span class="type">lt_destroy_func_t</span></a> finalizer</code></em>);
 <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-ref" title="lt_ext_module_data_ref ()">lt_ext_module_data_ref</a>           (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);
                     <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t">lt_ext_module_data_t</a>;
 <span class="returnvalue">void</span>                <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-unref" title="lt_ext_module_data_unref ()">lt_ext_module_data_unref</a>            (<em class="parameter"><code><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a> *data</code></em>);
@@ -55,8 +55,8 @@ extension subtag.
 <a name="liblangtag-Module---Data.details"></a><h2>Details</h2>
 <div class="refsect2">
 <a name="lt-ext-module-data-new"></a><h3>lt_ext_module_data_new ()</h3>
-<pre class="programlisting"><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * lt_ext_module_data_new           (<em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gsize"><span class="type">gsize</span></a> size</code></em>,
-                                                         <em class="parameter"><code><a href="../glib/glib-Datasets.html#GDestroyNotify"><span class="type">GDestroyNotify</span></a> finalizer</code></em>);</pre>
+<pre class="programlisting"><a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="returnvalue">lt_ext_module_data_t</span></a> * lt_ext_module_data_new           (<em class="parameter"><code><span class="type">size_t</span> size</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-destroy-func-t" title="lt_destroy_func_t ()"><span class="type">lt_destroy_func_t</span></a> finalizer</code></em>);</pre>
 <p>
 Create a new instance of <a class="link" href="liblangtag-Module---Data.html#lt-ext-module-data-t" title="lt_ext_module_data_t"><span class="type">lt_ext_module_data_t</span></a>. this function allows
 to create an inherited instance like:
@@ -89,7 +89,8 @@ to create an inherited instance like:
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>finalizer</code></em> :</span></p></td>
-<td>a callback function to destroy the content.</td>
+<td>a callback function to destroy the content. <span class="annotation">[<acronym title="The callback is valid until first called."><span class="acronym">scope async</span></acronym>]</span>
+</td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
@@ -125,7 +126,7 @@ Increases the reference count of <em class="parameter"><code>data</code></em>.
 <div class="refsect2">
 <a name="lt-ext-module-data-t"></a><h3>lt_ext_module_data_t</h3>
 <pre class="programlisting">typedef struct {
-	gpointer dummy[8];
+	lt_pointer_t dummy[8];
 } lt_ext_module_data_t;
 </pre>
 <p>
@@ -135,7 +136,7 @@ structure are private to the <a class="link" href="liblangtag-Module---Data.html
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td><p><span class="term"><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> <em class="structfield"><code><a name="lt-ext-module-data-t.dummy"></a>dummy</code></em>[8];</span></p></td>
+<td><p><span class="term"><a class="link" href="liblangtag-Miscellaneous-Macros.html#lt-pointer-t" title="lt_pointer_t"><span class="type">lt_pointer_t</span></a> <em class="structfield"><code><a name="lt-ext-module-data-t.dummy"></a>dummy</code></em>[8];</span></p></td>
 <td>a dummy pointer for alignment.</td>
 </tr></tbody>
 </table></div>
