@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.62)
-AC_INIT([liblangtag], 0.3, [http://github.com/tagoh/liblangtag/issues])
+AC_INIT([liblangtag], 0.4.0, [http://github.com/tagoh/liblangtag/issues])
 
 . `dirname $0`/requires
 
@@ -46,9 +46,9 @@ dnl    then set CURRENT to the so number +1 and set AGE to 0.
 dnl
 
 dnl for liblangtag.la
-LT_CURRENT=2
+LT_CURRENT=1
 LT_REVISION=0
-LT_AGE=2
+LT_AGE=0
 
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
@@ -295,7 +295,7 @@ AX_PTHREAD([],
 	[AC_MSG_ERROR([*** pthread library are required])])
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
-if test "x$enable_introspection" = "xyes"; then
+if test "x$enable_introspection" != "xyes"; then
 	has_gobject=no
 fi
 AM_CONDITIONAL(ENABLE_GOBJECT, test x$has_gobject != xno)

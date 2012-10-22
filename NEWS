@@ -1,3 +1,21 @@
+0.3 -> 0.4
+=============
+* Dual-licensing with LGPLv3+ and MPLv2.
+* No GLib required to build anymore.
+* SONAME bumped
+* Bug Fixes:
+  * Fix various bashisms.
+  * Fix 'make check' fails without --enable-debug.
+  * Fix the broken output of language-subtag-registry.xml
+  * Fix broken .pc files.
+  * Do not call xmlCleanupParser().
+  * Fix detecting locale.alias
+* Enhancements:
+  * Add --disable-test option to configure
+  * Add --disable-modules option to configure
+  * Update CLDR data.
+  * Support IME/Keyboard/Machine Translation/Private Use transform tags
+
 0.2 -> 0.3
 =============
 * Bug Fix:
