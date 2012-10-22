@@ -55,8 +55,10 @@ DISTCHECK_CONFIGURE_FLAGS =		\
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA =			\
 	liblangtag.pc			\
-	liblangtag-gobject.pc		\
 	$(NULL)
+if ENABLE_GOBJECT
+pkgconfig_DATA += liblangtag-gobject.pc
+endif
 $(pkgconfig_DATA): $(top_builddir)/config.status
 noinst_DATA =					\
 	liblangtag-uninstalled.pc		\

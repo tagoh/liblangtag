@@ -286,7 +286,6 @@ else
 	use_check=no
 fi
 
-AM_CONDITIONAL(ENABLE_GOBJECT, test x$has_gobject != xno)
 AM_CONDITIONAL(ENABLE_UNIT_TEST, test x$use_check != xno)
 
 dnl ======================================================================
@@ -296,6 +295,10 @@ AX_PTHREAD([],
 	[AC_MSG_ERROR([*** pthread library are required])])
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
+if test "x$enable_introspection" = "xyes"; then
+	has_gobject=no
+fi
+AM_CONDITIONAL(ENABLE_GOBJECT, test x$has_gobject != xno)
 GTK_DOC_CHECK(1.0)
 
 dnl ======================================================================
