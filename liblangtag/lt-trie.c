@@ -25,7 +25,6 @@ typedef struct _lt_trie_node_t	lt_trie_node_t;
 struct _lt_trie_node_t {
 	lt_mem_t           parent;
 	lt_trie_node_t    *node[255];
-	lt_destroy_func_t  destroy_func;
 	lt_pointer_t       data;
 	char               index_;
 };
@@ -82,12 +81,9 @@ lt_trie_node_add(lt_trie_node_t    *node,
 			return FALSE;
 		} else {
 			if (node->data) {
-				lt_mem_remove_ref(&node->parent, node->data);
-				if (node->destroy_func)
-					node->destroy_func(node->data);
+				lt_mem_delete_ref(&node->parent, node->data);
 			}
 			node->data = data;
-			node->destroy_func = func;
 			if (func)
 				lt_mem_add_ref(&node->parent, data, func);
 
@@ -109,6 +105,7 @@ lt_trie_node_add(lt_trie_node_t    *node,
 
 static lt_bool_t
 lt_trie_node_remove(lt_trie_node_t *node,
+		    lt_trie_node_t *parent,
 		    const char     *key)
 {
 	int i, index_;
@@ -121,21 +118,19 @@ lt_trie_node_remove(lt_trie_node_t *node,
 	if (*key == 0) {
 		if (!node->data)
 			return FALSE;
-		lt_mem_remove_ref(&node->parent, node->data);
-		if (node->destroy_func)
-			node->destroy_func(node->data);
+		lt_mem_delete_ref(&node->parent, node->data);
 		node->data = NULL;
 		for (i = 0; i < 255; i++) {
 			found |= node->node[i] != NULL;
 		}
 		if (!found)
-			lt_trie_node_unref(node);
+			lt_mem_delete_ref(&parent->parent, node);
 		return TRUE;
 	}
 	if (!node->node[index_])
 		return FALSE;
 
-	return lt_trie_node_remove(node->node[index_], key + 1);
+	return lt_trie_node_remove(node->node[index_], node, key + 1);
 }
 
 static const lt_pointer_t
@@ -227,11 +222,12 @@ lt_trie_remove(lt_trie_t  *trie,
 {
 	lt_return_val_if_fail (trie != NULL, FALSE);
 	lt_return_val_if_fail (key != NULL, FALSE);
+	lt_return_val_if_fail (*key != 0, FALSE);
 
 	if (!trie->root)
 		return FALSE;
 
-	return lt_trie_node_remove(trie->root, key);
+	return lt_trie_node_remove(trie->root, NULL, key);
 }
 
 lt_pointer_t
