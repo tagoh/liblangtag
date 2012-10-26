@@ -19,6 +19,7 @@
 #include "lt-error.h"
 #include "lt-grandfathered.h"
 #include "lt-grandfathered-private.h"
+#include "lt-iter-private.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
 #include "lt-trie.h"
@@ -36,10 +37,14 @@
  * which has been registered under RFC 3066 and mostly deprecated.
  */
 struct _lt_grandfathered_db_t {
-	lt_mem_t   parent;
-	lt_xml_t  *xml;
-	lt_trie_t *grandfathered_entries;
+	lt_iter_tmpl_t  parent;
+	lt_xml_t       *xml;
+	lt_trie_t      *grandfathered_entries;
 };
+typedef struct _lt_grandfathered_db_iter_t {
+	lt_iter_t  parent;
+	lt_iter_t *iter;
+} lt_grandfathered_db_iter_t;
 
 /*< private >*/
 static lt_bool_t
@@ -166,6 +171,42 @@ lt_grandfathered_db_parse(lt_grandfathered_db_t  *grandfathereddb,
 	return retval;
 }
 
+static lt_iter_t *
+_lt_grandfathered_db_iter_init(lt_iter_tmpl_t *tmpl)
+{
+	lt_grandfathered_db_iter_t *retval;
+	lt_grandfathered_db_t *db = (lt_grandfathered_db_t *)tmpl;
+
+	retval = malloc(sizeof (lt_grandfathered_db_iter_t));
+	if (retval) {
+		retval->iter = lt_iter_init((lt_iter_tmpl_t *)db->grandfathered_entries);
+		if (!retval->iter) {
+			free(retval);
+			retval = NULL;
+		}
+	}
+
+	return &retval->parent;
+}
+
+static void
+_lt_grandfathered_db_iter_fini(lt_iter_t *iter)
+{
+	lt_grandfathered_db_iter_t *db_iter = (lt_grandfathered_db_iter_t *)iter;
+
+	lt_iter_finish(db_iter->iter);
+}
+
+static lt_bool_t
+_lt_grandfathered_db_iter_next(lt_iter_t    *iter,
+			       lt_pointer_t *key,
+			       lt_pointer_t *val)
+{
+	lt_grandfathered_db_iter_t *db_iter = (lt_grandfathered_db_iter_t *)iter;
+
+	return lt_iter_next(db_iter->iter, key, val);
+}
+
 /*< public >*/
 /**
  * lt_grandfathered_db_new:
@@ -182,8 +223,13 @@ lt_grandfathered_db_new(void)
 	if (retval) {
 		lt_error_t *err = NULL;
 
+		lt_iter_tmpl_init(&retval->parent);
+		retval->parent.init = _lt_grandfathered_db_iter_init;
+		retval->parent.fini = _lt_grandfathered_db_iter_fini;
+		retval->parent.next = _lt_grandfathered_db_iter_next;
+
 		retval->grandfathered_entries = lt_trie_new();
-		lt_mem_add_ref(&retval->parent, retval->grandfathered_entries,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->grandfathered_entries,
 			       (lt_destroy_func_t)lt_trie_unref);
 
 		retval->xml = lt_xml_new();
@@ -192,7 +238,7 @@ lt_grandfathered_db_new(void)
 			retval = NULL;
 			goto bail;
 		}
-		lt_mem_add_ref(&retval->parent, retval->xml,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->xml,
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_grandfathered_db_parse(retval, &err);
@@ -221,7 +267,7 @@ lt_grandfathered_db_ref(lt_grandfathered_db_t *grandfathereddb)
 {
 	lt_return_val_if_fail (grandfathereddb != NULL, NULL);
 
-	return lt_mem_ref(&grandfathereddb->parent);
+	return lt_mem_ref((lt_mem_t *)grandfathereddb);
 }
 
 /**
@@ -235,7 +281,7 @@ void
 lt_grandfathered_db_unref(lt_grandfathered_db_t *grandfathereddb)
 {
 	if (grandfathereddb)
-		lt_mem_unref(&grandfathereddb->parent);
+		lt_mem_unref((lt_mem_t *)grandfathereddb);
 }
 
 /**
