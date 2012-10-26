@@ -42,6 +42,9 @@ size_t        lt_list_length     (const lt_list_t    *list);
 lt_list_t    *lt_list_append     (lt_list_t          *list,
                                   lt_pointer_t        data,
                                   lt_destroy_func_t   func);
+lt_list_t    *lt_list_prepend    (lt_list_t          *list,
+				  lt_pointer_t        data,
+				  lt_destroy_func_t   func);
 lt_list_t    *lt_list_remove     (lt_list_t          *list,
                                   lt_pointer_t        data);
 lt_list_t    *lt_list_delete     (lt_list_t          *list,

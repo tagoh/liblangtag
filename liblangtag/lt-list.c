@@ -272,6 +272,30 @@ lt_list_append(lt_list_t         *list,
 	return list;
 }
 
+lt_list_t *
+lt_list_prepend(lt_list_t         *list,
+		lt_pointer_t       data,
+		lt_destroy_func_t  func)
+{
+	lt_list_t *l = lt_list_new();
+
+	l->value = data;
+	l->next = list;
+	lt_mem_add_ref(&l->parent, l, _lt_list_update);
+	if (func)
+		lt_mem_add_ref(&l->parent, data, func);
+	if (list) {
+		l->prev = list->prev;
+		if (list->prev)
+			list->prev->next = l;
+		list->prev = l;
+	} else {
+		l->prev = NULL;
+	}
+
+	return l;
+}
+
 #if 0
 /**
  * lt_list_remove:
@@ -470,7 +494,8 @@ lt_list_pop(lt_list_t    *list,
 {
 	lt_return_val_if_fail (list != NULL, NULL);
 
-	lt_mem_remove_ref(&list->parent, list->value);
+	if (list->value)
+		lt_mem_remove_ref(&list->parent, list->value);
 	if (data)
 		*data = list->value;
 	list = lt_list_delete_link(list, list);
