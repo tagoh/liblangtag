@@ -229,6 +229,7 @@ _lt_lang_db_iter_fini(lt_iter_t *iter)
 	lt_lang_db_iter_t *db_iter = (lt_lang_db_iter_t *)iter;
 
 	lt_iter_finish(db_iter->iter);
+	free(iter);
 }
 
 static lt_bool_t
