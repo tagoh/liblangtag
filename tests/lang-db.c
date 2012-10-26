@@ -31,7 +31,27 @@ main(int    argc,
 	lt_db_set_datadir(TEST_DATADIR);
 	langdb = lt_lang_db_new();
 
-	if (lt_strcmp0(argv[1], "list") == 0) {
+	if (lt_strcmp0(argv[1], "list_keys") == 0) {
+		const char *key;
+		lt_iter_t *iter;
+
+		iter = lt_iter_init((lt_iter_tmpl_t *)langdb);
+		while (lt_iter_next(iter,
+				    (lt_pointer_t *)&key,
+				    NULL)) {
+			printf("%s\n", key);
+		}
+		lt_iter_finish(iter);
+	} else if (lt_strcmp0(argv[1], "list_values") == 0) {
+		lt_iter_t *iter;
+
+		iter = lt_iter_init((lt_iter_tmpl_t *)langdb);
+		while (lt_iter_next(iter,
+				    NULL,
+				    (lt_pointer_t *)&lang)) {
+			lt_lang_dump(lang);
+		}
+		lt_iter_finish(iter);
 	} else if (lt_strcmp0(argv[1], "lookup") == 0) {
 		lang = lt_lang_db_lookup(langdb, argv[2]);
 		if (!lang) {

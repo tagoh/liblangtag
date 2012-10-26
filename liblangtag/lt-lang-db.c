@@ -17,6 +17,7 @@
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
+#include "lt-iter-private.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
 #include "lt-trie.h"
@@ -35,9 +36,9 @@
  * registered as ISO 639 code.
  */
 struct _lt_lang_db_t {
-	lt_mem_t   parent;
-	lt_xml_t  *xml;
-	lt_trie_t *lang_entries;
+	lt_iter_tmpl_t  parent;
+	lt_xml_t       *xml;
+	lt_trie_t      *lang_entries;
 };
 
 /*< private >*/
@@ -200,6 +201,42 @@ lt_lang_db_parse(lt_lang_db_t  *langdb,
 	return retval;
 }
 
+static lt_iter_t *
+_lt_lang_db_iter_init(lt_iter_tmpl_t *tmpl)
+{
+	lt_lang_db_iter_t *retval;
+	lt_lang_db_t *langdb = (lt_lang_db_t *)tmpl;
+
+	retval = malloc(sizeof (lt_lang_db_iter_t));
+	if (retval) {
+		retval->iter = lt_iter_init((lt_iter_tmpl_t *)langdb->lang_entries);
+		if (!retval->iter) {
+			free(retval);
+			retval = NULL;
+		}
+	}
+
+	return &retval->parent;
+}
+
+static void
+_lt_lang_db_iter_fini(lt_iter_t *iter)
+{
+	lt_lang_db_iter_t *db_iter = (lt_lang_db_iter_t *)iter;
+
+	lt_iter_finish(db_iter->iter);
+}
+
+static lt_bool_t
+_lt_lang_db_iter_next(lt_iter_t    *iter,
+		      lt_pointer_t *key,
+		      lt_pointer_t *val)
+{
+	lt_lang_db_iter_t *db_iter = (lt_lang_db_iter_t *)iter;
+
+	return lt_iter_next(db_iter->iter, key, val);
+}
+
 /*< public >*/
 /**
  * lt_lang_db_new:
@@ -217,8 +254,12 @@ lt_lang_db_new(void)
 		lt_error_t *err = NULL;
 		lt_lang_t *le;
 
+		retval->parent.init = _lt_lang_db_iter_init;
+		retval->parent.fini = _lt_lang_db_iter_fini;
+		retval->parent.next = _lt_lang_db_iter_next;
+
 		retval->lang_entries = lt_trie_new();
-		lt_mem_add_ref(&retval->parent, retval->lang_entries,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->lang_entries,
 			       (lt_destroy_func_t)lt_trie_unref);
 
 		le = lt_lang_create();
@@ -235,7 +276,7 @@ lt_lang_db_new(void)
 			retval = NULL;
 			goto bail;
 		}
-		lt_mem_add_ref(&retval->parent, retval->xml,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->xml,
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_lang_db_parse(retval, &err);
@@ -264,7 +305,7 @@ lt_lang_db_ref(lt_lang_db_t *langdb)
 {
 	lt_return_val_if_fail (langdb != NULL, NULL);
 
-	return lt_mem_ref(&langdb->parent);
+	return lt_mem_ref((lt_mem_t *)langdb);
 }
 
 /**
@@ -278,7 +319,7 @@ void
 lt_lang_db_unref(lt_lang_db_t *langdb)
 {
 	if (langdb)
-		lt_mem_unref(&langdb->parent);
+		lt_mem_unref((lt_mem_t *)langdb);
 }
 
 /**
