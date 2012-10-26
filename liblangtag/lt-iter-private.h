@@ -26,10 +26,13 @@ typedef lt_bool_t   (* lt_iter_next_func_t) (lt_iter_t      *iter,
 
 struct _lt_iter_tmpl_t {
 	lt_mem_t            parent;
+	int                 magic_code;
 	lt_iter_init_func_t init;
 	lt_iter_fini_func_t fini;
 	lt_iter_next_func_t next;
 };
+
+void lt_iter_tmpl_init(lt_iter_tmpl_t *tmpl);
 
 LT_END_DECLS
 

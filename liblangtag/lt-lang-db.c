@@ -229,7 +229,6 @@ _lt_lang_db_iter_fini(lt_iter_t *iter)
 	lt_lang_db_iter_t *db_iter = (lt_lang_db_iter_t *)iter;
 
 	lt_iter_finish(db_iter->iter);
-	free(iter);
 }
 
 static lt_bool_t
@@ -259,6 +258,7 @@ lt_lang_db_new(void)
 		lt_error_t *err = NULL;
 		lt_lang_t *le;
 
+		lt_iter_tmpl_init(&retval->parent);
 		retval->parent.init = _lt_lang_db_iter_init;
 		retval->parent.fini = _lt_lang_db_iter_fini;
 		retval->parent.next = _lt_lang_db_iter_next;

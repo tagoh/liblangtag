@@ -241,6 +241,7 @@ lt_trie_new(void)
 	lt_trie_t *retval = lt_mem_alloc_object(sizeof (lt_trie_t));
 
 	if (retval) {
+		lt_iter_tmpl_init(&retval->parent);
 		retval->parent.init = _lt_trie_iter_init;
 		retval->parent.fini = _lt_trie_iter_fini;
 		retval->parent.next = _lt_trie_iter_next;

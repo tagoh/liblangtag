@@ -18,9 +18,18 @@
 #include "lt-messages.h"
 #include "lt-iter-private.h"
 
+#define MAGIC_CODE	0xB1C023FF
+
 /*< private >*/
 
 /*< protected >*/
+void
+lt_iter_tmpl_init(lt_iter_tmpl_t *tmpl)
+{
+	lt_return_if_fail (tmpl != NULL);
+
+	tmpl->magic_code = MAGIC_CODE;
+}
 
 /*< public >*/
 lt_iter_t *
@@ -29,6 +38,7 @@ lt_iter_init(lt_iter_tmpl_t *tmpl)
 	lt_iter_t *retval;
 
 	lt_return_val_if_fail (tmpl != NULL, NULL);
+	lt_return_val_if_fail (tmpl->magic_code == MAGIC_CODE, NULL);
 	lt_return_val_if_fail (tmpl->init != NULL, NULL);
 
 	retval = tmpl->init(tmpl);
