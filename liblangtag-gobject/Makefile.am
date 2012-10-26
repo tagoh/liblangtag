@@ -68,6 +68,7 @@ liblangtag_gobject_built_private_headers =	\
 	lt-extlang.gir.h			\
 	lt-grandfathered-db.gir.h		\
 	lt-grandfathered.gir.h			\
+	lt-iter.gir.h				\
 	lt-lang-db.gir.h			\
 	lt-lang.gir.h				\
 	lt-list.gir.h				\
@@ -93,6 +94,7 @@ liblangtag_gobject_built_sources =	\
 	lt-extlang.gir.c		\
 	lt-grandfathered-db.gir.c	\
 	lt-grandfathered.gir.c		\
+	lt-iter.gir.c			\
 	lt-lang-db.gir.c		\
 	lt-lang.gir.c			\
 	lt-list.gir.c			\

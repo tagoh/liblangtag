@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "lt-mem.h"
+#include "lt-iter-private.h"
 #include "lt-messages.h"
 #include "lt-trie.h"
 
@@ -29,7 +30,7 @@ struct _lt_trie_node_t {
 	char               index_;
 };
 struct _lt_trie_t {
-	lt_mem_t        parent;
+	lt_iter_tmpl_t  parent;
 	lt_trie_node_t *root;
 };
 
@@ -151,13 +152,93 @@ lt_trie_node_lookup(lt_trie_node_t *node,
 	return lt_trie_node_lookup(node->node[index_], key + 1);
 }
 
+static lt_iter_t *
+_lt_trie_iter_init(lt_iter_t *iter)
+{
+	lt_trie_iter_t *trie_iter = (lt_trie_iter_t *)iter;
+	lt_trie_t *trie = (lt_trie_t *)iter->target;
+	int i;
+
+	trie_iter->pos_str = lt_string_new(NULL);
+	trie_iter->stack = NULL;
+	if (trie->root) {
+		lt_trie_node_t *node = trie->root;
+
+		for (i = 0; i < 255; i++) {
+			if (node->node[i])
+				trie_iter->stack = lt_list_append(trie_iter->stack, node->node[i], NULL);
+		}
+		/* add a terminator */
+		trie_iter->stack = lt_list_append(trie_iter->stack, NULL, NULL);
+	}
+
+	return iter;
+}
+
+static void
+_lt_trie_iter_fini(lt_iter_t *iter)
+{
+	lt_trie_iter_t *trie_iter = (lt_trie_iter_t *)iter;
+
+	if (trie_iter->stack)
+		lt_list_free(trie_iter->stack);
+	lt_string_unref(trie_iter->pos_str);
+}
+
+static lt_bool_t
+_lt_trie_iter_next(lt_iter_t    *iter,
+		   lt_pointer_t *key,
+		   lt_pointer_t *value)
+{
+	lt_trie_iter_t *trie_iter = (lt_trie_iter_t *)iter;
+	int i;
+	lt_trie_node_t *node = NULL;
+
+	while (1) {
+		if (lt_list_length(trie_iter->stack) == 0)
+			break;
+		trie_iter->stack = lt_list_pop(trie_iter->stack, (lt_pointer_t *)&node);
+		if (node) {
+			lt_string_append_c(trie_iter->pos_str, node->index_);
+		} else {
+			lt_string_truncate(trie_iter->pos_str, -1);
+			continue;
+		}
+		for (i = 0; i < 255; i++) {
+			if (node->node[i])
+				trie_iter->stack = lt_list_append(trie_iter->stack, node->node[i], NULL);
+		}
+		/* add a terminator */
+		trie_iter->stack = lt_list_append(trie_iter->stack, NULL, NULL);
+		if (node->data) {
+			if (key) {
+				*key = strdup(lt_string_value(trie_iter->pos_str));
+			}
+			if (value)
+				*value = node->data;
+
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
 /*< protected >*/
 
 /*< public >*/
 lt_trie_t *
 lt_trie_new(void)
 {
-	return lt_mem_alloc_object(sizeof (lt_trie_t));
+	lt_trie_t *retval = lt_mem_alloc_object(sizeof (lt_trie_t));
+
+	if (retval) {
+		retval->parent.init = _lt_trie_iter_init;
+		retval->parent.fini = _lt_trie_iter_fini;
+		retval->parent.next = _lt_trie_iter_next;
+	}
+
+	return retval;
 }
 
 lt_trie_t *
@@ -165,14 +246,14 @@ lt_trie_ref(lt_trie_t *trie)
 {
 	lt_return_val_if_fail (trie != NULL, NULL);
 
-	return lt_mem_ref(&trie->parent);
+	return lt_mem_ref((lt_mem_t *)trie);
 }
 
 void
 lt_trie_unref(lt_trie_t *trie)
 {
 	if (trie)
-		lt_mem_unref(&trie->parent);
+		lt_mem_unref((lt_mem_t *)trie);
 }
 
 lt_bool_t
@@ -188,7 +269,7 @@ lt_trie_add(lt_trie_t         *trie,
 	if (!trie->root) {
 		if ((trie->root = lt_trie_node_new(0)) == NULL)
 			return FALSE;
-		lt_mem_add_ref(&trie->parent, trie->root,
+		lt_mem_add_ref((lt_mem_t *)trie, trie->root,
 			       (lt_destroy_func_t)lt_trie_node_unref);
 		lt_mem_add_weak_pointer(&trie->root->parent, (lt_pointer_t *)&trie->root);
 	}
@@ -209,7 +290,7 @@ lt_trie_replace(lt_trie_t         *trie,
 	if (!trie->root) {
 		if ((trie->root = lt_trie_node_new(0)) == NULL)
 			return FALSE;
-		lt_mem_add_ref(&trie->parent, trie->root,
+		lt_mem_add_ref((lt_mem_t *)trie, trie->root,
 			       (lt_destroy_func_t)lt_trie_node_unref);
 	}
 
@@ -255,88 +336,13 @@ lt_trie_keys(lt_trie_t *trie)
 	if (trie->root)
 		return NULL;
 
-	lt_trie_iter_init(&iter, trie);
+	lt_iter_init((lt_iter_t *)&iter, &trie->parent);
 
-	while (lt_trie_iter_next(&iter, &key, NULL)) {
+	while (lt_iter_next((lt_iter_t *)&iter, &key, NULL)) {
 		retval = lt_list_append(retval, key, free);
 	}
 
-	lt_trie_iter_finish(&iter);
+	lt_iter_finish((lt_iter_t *)&iter);
 
 	return retval;
-}
-
-lt_trie_iter_t *
-lt_trie_iter_init(lt_trie_iter_t *iter,
-		  lt_trie_t      *trie)
-{
-	int i;
-
-	lt_return_val_if_fail (iter != NULL, NULL);
-	lt_return_val_if_fail (trie != NULL, NULL);
-
-	iter->pos_str = lt_string_new(NULL);
-	iter->stack = NULL;
-	if (trie->root) {
-		lt_trie_node_t *node = trie->root;
-
-		for (i = 0; i < 255; i++) {
-			if (node->node[i])
-				iter->stack = lt_list_append(iter->stack, node->node[i], NULL);
-		}
-		/* add a terminator */
-		iter->stack = lt_list_append(iter->stack, NULL, NULL);
-	}
-
-	return iter;
-}
-
-void
-lt_trie_iter_finish(lt_trie_iter_t *iter)
-{
-	lt_return_if_fail (iter != NULL);
-
-	if (iter->stack)
-		lt_list_free(iter->stack);
-	lt_string_unref(iter->pos_str);
-}
-
-lt_bool_t
-lt_trie_iter_next(lt_trie_iter_t *iter,
-		  lt_pointer_t   *key,
-		  lt_pointer_t   *value)
-{
-	int i;
-	lt_trie_node_t *node = NULL;
-
-	lt_return_val_if_fail (iter != NULL, FALSE);
-
-	while (1) {
-		if (lt_list_length(iter->stack) == 0)
-			break;
-		iter->stack = lt_list_pop(iter->stack, (lt_pointer_t *)&node);
-		if (node) {
-			lt_string_append_c(iter->pos_str, node->index_);
-		} else {
-			lt_string_truncate(iter->pos_str, -1);
-			continue;
-		}
-		for (i = 0; i < 255; i++) {
-			if (node->node[i])
-				iter->stack = lt_list_append(iter->stack, node->node[i], NULL);
-		}
-		/* add a terminator */
-		iter->stack = lt_list_append(iter->stack, NULL, NULL);
-		if (node->data) {
-			if (key) {
-				*key = strdup(lt_string_value(iter->pos_str));
-			}
-			if (value)
-				*value = node->data;
-
-			return TRUE;
-		}
-	}
-
-	return FALSE;
 }

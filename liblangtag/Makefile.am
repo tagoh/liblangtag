@@ -51,6 +51,7 @@ liblangtag_public_headers =			\
 	lt-extlang-db.h				\
 	lt-grandfathered.h			\
 	lt-grandfathered-db.h			\
+	lt-iter.h				\
 	lt-lang.h				\
 	lt-lang-db.h				\
 	lt-list.h				\
@@ -72,6 +73,7 @@ liblangtag_private_headers =			\
 	lt-extension-private.h			\
 	lt-extlang-private.h			\
 	lt-grandfathered-private.h		\
+	lt-iter-private.h			\
 	lt-lang-private.h			\
 	lt-mem.h				\
 	lt-messages.h				\
@@ -103,6 +105,7 @@ liblangtag_sources =				\
 	lt-extlang-db.c				\
 	lt-grandfathered.c			\
 	lt-grandfathered-db.c			\
+	lt-iter.c				\
 	lt-lang.c				\
 	lt-lang-db.c				\
 	lt-list.c				\
