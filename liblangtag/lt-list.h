@@ -17,7 +17,7 @@
 #ifndef __LT_LIST_H__
 #define __LT_LIST_H__
 
-#include "lt-macros.h"
+#include <liblangtag/lt-macros.h>
 
 LT_BEGIN_DECLS
 
