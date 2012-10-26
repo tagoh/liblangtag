@@ -19,6 +19,7 @@
 #include "lt-error.h"
 #include "lt-extlang.h"
 #include "lt-extlang-private.h"
+#include "lt-iter-private.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
 #include "lt-trie.h"
@@ -36,10 +37,14 @@
  * registered as ISO 639 code.
  */
 struct _lt_extlang_db_t {
-	lt_mem_t   parent;
-	lt_xml_t  *xml;
-	lt_trie_t *extlang_entries;
+	lt_iter_tmpl_t  parent;
+	lt_xml_t       *xml;
+	lt_trie_t      *extlang_entries;
 };
+typedef struct _lt_extlang_db_iter_t {
+	lt_iter_t  parent;
+	lt_iter_t *iter;
+} lt_extlang_db_iter_t;
 
 /*< private >*/
 static lt_bool_t
@@ -187,6 +192,42 @@ lt_extlang_db_parse(lt_extlang_db_t  *extlangdb,
 	return retval;
 }
 
+static lt_iter_t *
+_lt_extlang_db_iter_init(lt_iter_tmpl_t *tmpl)
+{
+	lt_extlang_db_iter_t *retval;
+	lt_extlang_db_t *extlangdb = (lt_extlang_db_t *)tmpl;
+
+	retval = malloc(sizeof (lt_extlang_db_iter_t));
+	if (retval) {
+		retval->iter = lt_iter_init((lt_iter_tmpl_t *)extlangdb->extlang_entries);
+		if (!retval->iter) {
+			free(retval);
+			retval = NULL;
+		}
+	}
+
+	return &retval->parent;
+}
+
+static void
+_lt_extlang_db_iter_fini(lt_iter_t *iter)
+{
+	lt_extlang_db_iter_t *db_iter = (lt_extlang_db_iter_t *)iter;
+
+	lt_iter_finish(db_iter->iter);
+}
+
+static lt_bool_t
+_lt_extlang_db_iter_next(lt_iter_t    *iter,
+			 lt_pointer_t *key,
+			 lt_pointer_t *val)
+{
+	lt_extlang_db_iter_t *db_iter = (lt_extlang_db_iter_t *)iter;
+
+	return lt_iter_next(db_iter->iter, key, val);
+}
+
 /*< public >*/
 /**
  * lt_extlang_db_new:
@@ -204,8 +245,13 @@ lt_extlang_db_new(void)
 		lt_error_t *err = NULL;
 		lt_extlang_t *le;
 
+		lt_iter_tmpl_init(&retval->parent);
+		retval->parent.init = _lt_extlang_db_iter_init;
+		retval->parent.fini = _lt_extlang_db_iter_fini;
+		retval->parent.next = _lt_extlang_db_iter_next;
+
 		retval->extlang_entries = lt_trie_new();
-		lt_mem_add_ref(&retval->parent, retval->extlang_entries,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->extlang_entries,
 			       (lt_destroy_func_t)lt_trie_unref);
 
 		le = lt_extlang_create();
@@ -229,7 +275,7 @@ lt_extlang_db_new(void)
 			retval = NULL;
 			goto bail;
 		}
-		lt_mem_add_ref(&retval->parent, retval->xml,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->xml,
 			       (lt_destroy_func_t)lt_xml_unref);
 		lt_extlang_db_parse(retval, &err);
 		if (err) {
@@ -257,7 +303,7 @@ lt_extlang_db_ref(lt_extlang_db_t *extlangdb)
 {
 	lt_return_val_if_fail (extlangdb != NULL, NULL);
 
-	return lt_mem_ref(&extlangdb->parent);
+	return lt_mem_ref((lt_mem_t *)extlangdb);
 }
 
 /**
@@ -271,7 +317,7 @@ void
 lt_extlang_db_unref(lt_extlang_db_t *extlangdb)
 {
 	if (extlangdb)
-		lt_mem_unref(&extlangdb->parent);
+		lt_mem_unref((lt_mem_t *)extlangdb);
 }
 
 /**
