@@ -30,12 +30,6 @@ LT_BEGIN_DECLS
  * structure are private to the #lt_lang_db_t implementation.
  */
 typedef struct _lt_lang_db_t		lt_lang_db_t;
-typedef struct _lt_lang_db_iter_t	lt_lang_db_iter_t;
-
-struct _lt_lang_db_iter_t {
-	lt_iter_t  parent;
-	lt_iter_t *iter;
-};
 
 lt_lang_db_t *lt_lang_db_new   (void);
 lt_lang_db_t *lt_lang_db_ref   (lt_lang_db_t *langdb);

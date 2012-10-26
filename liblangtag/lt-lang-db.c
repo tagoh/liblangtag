@@ -40,6 +40,10 @@ struct _lt_lang_db_t {
 	lt_xml_t       *xml;
 	lt_trie_t      *lang_entries;
 };
+typedef struct _lt_lang_db_iter_t {
+	lt_iter_t  parent;
+	lt_iter_t *iter;
+} lt_lang_db_iter_t;
 
 /*< private >*/
 static lt_bool_t
