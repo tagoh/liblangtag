@@ -46,7 +46,7 @@ _parse(const char *filename,
        xmlNodePtr  root)
 {
 	FILE *fp;
-	char buffer[1024];
+	char buffer[1024], *range = NULL, *begin = NULL, *end = NULL;
 	lt_bool_t in_entry = FALSE;
 	xmlNodePtr ent = NULL;
 
@@ -62,9 +62,45 @@ _parse(const char *filename,
 		if (lt_strcmp0(buffer, "%%") == 0) {
 			if (in_entry) {
 				if (ent) {
-					xmlAddChild(root, ent);
+					if (range) {
+						xmlNodePtr p;
+						const char table[] = "abcdefghijklmnopqrstuvwxyz";
+						const char table2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+						const char *t;
+						size_t len = strlen(begin);
+						int pos;
+
+						if (begin[len - 1] >= 'a' && begin[len - 1] <= 'z')
+							t = table;
+						else
+							t = table2;
+
+						while (1) {
+							p = xmlCopyNode(ent, 1);
+							xmlNewChild(p, NULL,
+								    (const xmlChar *)range,
+								    (const xmlChar *)begin);
+							xmlAddChild(root, p);
+							if (lt_strcmp0(begin, end) == 0)
+								break;
+							pos = len - 1;
+							while (pos >= 0) {
+								begin[pos] = t[begin[pos] - t[0] + 1];
+								if (begin[pos] == 0) {
+									begin[pos] = t[0];
+									pos--;
+								} else {
+									break;
+								}
+							}
+						}
+						xmlFreeNode(ent);
+					} else {
+						xmlAddChild(root, ent);
+					}
 				}
 				ent = NULL;
+				range = NULL;
 			}
 			in_entry = TRUE;
 		} else {
@@ -85,7 +121,7 @@ _parse(const char *filename,
 						   buffer);
 					in_entry = FALSE;
 				} else {
-					char *token, *tag;
+					char *token, *tag, *rtag;
 					fpos_t pos;
 					size_t len;
 
@@ -104,6 +140,7 @@ _parse(const char *filename,
 						}
 						if (i > 1) {
 							memmove(&buffer[len + 1], &buffer[len + i], l - i);
+							buffer[len + l - i + 1] = 0;
 						}
 						goto multiline;
 					} else {
@@ -113,9 +150,25 @@ _parse(const char *filename,
 					token = strstr(buffer, ": ");
 					tag = strndup(buffer, token - buffer);
 					token += 2;
-					xmlNewChild(ent, NULL,
-						    (const xmlChar *)lt_strlower(tag),
-						    (const xmlChar *)token);
+					rtag = strstr(token, "..");
+					if (rtag && rtag[2] != '.') {
+						/* the range in tags */
+						begin = strndup(token, rtag - token);
+						rtag += 2;
+						end = strdup(rtag);
+						if (strlen(begin) != strlen(end)) {
+							lt_warning("Invalid range: %s..%s", begin, end);
+							xmlFreeNode(ent);
+							ent = NULL;
+							free(tag);
+							continue;
+						}
+						range = lt_strlower(strdup(tag));
+					} else {
+						xmlNewChild(ent, NULL,
+							    (const xmlChar *)lt_strlower(tag),
+							    (const xmlChar *)token);
+					}
 					free(tag);
 				}
 			}
