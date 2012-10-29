@@ -245,10 +245,7 @@ lt_extlang_db_new(void)
 		lt_error_t *err = NULL;
 		lt_extlang_t *le;
 
-		lt_iter_tmpl_init(&retval->parent);
-		retval->parent.init = _lt_extlang_db_iter_init;
-		retval->parent.fini = _lt_extlang_db_iter_fini;
-		retval->parent.next = _lt_extlang_db_iter_next;
+		LT_ITER_TMPL_INIT (&retval->parent, _lt_extlang_db);
 
 		retval->extlang_entries = lt_trie_new();
 		lt_mem_add_ref((lt_mem_t *)retval, retval->extlang_entries,

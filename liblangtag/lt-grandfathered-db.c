@@ -223,10 +223,7 @@ lt_grandfathered_db_new(void)
 	if (retval) {
 		lt_error_t *err = NULL;
 
-		lt_iter_tmpl_init(&retval->parent);
-		retval->parent.init = _lt_grandfathered_db_iter_init;
-		retval->parent.fini = _lt_grandfathered_db_iter_fini;
-		retval->parent.next = _lt_grandfathered_db_iter_next;
+		LT_ITER_TMPL_INIT (&retval->parent, _lt_grandfathered_db);
 
 		retval->grandfathered_entries = lt_trie_new();
 		lt_mem_add_ref((lt_mem_t *)retval, retval->grandfathered_entries,
