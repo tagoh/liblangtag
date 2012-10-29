@@ -24,15 +24,36 @@ main(int    argc,
      char **argv)
 {
 	lt_script_db_t *scriptdb;
+	lt_script_t *script;
 
 	setlocale(LC_ALL, "");
 
 	lt_db_set_datadir(TEST_DATADIR);
 	scriptdb = lt_script_db_new();
 
-	if (lt_strcmp0(argv[1], "list") == 0) {
+	if (lt_strcmp0(argv[1], "list_keys") == 0) {
+		const char *key;
+		lt_iter_t *iter;
+
+		iter = lt_iter_init((lt_iter_tmpl_t *)scriptdb);
+		while (lt_iter_next(iter,
+				    (lt_pointer_t *)&key,
+				    NULL)) {
+			printf("%s\n", key);
+		}
+		lt_iter_finish(iter);
+	} else if (lt_strcmp0(argv[1], "list_values") == 0) {
+		lt_iter_t *iter;
+
+		iter = lt_iter_init((lt_iter_tmpl_t *)scriptdb);
+		while (lt_iter_next(iter,
+				    NULL,
+				    (lt_pointer_t *)&script)) {
+			lt_script_dump(script);
+		}
+		lt_iter_finish(iter);
 	} else if (lt_strcmp0(argv[1], "lookup") == 0) {
-		lt_script_t *script = lt_script_db_lookup(scriptdb, argv[2]);
+		script = lt_script_db_lookup(scriptdb, argv[2]);
 
 		printf("%s (%s)\n",
 		       lt_script_get_tag(script),

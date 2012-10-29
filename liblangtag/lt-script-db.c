@@ -18,6 +18,7 @@
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
+#include "lt-iter-private.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
 #include "lt-trie.h"
@@ -36,10 +37,14 @@
  * registered as ISO 15924.
  */
 struct _lt_script_db_t {
-	lt_mem_t   parent;
-	lt_xml_t  *xml;
-	lt_trie_t *script_entries;
+	lt_iter_tmpl_t  parent;
+	lt_xml_t       *xml;
+	lt_trie_t      *script_entries;
 };
+typedef struct _lt_script_db_iter_t {
+	lt_iter_t  parent;
+	lt_iter_t *iter;
+} lt_script_db_iter_t;
 
 /*< private >*/
 static lt_bool_t
@@ -155,6 +160,42 @@ lt_script_db_parse(lt_script_db_t  *scriptdb,
 	return retval;
 }
 
+static lt_iter_t *
+_lt_script_db_iter_init(lt_iter_tmpl_t *tmpl)
+{
+	lt_script_db_iter_t *retval;
+	lt_script_db_t *db = (lt_script_db_t *)tmpl;
+
+	retval = malloc(sizeof (lt_script_db_iter_t));
+	if (retval) {
+		retval->iter = lt_iter_init((lt_iter_tmpl_t *)db->script_entries);
+		if (!retval->iter) {
+			free(retval);
+			retval = NULL;
+		}
+	}
+
+	return &retval->parent;
+}
+
+static void
+_lt_script_db_iter_fini(lt_iter_t *iter)
+{
+	lt_script_db_iter_t *db_iter = (lt_script_db_iter_t *)iter;
+
+	lt_iter_finish(db_iter->iter);
+}
+
+static lt_bool_t
+_lt_script_db_iter_next(lt_iter_t    *iter,
+			lt_pointer_t *key,
+			lt_pointer_t *val)
+{
+	lt_script_db_iter_t *db_iter = (lt_script_db_iter_t *)iter;
+
+	return lt_iter_next(db_iter->iter, key, val);
+}
+
 /*< public >*/
 /**
  * lt_script_db_new:
@@ -172,8 +213,10 @@ lt_script_db_new(void)
 		lt_error_t *err = NULL;
 		lt_script_t *le;
 
+		LT_ITER_TMPL_INIT (&retval->parent, _lt_script_db);
+
 		retval->script_entries = lt_trie_new();
-		lt_mem_add_ref(&retval->parent, retval->script_entries,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->script_entries,
 			       (lt_destroy_func_t)lt_trie_unref);
 
 		le = lt_script_create();
@@ -197,7 +240,7 @@ lt_script_db_new(void)
 			retval = NULL;
 			goto bail;
 		}
-		lt_mem_add_ref(&retval->parent, retval->xml,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->xml,
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_script_db_parse(retval, &err);
@@ -226,7 +269,7 @@ lt_script_db_ref(lt_script_db_t *scriptdb)
 {
 	lt_return_val_if_fail (scriptdb != NULL, NULL);
 
-	return lt_mem_ref(&scriptdb->parent);
+	return lt_mem_ref((lt_mem_t *)scriptdb);
 }
 
 /**
@@ -240,7 +283,7 @@ void
 lt_script_db_unref(lt_script_db_t *scriptdb)
 {
 	if (scriptdb)
-		lt_mem_unref(&scriptdb->parent);
+		lt_mem_unref((lt_mem_t *)scriptdb);
 }
 
 /**
