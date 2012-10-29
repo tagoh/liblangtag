@@ -18,6 +18,7 @@
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
+#include "lt-iter-private.h"
 #include "lt-variant.h"
 #include "lt-variant-private.h"
 #include "lt-list.h"
@@ -38,10 +39,14 @@
  * registered with IANA.
  */
 struct _lt_variant_db_t {
-	lt_mem_t   parent;
-	lt_xml_t  *xml;
-	lt_trie_t *variant_entries;
+	lt_iter_tmpl_t  parent;
+	lt_xml_t       *xml;
+	lt_trie_t      *variant_entries;
 };
+typedef struct _lt_variant_db_iter_t {
+	lt_iter_t  parent;
+	lt_iter_t *iter;
+} lt_variant_db_iter_t;
 
 /*< private >*/
 static lt_bool_t
@@ -178,6 +183,42 @@ lt_variant_db_parse(lt_variant_db_t  *variantdb,
 	return retval;
 }
 
+static lt_iter_t *
+_lt_variant_db_iter_init(lt_iter_tmpl_t *tmpl)
+{
+	lt_variant_db_iter_t *retval;
+	lt_variant_db_t *db = (lt_variant_db_t *)tmpl;
+
+	retval = malloc(sizeof (lt_variant_db_iter_t));
+	if (retval) {
+		retval->iter = lt_iter_init((lt_iter_tmpl_t *)db->variant_entries);
+		if (!retval->iter) {
+			free(retval);
+			retval = NULL;
+		}
+	}
+
+	return &retval->parent;
+}
+
+static void
+_lt_variant_db_iter_fini(lt_iter_t *iter)
+{
+	lt_variant_db_iter_t *db_iter = (lt_variant_db_iter_t *)iter;
+
+	lt_iter_finish(db_iter->iter);
+}
+
+static lt_bool_t
+_lt_variant_db_iter_next(lt_iter_t    *iter,
+			 lt_pointer_t *key,
+			 lt_pointer_t *val)
+{
+	lt_variant_db_iter_t *db_iter = (lt_variant_db_iter_t *)iter;
+
+	return lt_iter_next(db_iter->iter, key, val);
+}
+
 /*< public >*/
 /**
  * lt_variant_db_new:
@@ -195,8 +236,10 @@ lt_variant_db_new(void)
 		lt_error_t *err = NULL;
 		lt_variant_t *le;
 
+		LT_ITER_TMPL_INIT (&retval->parent, _lt_variant_db);
+
 		retval->variant_entries = lt_trie_new();
-		lt_mem_add_ref(&retval->parent, retval->variant_entries,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->variant_entries,
 			       (lt_destroy_func_t)lt_trie_unref);
 
 		le = lt_variant_create();
@@ -220,7 +263,7 @@ lt_variant_db_new(void)
 			retval = NULL;
 			goto bail;
 		}
-		lt_mem_add_ref(&retval->parent, retval->xml,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->xml,
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_variant_db_parse(retval, &err);
@@ -249,7 +292,7 @@ lt_variant_db_ref(lt_variant_db_t *variantdb)
 {
 	lt_return_val_if_fail (variantdb != NULL, NULL);
 
-	return lt_mem_ref(&variantdb->parent);
+	return lt_mem_ref((lt_mem_t *)variantdb);
 }
 
 /**
@@ -263,7 +306,7 @@ void
 lt_variant_db_unref(lt_variant_db_t *variantdb)
 {
 	if (variantdb)
-		lt_mem_unref(&variantdb->parent);
+		lt_mem_unref((lt_mem_t *)variantdb);
 }
 
 /**

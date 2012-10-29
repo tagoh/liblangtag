@@ -24,15 +24,36 @@ main(int    argc,
      char **argv)
 {
 	lt_variant_db_t *variantdb;
+	lt_variant_t *variant;
 
 	setlocale(LC_ALL, "");
 
 	lt_db_set_datadir(TEST_DATADIR);
 	variantdb = lt_variant_db_new();
 
-	if (lt_strcmp0(argv[1], "list") == 0) {
+	if (lt_strcmp0(argv[1], "list_keys") == 0) {
+		const char *key;
+		lt_iter_t *iter;
+
+		iter = lt_iter_init((lt_iter_tmpl_t *)variantdb);
+		while (lt_iter_next(iter,
+				    (lt_pointer_t *)&key,
+				    NULL)) {
+			printf("%s\n", key);
+		}
+		lt_iter_finish(iter);
+	} else if (lt_strcmp0(argv[1], "list_values") == 0) {
+		lt_iter_t *iter;
+
+		iter = lt_iter_init((lt_iter_tmpl_t *)variantdb);
+		while (lt_iter_next(iter,
+				    NULL,
+				    (lt_pointer_t *)&variant)) {
+			lt_variant_dump(variant);
+		}
+		lt_iter_finish(iter);
 	} else if (lt_strcmp0(argv[1], "lookup") == 0) {
-		lt_variant_t *variant = lt_variant_db_lookup(variantdb, argv[2]);
+		variant = lt_variant_db_lookup(variantdb, argv[2]);
 		const lt_list_t *prefix, *l;
 
 		if (variant) {
