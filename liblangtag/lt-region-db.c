@@ -18,6 +18,7 @@
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
+#include "lt-iter-private.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
 #include "lt-trie.h"
@@ -37,11 +38,14 @@
  * registered as ISO 3166-1 and UN M.49 code.
  */
 struct _lt_region_db_t {
-	lt_mem_t   parent;
-	lt_xml_t  *xml;
-	lt_trie_t *region_entries;
+	lt_iter_tmpl_t  parent;
+	lt_xml_t       *xml;
+	lt_trie_t      *region_entries;
 };
-
+typedef struct _lt_region_db_iter_t {
+	lt_iter_t  parent;
+	lt_iter_t *iter;
+} lt_region_db_iter_t;
 
 /*< private >*/
 static lt_bool_t
@@ -169,6 +173,42 @@ lt_region_db_parse(lt_region_db_t  *regiondb,
 	return retval;
 }
 
+static lt_iter_t *
+_lt_region_db_iter_init(lt_iter_tmpl_t *tmpl)
+{
+	lt_region_db_iter_t *retval;
+	lt_region_db_t *db = (lt_region_db_t *)tmpl;
+
+	retval = malloc(sizeof (lt_region_db_iter_t));
+	if (retval) {
+		retval->iter = lt_iter_init((lt_iter_tmpl_t *)db->region_entries);
+		if (!retval->iter) {
+			free(retval);
+			retval = NULL;
+		}
+	}
+
+	return &retval->parent;
+}
+
+static void
+_lt_region_db_iter_fini(lt_iter_t *iter)
+{
+	lt_region_db_iter_t *db_iter = (lt_region_db_iter_t *)iter;
+
+	lt_iter_finish(db_iter->iter);
+}
+
+static lt_bool_t
+_lt_region_db_iter_next(lt_iter_t    *iter,
+			lt_pointer_t *key,
+			lt_pointer_t *val)
+{
+	lt_region_db_iter_t *db_iter = (lt_region_db_iter_t *)iter;
+
+	return lt_iter_next(db_iter->iter, key, val);
+}
+
 /*< public >*/
 /**
  * lt_region_db_new:
@@ -186,8 +226,10 @@ lt_region_db_new(void)
 		lt_error_t *err = NULL;
 		lt_region_t *le;
 
+		LT_ITER_TMPL_INIT (&retval->parent, _lt_region_db);
+
 		retval->region_entries = lt_trie_new();
-		lt_mem_add_ref(&retval->parent, retval->region_entries,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->region_entries,
 			       (lt_destroy_func_t)lt_trie_unref);
 
 		le = lt_region_create();
@@ -211,7 +253,7 @@ lt_region_db_new(void)
 			retval = NULL;
 			goto bail;
 		}
-		lt_mem_add_ref(&retval->parent, retval->xml,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->xml,
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_region_db_parse(retval, &err);
@@ -240,7 +282,7 @@ lt_region_db_ref(lt_region_db_t *regiondb)
 {
 	lt_return_val_if_fail (regiondb != NULL, NULL);
 
-	return lt_mem_ref(&regiondb->parent);
+	return lt_mem_ref((lt_mem_t *)regiondb);
 }
 
 /**
@@ -254,7 +296,7 @@ void
 lt_region_db_unref(lt_region_db_t *regiondb)
 {
 	if (regiondb)
-		lt_mem_unref(&regiondb->parent);
+		lt_mem_unref((lt_mem_t *)regiondb);
 }
 
 /**
