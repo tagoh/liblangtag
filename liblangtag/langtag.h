@@ -20,6 +20,7 @@
 #include <liblangtag/lt-extension.h>
 #include <liblangtag/lt-iter.h>
 #include <liblangtag/lt-list.h>
+#include <liblangtag/lt-redundant.h>
 #include <liblangtag/lt-string.h>
 #include <liblangtag/lt-tag.h>
 #undef __LANGTAG_H__INSIDE

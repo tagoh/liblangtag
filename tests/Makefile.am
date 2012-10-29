@@ -46,6 +46,7 @@ noinst_PROGRAMS =				\
 	test-extlang-db				\
 	test-grandfathered-db			\
 	test-lang-db				\
+	test-redundant-db			\
 	test-region-db				\
 	test-script-db				\
 	test-tag				\
@@ -81,6 +82,10 @@ test_grandfathered_db_SOURCES =	\
 #
 test_lang_db_SOURCES =	\
 	lang-db.c	\
+	$(NULL)
+#
+test_redundant_db_SOURCES =	\
+	redundant-db.c		\
 	$(NULL)
 #
 test_region_db_SOURCES =	\

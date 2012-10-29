@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libxml/xpath.h>
+#include "lt-iter-private.h"
 #include "lt-error.h"
 #include "lt-redundant.h"
 #include "lt-redundant-private.h"
@@ -38,10 +39,14 @@
  * or RFC 5646.
  */
 struct _lt_redundant_db_t {
-	lt_mem_t   parent;
-	lt_xml_t  *xml;
-	lt_trie_t *redundant_entries;
+	lt_iter_tmpl_t  parent;
+	lt_xml_t       *xml;
+	lt_trie_t      *redundant_entries;
 };
+typedef struct _lt_redundant_db_iter_t {
+	lt_iter_t  parent;
+	lt_iter_t *iter;
+} lt_redundant_db_iter_t;
 
 /*< private >*/
 static lt_bool_t
@@ -168,6 +173,42 @@ lt_redundant_db_parse(lt_redundant_db_t  *redundantdb,
 	return retval;
 }
 
+static lt_iter_t *
+_lt_redundant_db_iter_init(lt_iter_tmpl_t *tmpl)
+{
+	lt_redundant_db_iter_t *retval;
+	lt_redundant_db_t *db = (lt_redundant_db_t *)tmpl;
+
+	retval = malloc(sizeof (lt_redundant_db_iter_t));
+	if (retval) {
+		retval->iter = lt_iter_init((lt_iter_tmpl_t *)db->redundant_entries);
+		if (!retval->iter) {
+			free(retval);
+			retval = NULL;
+		}
+	}
+
+	return &retval->parent;
+}
+
+static void
+_lt_redundant_db_iter_fini(lt_iter_t *iter)
+{
+	lt_redundant_db_iter_t *db_iter = (lt_redundant_db_iter_t *)iter;
+
+	lt_iter_finish(db_iter->iter);
+}
+
+static lt_bool_t
+_lt_redundant_db_iter_next(lt_iter_t    *iter,
+			   lt_pointer_t *key,
+			   lt_pointer_t *val)
+{
+	lt_redundant_db_iter_t *db_iter = (lt_redundant_db_iter_t *)iter;
+
+	return lt_iter_next(db_iter->iter, key, val);
+}
+
 /*< public >*/
 /**
  * lt_redundant_db_new:
@@ -184,8 +225,13 @@ lt_redundant_db_new(void)
 	if (retval) {
 		lt_error_t *err = NULL;
 
+		lt_iter_tmpl_init(&retval->parent);
+		retval->parent.init = _lt_redundant_db_iter_init;
+		retval->parent.fini = _lt_redundant_db_iter_fini;
+		retval->parent.next = _lt_redundant_db_iter_next;
+
 		retval->redundant_entries = lt_trie_new();
-		lt_mem_add_ref(&retval->parent, retval->redundant_entries,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->redundant_entries,
 			       (lt_destroy_func_t)lt_trie_unref);
 
 		retval->xml = lt_xml_new();
@@ -194,7 +240,7 @@ lt_redundant_db_new(void)
 			retval = NULL;
 			goto bail;
 		}
-		lt_mem_add_ref(&retval->parent, retval->xml,
+		lt_mem_add_ref((lt_mem_t *)retval, retval->xml,
 			       (lt_destroy_func_t)lt_xml_unref);
 
 		lt_redundant_db_parse(retval, &err);
@@ -223,7 +269,7 @@ lt_redundant_db_ref(lt_redundant_db_t *redundantdb)
 {
 	lt_return_val_if_fail (redundantdb != NULL, NULL);
 
-	return lt_mem_ref(&redundantdb->parent);
+	return lt_mem_ref((lt_mem_t *)redundantdb);
 }
 
 /**
@@ -237,7 +283,7 @@ void
 lt_redundant_db_unref(lt_redundant_db_t *redundantdb)
 {
 	if (redundantdb)
-		lt_mem_unref(&redundantdb->parent);
+		lt_mem_unref((lt_mem_t *)redundantdb);
 }
 
 /**
