@@ -286,7 +286,7 @@ _lt_xml_merge_keys(lt_xml_t    *xml,
 	}
 	n = xmlXPathNodeSetGetLength(xobj->nodesetval);
 	for (i = 0; i < n; i++) {
-		xmlNodePtr p = xmlCopyNode(xmlXPathNodeSetItem(xobj->nodesetval, i), 1);
+		xmlNodePtr p = xmlDocCopyNode(xmlXPathNodeSetItem(xobj->nodesetval, i), doc1, 1);
 
 		xmlAddChild(parent_node, p);
 	}
