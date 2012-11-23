@@ -173,8 +173,11 @@ i = __sync_fetch_and_add(&j, 1);
 __sync_synchronize();
 j = __sync_fetch_and_sub(&i, 1);
 return j;
-       ]])], [AC_MSG_ERROR([liblangtag has to be built with -march=i486 or later.])]
-       [lt_cv_has_atomic=no])])
+       ]])], [AC_MSG_ERROR([liblangtag has to be built with -march=i486 or later.])])
+       # the above code is just to inform the flag is required to be built.
+       # so regardless of that, we deal with no-atomic-function here.
+       CFLAGS="$_save_cflags"
+       lt_cv_has_atomic=no])
 ])
 if test "x$lt_cv_has_atomic" = "xyes"; then
 	AC_DEFINE(LT_HAVE_ATOMIC_BUILTINS, 1, [Have buit-in atomic functions])

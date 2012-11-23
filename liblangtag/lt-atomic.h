@@ -93,7 +93,7 @@ lt_atomic_int_dec_and_test(volatile int *v)
 {
 	lt_bool_t retval;
 
-	lt_return_if_fail (v != NULL, FALSE);
+	lt_return_val_if_fail (v != NULL, FALSE);
 
 	pthread_mutex_lock(&__lt_atomic_lock);
 	retval = --(*v) == 0;
