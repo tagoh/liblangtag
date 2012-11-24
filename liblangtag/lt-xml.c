@@ -14,11 +14,11 @@
 #include "config.h"
 #endif
 
-#include <pthread.h>
 #include <sys/stat.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"
+#include "lt-lock.h"
 #include "lt-mem.h"
 #include "lt-messages.h"
 #include "lt-database.h"
@@ -40,7 +40,7 @@ struct _lt_xml_t {
 };
 
 static lt_xml_t *__xml = NULL;
-static pthread_mutex_t __lt_xml_lock = PTHREAD_MUTEX_INITIALIZER;
+LT_LOCK_DEFINE_STATIC (xml);
 
 /*< private >*/
 static lt_bool_t
@@ -309,10 +309,10 @@ lt_xml_new(void)
 {
 	lt_error_t *err = NULL;
 
-	pthread_mutex_lock(&__lt_xml_lock);
+	LT_LOCK (xml);
 
 	if (__xml) {
-		pthread_mutex_unlock(&__lt_xml_lock);
+		LT_UNLOCK (xml);
 
 		return lt_xml_ref(__xml);
 	}
@@ -389,7 +389,7 @@ lt_xml_new(void)
 		lt_xml_unref(__xml);
 	}
 
-	pthread_mutex_unlock(&__lt_xml_lock);
+	LT_UNLOCK (xml);
 
 	return __xml;
 }

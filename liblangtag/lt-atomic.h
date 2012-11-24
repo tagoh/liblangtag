@@ -17,7 +17,7 @@
 #include "config.h"
 #endif
 
-#include <pthread.h>
+#include "lt-lock.h"
 #include "lt-messages.h"
 
 LT_BEGIN_DECLS
@@ -27,7 +27,7 @@ LT_INLINE_FUNC int       lt_atomic_int_inc         (volatile int *v);
 LT_INLINE_FUNC lt_bool_t lt_atomic_int_dec_and_test(volatile int *v);
 
 #ifndef LT_HAVE_ATOMIC_BUILTINS
-static pthread_mutex_t __lt_atomic_lock = PTHREAD_MUTEX_INITIALIZER;
+LT_LOCK_DEFINE_STATIC (atomic);
 #endif
 
 /*< private >*/
@@ -67,9 +67,9 @@ lt_atomic_int_get(volatile int *v)
 
 	lt_return_val_if_fail (v != NULL, 0);
 
-	pthread_mutex_lock(&__lt_atomic_lock);
+	LT_LOCK (atomic);
 	retval = *v;
-	pthread_mutex_unlock(&__lt_atomic_lock);
+	LT_UNLOCK (atomic);
 
 	return retval;
 }
@@ -81,9 +81,9 @@ lt_atomic_int_inc(volatile int *v)
 
 	lt_return_val_if_fail (v != NULL, 0);
 
-	pthread_mutex_lock(&__lt_atomic_lock);
+	LT_LOCK (atomic);
 	retval = (*v)++;
-	pthread_mutex_unlock(&__lt_atomic_lock);
+	LT_UNLOCK (atomic);
 
 	return retval;
 }
@@ -95,9 +95,9 @@ lt_atomic_int_dec_and_test(volatile int *v)
 
 	lt_return_val_if_fail (v != NULL, FALSE);
 
-	pthread_mutex_lock(&__lt_atomic_lock);
+	LT_LOCK (atomic);
 	retval = --(*v) == 0;
-	pthread_mutex_unlock(&__lt_atomic_lock);
+	LT_UNLOCK (atomic);
 
 	return retval;
 }

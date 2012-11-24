@@ -303,7 +303,12 @@ dnl ======================================================================
 dnl check another libraries
 dnl ======================================================================
 AX_PTHREAD([],
-	[AC_MSG_ERROR([*** pthread library are required])])
+	[case $host_os in
+	 cygwin* | mingw*)
+	 ;;
+	 *)
+	 AC_MSG_ERROR([*** pthread library are required])
+	 esac])
 
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
 if test "x$enable_introspection" != "xyes"; then

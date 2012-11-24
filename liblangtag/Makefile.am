@@ -75,6 +75,7 @@ liblangtag_private_headers =			\
 	lt-grandfathered-private.h		\
 	lt-iter-private.h			\
 	lt-lang-private.h			\
+	lt-lock.h				\
 	lt-mem.h				\
 	lt-messages.h				\
 	lt-redundant-private.h			\
