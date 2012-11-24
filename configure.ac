@@ -191,7 +191,7 @@ AC_CHECK_ALIGNOF(void *)
 dnl ======================================================================
 dnl functions testing
 dnl ======================================================================
-AC_CHECK_HEADERS([execinfo.h langinfo.h stdint.h])
+AC_CHECK_HEADERS([execinfo.h langinfo.h])
 AC_CHECK_FUNCS([backtrace dlopen strndup])
 
 if test "x$ac_cv_func_dlopen" != xyes; then
