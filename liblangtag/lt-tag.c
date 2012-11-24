@@ -147,7 +147,7 @@ lt_tag_scanner_get_token(lt_tag_scanner_t  *scanner,
 					     (unsigned long)scanner->position - 1);
 				break;
 			}
-		} else if (!isalnum(c) && c != '-' && c != 0) {
+		} else if (!isalnum((int)c) && c != '-' && c != 0) {
 			lt_error_set(&err, LT_ERR_FAIL_ON_SCANNER,
 				     "Invalid character for tag: '%c'", c);
 			break;
@@ -512,9 +512,9 @@ lt_tag_parse_state(lt_tag_t    *tag,
 	    case STATE_REGION:
 		    if (length == 2 ||
 			(length == 3 &&
-			 isdigit(token[0]) &&
-			 isdigit(token[1]) &&
-			 isdigit(token[2]))) {
+			 isdigit((int)token[0]) &&
+			 isdigit((int)token[1]) &&
+			 isdigit((int)token[2]))) {
 			    lt_region_db_t *regiondb = lt_db_get_region();
 
 			    lt_tag_set_region(tag, lt_region_db_lookup(regiondb, token));
@@ -529,7 +529,7 @@ lt_tag_parse_state(lt_tag_t    *tag,
 		    }
 	    case STATE_VARIANT:
 		    if ((length >=5 && length <= 8) ||
-			(length == 4 && isdigit(token[0]))) {
+			(length == 4 && isdigit((int)token[0]))) {
 			    lt_variant_db_t *variantdb = lt_db_get_variant();
 			    lt_variant_t *variant;
 

@@ -77,7 +77,7 @@ _lt_ext_ldml_t_lookup_type(lt_ext_ldml_t_data_t  *data,
 		size_t len = strlen(subtag);
 
 		for (i = 0; i < len; i++) {
-			if (!isalnum(subtag[i])) {
+			if (!isalnum((int)subtag[i])) {
 				lt_error_set(error, LT_ERR_FAIL_ON_SCANNER,
 					     "subtag for -t-x0- has to be 3-8 alphanum characters but: %s", subtag);
 				goto bail;

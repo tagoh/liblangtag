@@ -46,8 +46,8 @@ lt_strcasecmp(const char *s1,
 	lt_return_val_if_fail (s2 != NULL, 0);
 
 	while (*s1 && *s2) {
-		c1 = tolower(*s1);
-		c2 = tolower(*s2);
+		c1 = tolower((int)*s1);
+		c2 = tolower((int)*s2);
 		if (c1 != c2)
 			return (c1 - c2);
 		s1++;
@@ -69,8 +69,8 @@ lt_strncasecmp(const char *s1,
 
 	while (len && *s1 && *s2) {
 		len--;
-		c1 = tolower(*s1);
-		c2 = tolower(*s2);
+		c1 = tolower((int)*s1);
+		c2 = tolower((int)*s2);
 		if (c1 != c2)
 			return (c1 - c2);
 		s1++;
@@ -93,7 +93,7 @@ lt_strlower(char *string)
 
 	len = strlen(string);
 	while (len) {
-		*p = tolower(*p);
+		*p = tolower((int)*p);
 		p++;
 		len--;
 	}

@@ -240,10 +240,10 @@ lt_ext_module_load(lt_ext_module_t *module)
 			p++;
 		}
 		s = p;
-		while (*path && isspace(*path))
+		while (*path && isspace((int)*path))
 			path++;
 		len = strlen(path);
-		while (len > 0 && isspace(path[len - 1]))
+		while (len > 0 && isspace((int)path[len - 1]))
 			len--;
 		path[len] = 0;
 		if (path[0] != 0) {
@@ -342,7 +342,7 @@ lt_ext_module_singleton_char_to_int(char singleton_c)
 		retval = singleton_c - '0';
 	} else if ((singleton_c >= 'a' && singleton_c <= 'z') ||
 		   (singleton_c >= 'A' && singleton_c <= 'Z')) {
-		retval = tolower(singleton_c) - 'a' + 10;
+		retval = tolower((int)singleton_c) - 'a' + 10;
 	} else if (singleton_c == ' ') {
 		retval = LT_MAX_EXT_MODULES - 2;
 	} else if (singleton_c == '*') {
