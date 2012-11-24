@@ -148,12 +148,12 @@ _parse(const char *filename,
 						fsetpos(fp, &pos);
 					}
 					token = strstr(buffer, ": ");
-					tag = strndup(buffer, token - buffer);
+					tag = lt_strndup(buffer, token - buffer);
 					token += 2;
 					rtag = strstr(token, "..");
 					if (rtag && rtag[2] != '.') {
 						/* the range in tags */
-						begin = strndup(token, rtag - token);
+						begin = lt_strndup(token, rtag - token);
 						rtag += 2;
 						end = strdup(rtag);
 						if (strlen(begin) != strlen(end)) {

@@ -17,7 +17,9 @@
 #include "config.h"
 #endif
 
+#ifdef HAVE_EXECINFO_H
 #include <execinfo.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,6 +100,7 @@ _lt_message_get_prefix(lt_message_type_t     type,
 static void
 _lt_message_stacktrace(void)
 {
+#if HAVE_BACKTRACE
 	void *traces[1024];
 	char **strings;
 	int size, i;
@@ -119,6 +122,7 @@ _lt_message_stacktrace(void)
 		}
 		free(strings);
 	}
+#endif
 }
 
 static void

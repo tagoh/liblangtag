@@ -15,7 +15,6 @@
 #endif
 
 #include <ctype.h>
-#include <langinfo.h>
 #include <locale.h>
 #include <stdint.h>
 #include <string.h>
@@ -144,8 +143,8 @@ lt_tag_scanner_get_token(lt_tag_scanner_t  *scanner,
 		if (c == '*') {
 			if (lt_string_length(string) > 0) {
 				lt_error_set(&err, LT_ERR_FAIL_ON_SCANNER,
-					     "Invalid wildcard: positon = %zd",
-					     scanner->position - 1);
+					     "Invalid wildcard: positon = %lu",
+					     (unsigned long)scanner->position - 1);
 				break;
 			}
 		} else if (!isalnum(c) && c != '-' && c != 0) {
@@ -196,7 +195,7 @@ static int
 _lt_tag_variant_compare(const lt_pointer_t a,
 			const lt_pointer_t b)
 {
-	return (unsigned long)a - (unsigned long)b;
+	return (unsigned long long)a - (unsigned long long)b;
 }
 
 #define DEFUNC_TAG_FREE(__func__)					\

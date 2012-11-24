@@ -30,6 +30,8 @@ char *lt_strdup_printf (const char *format,
 			...) LT_GNUC_PRINTF (1, 2);
 char *lt_strdup_vprintf(const char *format,
                         va_list     args);
+char *lt_strndup       (const char *s,
+			size_t      n);
 
 LT_END_DECLS
 

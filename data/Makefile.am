@@ -59,9 +59,14 @@ am__v_DL_0 = @echo "  DL    " $@;
 language-subtag-registry:
 	$(AM_V_DL) wget -O $@ http://www.iana.org/assignments/language-subtag-registry || \
 	curl -o $@ http://www.iana.org/assignments/language-subtag-registry
-language-subtag-registry.xml: language-subtag-registry reg2xml Makefile
-	$(AM_V_GEN) $(builddir)/reg2xml $(srcdir)/language-subtag-registry $@.tmp;	\
+if CROSS_COMPILING
+language-subtag-registry.xml: language-subtag-registry reg2xml.c Makefile
+	@echo Warning: Unable to rebuild $@ when cross-compiling
+else
+language-subtag-registry.xml: language-subtag-registry reg2xml$(EXEEXT) Makefile
+	$(AM_V_GEN) $(builddir)/reg2xml$(EXEEXT) $(srcdir)/language-subtag-registry $@.tmp;	\
 	head -1 $@.tmp | grep -E '^<\?xml version'>/dev/null 2>&1 && mv $@.tmp $@ || (echo "E: $@ isn't an expected result"; rm $@.tmp)
+endif
 stamp-core-zip:
 	-rm core.zip
 	$(AM_V_DL) wget http://unicode.org/Public/cldr/latest/core.zip ||	\

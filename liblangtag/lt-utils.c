@@ -16,6 +16,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "lt-messages.h"
 #include "lt-utils.h"
@@ -138,4 +139,28 @@ lt_strdup_vprintf(const char *format,
 	}
 
 	return retval;
+}
+
+char *
+lt_strndup(const char *s,
+	   size_t      n)
+{
+#if HAVE_STRNDUP
+	return strndup(s, n);
+#else
+	const char *p = s;
+	char *retval;
+	size_t i = 0;
+
+	while (p && *p && i < n) {
+		p++;
+		i++;
+	}
+	retval = malloc(i + 1);
+	if (!retval)
+		return NULL;
+	retval[i] = 0;
+
+	return memcpy(retval, s, i);
+#endif
 }

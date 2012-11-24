@@ -399,7 +399,7 @@ lt_ext_module_new(const char *name)
 
 			if (len > suffix_len &&
 			    lt_strcmp0(&filename[prefix_len + len - suffix_len], "." LT_MODULE_SUFFIX) == 0) {
-				module = strndup(&filename[prefix_len], len - suffix_len);
+				module = lt_strndup(&filename[prefix_len], len - suffix_len);
 				module[len - suffix_len] = 0;
 			}
 		}

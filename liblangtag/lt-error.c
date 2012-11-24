@@ -14,7 +14,9 @@
 #include "config.h"
 #endif
 
+#ifdef HAVE_EXECINFO_H
 #include <execinfo.h>
+#endif
 #include <stdlib.h>
 #include "lt-list.h"
 #include "lt-mem.h"
@@ -98,9 +100,11 @@ lt_error_set(lt_error_t      **error,
 	     ...)
 {
 	va_list ap;
+#if HAVE_BACKTRACE
 	void *traces[1024];
+#endif
 	lt_error_data_t *d = lt_mem_alloc_object(sizeof (lt_error_data_t));
-	int size;
+	int size = 0;
 	lt_bool_t allocated;
 
 	lt_return_val_if_fail (error != NULL, NULL);
@@ -117,13 +121,18 @@ lt_error_set(lt_error_t      **error,
 	d->message = lt_strdup_vprintf(message, ap);
 	va_end(ap);
 
+#if HAVE_BACKTRACE
 	size = backtrace(traces, 1024);
 	if (size > 0)
 		d->traces = backtrace_symbols(traces, size);
+#else
+	d->traces = NULL;
+#endif
 	d->stack_size = size;
 
 	lt_mem_add_ref(&d->parent, d->message, free);
-	lt_mem_add_ref(&d->parent, d->traces, free);
+	if (d->traces)
+		lt_mem_add_ref(&d->parent, d->traces, free);
 
 	allocated = (*error)->data == NULL;
 	(*error)->data = lt_list_append((*error)->data, d, (lt_destroy_func_t)lt_mem_unref);

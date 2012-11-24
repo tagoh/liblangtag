@@ -69,6 +69,8 @@ dnl ======================================================================
 LANGTAG_MODULEDIR="${libdir}/liblangtag"
 AC_SUBST(LANGTAG_MODULEDIR)
 
+AM_CONDITIONAL(CROSS_COMPILING, test $cross_compiling = yes)
+
 dnl check for flavours of varargs macros
 AC_MSG_CHECKING(for ISO C99 varargs macros in C)
 _save_cflags=$CFLAGS
@@ -189,6 +191,12 @@ AC_CHECK_ALIGNOF(void *)
 dnl ======================================================================
 dnl functions testing
 dnl ======================================================================
+AC_CHECK_HEADERS([execinfo.h langinfo.h stdint.h])
+AC_CHECK_FUNCS([backtrace dlopen strndup])
+
+if test "x$ac_cv_func_dlopen" != xyes; then
+	enable_modules=no
+fi
 
 dnl ======================================================================
 dnl gettext stuff
