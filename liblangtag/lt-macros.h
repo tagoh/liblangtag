@@ -14,7 +14,9 @@
 #error "Only <liblangtag/langtag.h> can be included directly."
 #endif
 
+#if HAVE_SYS_PARAM_H
 #include <sys/param.h>
+#endif
 
 #ifndef __LT_MACROS_H__
 #define __LT_MACROS_H__
@@ -200,11 +202,20 @@
 #  define LT_BREAKPOINT()						\
 	LT_STMT_START {__asm__ __volatile__ ("bpt");} LT_STMT_END
 #else
+#include <signal.h>
 #  define LT_BREAKPOINT()				\
 	LT_STMT_START {raise(SIGTRAP);} LT_STMT_END
 #endif
 
 LT_BEGIN_DECLS
+
+#ifdef _MSC_VER
+#  ifdef _M_AMD64
+typedef signed long long	ssize_t;
+#  else
+typedef signed int		ssize_t;
+#  endif
+#endif
 
 typedef void *		lt_pointer_t;
 typedef int		lt_bool_t;

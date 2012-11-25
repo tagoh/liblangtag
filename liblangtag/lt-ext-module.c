@@ -15,11 +15,15 @@
 #endif
 
 #include <ctype.h>
+#if HAVE_DIRENT_H
 #include <dirent.h>
-#ifdef HAVE_DLFCN_H
+#endif
+#if HAVE_DLFCN_H
 #include <dlfcn.h>
 #endif
+#if HAVE_LIBGEN_H
 #include <libgen.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -300,10 +300,17 @@ lt_debug0(lt_message_category_t  category,
 	_lt_return_after_eval_if_fail(__expr__,__eval__)
 #define lt_return_val_after_eval_if_fail(__expr__,__val__,__eval__)	\
 	_lt_return_val_after_eval_if_fail(__expr__,__val__,__eval__)
+#ifdef __GNUC__
 #define lt_warn_if_reached()						\
 	lt_message_printf(LT_MSG_WARNING, LT_MSG_FLAG_NONE, 0,		\
 			  "(%s:%d): %s: code should not be reached",	\
 			  __FILE__, __LINE__, __PRETTY_FUNCTION__)
+#else
+#define lt_warn_if_reached()						\
+	lt_message_printf(LT_MSG_WARNING, LT_MSG_FLAG_NONE, 0,		\
+			  "(%s:%d): code should not be reached",	\
+			  __FILE__, __LINE__)
+#endif
 
 LT_END_DECLS
 

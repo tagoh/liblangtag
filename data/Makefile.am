@@ -63,9 +63,14 @@ if CROSS_COMPILING
 language-subtag-registry.xml: language-subtag-registry reg2xml.c Makefile
 	@echo Warning: Unable to rebuild $@ when cross-compiling
 else
+if REBUILD_DATA
 language-subtag-registry.xml: language-subtag-registry reg2xml$(EXEEXT) Makefile
 	$(AM_V_GEN) $(builddir)/reg2xml$(EXEEXT) $(srcdir)/language-subtag-registry $@.tmp;	\
 	head -1 $@.tmp | grep -E '^<\?xml version'>/dev/null 2>&1 && mv $@.tmp $@ || (echo "E: $@ isn't an expected result"; rm $@.tmp)
+else
+language-subtag-registry.xml:
+	@echo Warning: the rebuild of $@ is explicitly disabled.
+endif
 endif
 stamp-core-zip:
 	-rm core.zip
@@ -94,8 +99,10 @@ ldmlsupplemental_DATA =			\
 	$(NULL)
 #
 noinst_PROGRAMS =	\
-	reg2xml		\
 	$(NULL)
+if REBUILD_DATA
+noinst_PROGRAMS += reg2xml
+endif
 #
 reg2xml_SOURCES =	\
 	reg2xml.c	\

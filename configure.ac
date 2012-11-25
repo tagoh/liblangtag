@@ -191,7 +191,7 @@ AC_CHECK_ALIGNOF(void *)
 dnl ======================================================================
 dnl functions testing
 dnl ======================================================================
-AC_CHECK_HEADERS([execinfo.h langinfo.h])
+AC_CHECK_HEADERS([dirent.h execinfo.h libgen.h sys/param.h])
 AC_CHECK_FUNCS([backtrace dlopen strndup])
 
 if test "x$ac_cv_func_dlopen" != xyes; then
@@ -227,6 +227,11 @@ AC_ARG_ENABLE([modules],
 	[AC_HELP_STRING([--disable-modules], [Disable modules])],
 	[enable_modules="$enableval"],
 	[enable_modules=yes])
+AC_ARG_ENABLE([rebuild-data],
+	[AC_HELP_STRING([--disable-rebuild-data],
+		[disable rebuilding the xml data])],
+	[enable_rebuild_data="$enableval"],
+	[enable_rebuild_data=yes])
 
 dnl ======================================================================
 dnl options - locale-alias
@@ -282,6 +287,11 @@ if test "x$enable_modules" != "xno"; then
 	AC_DEFINE_UNQUOTED(LT_MODULE_SUFFIX, "$lt_module_suffix", [Shared library suffix])
 fi
 AM_CONDITIONAL(ENABLE_MODULE, test x$MODULE_LIBS != x)
+
+dnl ======================================================================
+dnl options - rebuild-data
+dnl ======================================================================
+AM_CONDITIONAL(REBUILD_DATA, test x$enable_rebuild_data = xyes)
 
 dnl ======================================================================
 dnl check pkg-config stuff
