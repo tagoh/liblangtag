@@ -8,9 +8,7 @@ endif
 #SUBDIRS += docs tests
 SUBDIRS += tests
 
-ACLOCAL_AMFLAGS =			\
-	-I m4macros			\
-	$(NULL)
+ACLOCAL_AMFLAGS = -I m4macros
 
 CONFIGURE_DEPENDENCIES =		\
 	requires			\

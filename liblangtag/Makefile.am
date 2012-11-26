@@ -29,6 +29,10 @@ MAINTAINERCLEANFILES =				\
 	$(liblangtag_built_sources)		\
 	$(stamp_files)				\
 	$(NULL)
+DISTCLEANFILES =				\
+	stamp-lt-config				\
+	lt-config.h				\
+	$(NULL)
 CLEANFILES =					\
 	xgen-h					\
 	xgen-c					\
@@ -37,6 +41,7 @@ BUILT_SOURCES =					\
 	$(liblangtag_built_public_headers)	\
 	$(liblangtag_built_private_headers)	\
 	$(liblangtag_built_sources)		\
+	stamp-lt-config				\
 	$(NULL)
 
 ##
@@ -69,6 +74,7 @@ liblangtag_public_headers =			\
 	$(NULL)
 liblangtag_private_headers =			\
 	lt-atomic.h				\
+	lt-config.h				\
 	lt-ext-module-private.h			\
 	lt-extension-private.h			\
 	lt-extlang-private.h			\
@@ -90,7 +96,6 @@ liblangtag_private_headers =			\
 liblangtag_built_public_headers =		\
 	$(NULL)
 liblangtag_built_private_headers =		\
-	lt-config.h				\
 	lt-localealias.h			\
 	$(NULL)
 #
@@ -146,9 +151,10 @@ lt-localealias.h: @BUILD_LOCALEALIAS@ Makefile
 		echo "Failed to generate $@.";			\
 		exit 1;						\
 	fi
-lt-config.h: $(top_builddir)/config.status
+stamp-lt-config: $(top_builddir)/config.status
 	$(AM_V_GEN) cd $(top_builddir) &&			\
-	$(SHELL) ./config.status liblangtag/lt-config.h		\
+	$(SHELL) ./config.status liblangtag/lt-config.h
+	@touch $@
 	$(NULL)
 
 if !ENABLE_MODULE

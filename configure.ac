@@ -10,6 +10,9 @@ dnl Enable by either passing --enable-silent-rules to configure or
 dnl passing V=0 to make.
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
+m4_pattern_allow(^LT_.*_DECLS$)
+m4_pattern_allow(^LT_POINTER_.*$)
+
 AM_MAINTAINER_MODE
 AM_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4macros])
@@ -348,6 +351,7 @@ AC_CONFIG_COMMANDS([liblangtag/lt-config.h],[
 ____EOS
 
 	cat >> $outfile <<____EOS
+
 LT_BEGIN_DECLS
 ____EOS
 
