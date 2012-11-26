@@ -14,9 +14,23 @@
 #define __LT_UTILS_H__
 
 #include <stdarg.h>
+#if HAVE_MEMORY_H
+#include <memory.h>
+#endif
+#if HAVE_STRING_H
+#include <string.h>
+#endif
 #include "lt-macros.h"
 
 LT_BEGIN_DECLS
+
+#if HAVE_VA_COPY
+#define lt_va_copy(_d_,_s_)	va_copy(_d_,_s_)
+#elsif HAVE___VA_COPY
+#define lt_va_copy(_d_,_s_)	__va_copy(_d_,_s_)
+#else
+#define lt_va_copy(_d_,_s_)	memcpy(&(_d_), &(_s_), sizeof (va_list))
+#endif
 
 int   lt_strcmp0       (const char *v1,
                         const char *v2);

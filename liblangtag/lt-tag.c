@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <libxml/xpath.h>
+#include "lt-config.h"
 #include "lt-database.h"
 #include "lt-error.h"
 #include "lt-ext-module-private.h"
@@ -195,7 +196,7 @@ static int
 _lt_tag_variant_compare(const lt_pointer_t a,
 			const lt_pointer_t b)
 {
-	return (unsigned long long)a - (unsigned long long)b;
+	return LT_POINTER_TO_INT (a) - LT_POINTER_TO_INT (b);
 }
 
 #define DEFUNC_TAG_FREE(__func__)					\

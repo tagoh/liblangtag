@@ -90,6 +90,7 @@ liblangtag_private_headers =			\
 liblangtag_built_public_headers =		\
 	$(NULL)
 liblangtag_built_private_headers =		\
+	lt-config.h				\
 	lt-localealias.h			\
 	$(NULL)
 #
@@ -145,6 +146,11 @@ lt-localealias.h: @BUILD_LOCALEALIAS@ Makefile
 		echo "Failed to generate $@.";			\
 		exit 1;						\
 	fi
+lt-config.h: $(top_builddir)/config.status
+	$(AM_V_GEN) cd $(top_builddir) &&			\
+	$(SHELL) ./config.status liblangtag/lt-config.h		\
+	$(NULL)
+
 if !ENABLE_MODULE
 included-modules:
 	$(AM_V_GEN) cd $(top_builddir)/extensions && $(MAKE) $(AM_MAKEFLAGS)

@@ -23,8 +23,6 @@ GNOME_COMMON_INIT
 GNOME_DEBUG_CHECK
 GNOME_MAINTAINER_MODE_DEFINES
 
-CFLAGS="$CFLAGS $WARN_CFLAGS"
-
 dnl ======================================================================
 dnl Libraries versioning
 dnl ======================================================================
@@ -185,6 +183,14 @@ if test "x$lt_cv_has_atomic" = "xyes"; then
 	AC_DEFINE(LT_HAVE_ATOMIC_BUILTINS, 1, [Have buit-in atomic functions])
 fi
 
+dnl ---size---
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(void *)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(long long)
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+
 dnl ---alignment---
 AC_CHECK_ALIGNOF(void *)
 
@@ -192,7 +198,7 @@ dnl ======================================================================
 dnl functions testing
 dnl ======================================================================
 AC_CHECK_HEADERS([dirent.h execinfo.h libgen.h sys/param.h])
-AC_CHECK_FUNCS([backtrace dlopen strndup])
+AC_CHECK_FUNCS([backtrace dlopen strndup va_copy __va_copy])
 
 if test "x$ac_cv_func_dlopen" != xyes; then
 	enable_modules=no
@@ -330,6 +336,60 @@ GTK_DOC_CHECK(1.0)
 dnl ======================================================================
 dnl output
 dnl ======================================================================
+CFLAGS="$CFLAGS $WARN_CFLAGS"
+
+AC_CONFIG_COMMANDS([liblangtag/lt-config.h],[
+	outfile=liblangtag/lt-config.h-tmp
+	cat > $outfile <<\____EOS
+#ifndef __LT_CONFIG_H__
+#define __LT_CONFIG_H__
+
+#include "lt-macros.h"
+____EOS
+
+	cat >> $outfile <<____EOS
+LT_BEGIN_DECLS
+____EOS
+
+	if test -z "$unknown_sizeof_void_p"; then
+	cat >> $outfile<<____EOS
+
+#define LT_POINTER_TO_INT(p)	((int) ${ptoi_cast} (p))
+____EOS
+	else
+		echo "#error SIZEOF_VOID_P unknown"
+	fi
+
+	cat >> $outfile<<____EOS
+
+LT_END_DECLS
+
+#endif /* __LT_CONFIG_H__ */
+____EOS
+
+	if cmp -s $outfile liblangtag/lt-config.h; then
+		AC_MSG_NOTICE([liblangtag/lt-config.h is unchanged])
+		rm -f $outfile
+	else
+		mv $outfile liblangtag/lt-config.h
+	fi
+],[
+	case $ac_cv_sizeof_void_p in
+	$ac_cv_sizeof_int)
+		ptoi_cast=''
+		;;
+	$ac_cv_sizeof_long)
+		ptoi_cast='(long)'
+		;;
+	$ac_cv_sizeof_long_long)
+		ptoi_cast='(long long)'
+		;;
+	*)
+		unknown_sizeof_void_p=yes
+		;;
+	esac
+])
+
 AC_CONFIG_FILES([
 	Makefile
 	data/Makefile

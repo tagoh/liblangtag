@@ -17,7 +17,12 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if HAVE_MEMORY_H
+#include <memory.h>
+#endif
+#if HAVE_STRING_H
 #include <string.h>
+#endif
 #include "lt-messages.h"
 #include "lt-utils.h"
 
@@ -127,7 +132,7 @@ lt_strdup_vprintf(const char *format,
 
 	lt_return_val_if_fail (format != NULL, NULL);
 
-	va_copy(ap, args);
+	lt_va_copy(ap, args);
 
 	size = vsnprintf(&c, 1, format, ap) + 1;
 
