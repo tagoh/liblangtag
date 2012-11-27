@@ -26,14 +26,39 @@ LT_INLINE_FUNC int       lt_atomic_int_get         (volatile int *v);
 LT_INLINE_FUNC int       lt_atomic_int_inc         (volatile int *v);
 LT_INLINE_FUNC lt_bool_t lt_atomic_int_dec_and_test(volatile int *v);
 
-#ifndef LT_HAVE_ATOMIC_BUILTINS
+#if !defined(LT_HAVE_ATOMIC_BUILTINS) && !defined(_WIN32)
 LT_LOCK_DEFINE_STATIC (atomic);
 #endif
 
 /*< private >*/
 
 /*< public >*/
-#ifdef LT_HAVE_ATOMIC_BUILTINS
+#ifdef _WIN32
+LT_INLINE_FUNC int
+lt_atomic_int_get(volatile int *v)
+{
+	lt_return_val_if_fail (v != NULL, 0);
+
+	return (int)InterlockedExchange((LONG*)v, (LONG)*v);
+}
+
+LT_INLINE_FUNC int
+lt_atomic_int_inc(volatile int *v)
+{
+	lt_return_val_if_fail (v != NULL, 0);
+
+	return (int)InterlockedIncrement((LONG*)v);
+}
+
+lt_bool_t
+lt_atomic_int_dec_and_test(volatile int *v)
+{
+	lt_return_val_if_fail (v != NULL, FALSE);
+
+	return !InterlockedDecrement((LONG*)v);
+}
+
+#elif defined(LT_HAVE_ATOMIC_BUILTINS)
 LT_INLINE_FUNC int
 lt_atomic_int_get(volatile int *v)
 {
