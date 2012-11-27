@@ -200,8 +200,10 @@ AC_CHECK_ALIGNOF(void *)
 dnl ======================================================================
 dnl functions testing
 dnl ======================================================================
+AX_CREATE_STDINT_H([liblangtag/lt-stdint.h])
 AC_CHECK_HEADERS([dirent.h execinfo.h libgen.h sys/param.h])
-AC_CHECK_FUNCS([backtrace dlopen strndup va_copy __va_copy])
+AC_CHECK_FUNCS([backtrace dlopen strndup])
+AC_CHECK_VA_COPY
 
 if test "x$ac_cv_func_dlopen" != xyes; then
 	enable_modules=no

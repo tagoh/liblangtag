@@ -14,9 +14,10 @@
 #include "config.h"
 #endif
 
+#include "lt-stdint.h"
+
 #include <ctype.h>
 #include <locale.h>
-#include <stdint.h>
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-config.h"

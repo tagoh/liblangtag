@@ -14,7 +14,8 @@
 #include "config.h"
 #endif
 
-#include <stdint.h>
+#include "lt-stdint.h"
+
 #include <string.h>
 #include <libxml/xpath.h>
 #include "lt-error.h"

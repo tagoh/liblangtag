@@ -132,7 +132,7 @@ lt_strdup_vprintf(const char *format,
 
 	lt_return_val_if_fail (format != NULL, NULL);
 
-	lt_va_copy(ap, args);
+	va_copy(ap, args);
 
 	size = vsnprintf(&c, 1, format, ap) + 1;
 

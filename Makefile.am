@@ -33,7 +33,9 @@ MAINTAINERCLEANFILES =			\
 	$(srcdir)/ltmain.sh		\
 	$(srcdir)/missing		\
 	$(srcdir)/mkinstalldirs		\
-	$(srcdir)/m4macros/*.m4		\
+	$(srcdir)/m4macros/gtk-doc.m4	\
+	$(srcdir)/m4macros/libtool.m4	\
+	$(srcdir)/m4macros/lt*.m4	\
 	`find "$(srcdir)" -type f -name Makefile.in -print`	\
 	$(NULL)
 DISTCLEANFILES =			\

@@ -31,7 +31,9 @@ MAINTAINERCLEANFILES =				\
 	$(NULL)
 DISTCLEANFILES =				\
 	stamp-lt-config				\
+	stamp-lt-stdint				\
 	lt-config.h				\
+	lt-stdint.h				\
 	$(NULL)
 CLEANFILES =					\
 	xgen-h					\
@@ -42,6 +44,7 @@ BUILT_SOURCES =					\
 	$(liblangtag_built_private_headers)	\
 	$(liblangtag_built_sources)		\
 	stamp-lt-config				\
+	stamp-lt-stdint				\
 	$(NULL)
 
 ##
@@ -87,6 +90,7 @@ liblangtag_private_headers =			\
 	lt-redundant-private.h			\
 	lt-region-private.h			\
 	lt-script-private.h			\
+	lt-stdint.h				\
 	lt-tag-private.h			\
 	lt-trie.h				\
 	lt-utils.h				\
@@ -151,6 +155,11 @@ lt-localealias.h: @BUILD_LOCALEALIAS@ Makefile
 		echo "Failed to generate $@.";			\
 		exit 1;						\
 	fi
+stamp-lt-stdint: $(top_builddir)/config.status
+	$(AM_V_GEN) cd $(top_builddir) &&			\
+	$(SHELL) ./config.status liblangtag/lt-stdint.h
+	@touch $@
+	$(NULL)
 stamp-lt-config: $(top_builddir)/config.status
 	$(AM_V_GEN) cd $(top_builddir) &&			\
 	$(SHELL) ./config.status liblangtag/lt-config.h
