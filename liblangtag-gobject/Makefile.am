@@ -4,6 +4,8 @@
 # Global definitions
 NULL =
 INCLUDES =					\
+	-I$(top_builddir)/liblangtag-gobject/	\
+	-I$(top_builddir)			\
 	-I$(top_srcdir)/liblangtag/		\
 	-I$(top_srcdir)				\
 	-D__LANGTAG_COMPILATION			\

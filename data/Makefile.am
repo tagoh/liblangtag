@@ -65,7 +65,7 @@ language-subtag-registry.xml: language-subtag-registry reg2xml.c Makefile
 else
 if REBUILD_DATA
 language-subtag-registry.xml: language-subtag-registry reg2xml$(EXEEXT) Makefile
-	$(AM_V_GEN) $(builddir)/reg2xml$(EXEEXT) $(srcdir)/language-subtag-registry $@.tmp;	\
+	$(AM_V_GEN) $(builddir)/reg2xml$(EXEEXT) $(srcdir)/language-subtag-registry $@.tmp || $(builddir)/reg2xml$(EXEEXT) $(builddir)/language-subtag-registry $@.tmp;	\
 	head -1 $@.tmp | grep -E '^<\?xml version'>/dev/null 2>&1 && mv $@.tmp $@ || (echo "E: $@ isn't an expected result"; rm $@.tmp)
 else
 language-subtag-registry.xml:

@@ -3,6 +3,7 @@
 NULL =
 INCLUDES =						\
 	-I$(top_srcdir)/liblangtag/			\
+	-I$(top_builddir)/liblangtag/			\
 	-I$(top_srcdir)					\
 	-D__LANGTAG_COMPILATION				\
 	-DBUILDDIR="\"$(abs_top_builddir)\""		\
