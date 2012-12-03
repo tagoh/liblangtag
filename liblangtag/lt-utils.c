@@ -14,6 +14,10 @@
 #include "config.h"
 #endif
 
+#if HAVE_VASPRINTF
+#define _GNU_SOURCE
+#endif
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -126,22 +130,68 @@ char *
 lt_strdup_vprintf(const char *format,
 		  va_list     args)
 {
-	char *retval, c;
-	va_list ap;
-	int size;
+	char *retval;
 
 	lt_return_val_if_fail (format != NULL, NULL);
 
-	va_copy(ap, args);
-
-	size = vsnprintf(&c, 1, format, ap) + 1;
-
-	va_end(ap);
-
-	retval = malloc(sizeof (char) * size);
-	if (retval) {
-		vsprintf(retval, format, args);
+#if HAVE_VASPRINTF
+	if (vasprintf(&retval, format, args) < 0) {
+		retval = NULL;
 	}
+#elif LT_HAVE_C99_VSNPRINTF
+	LT_STMT_START {
+		char c;
+		va_list ap;
+		int size;
+
+		va_copy(ap, args);
+
+		size = vsnprintf(&c, 1, format, ap) + 1;
+
+		va_end(ap);
+
+		retval = malloc(sizeof (char) * size);
+		if (retval) {
+			vsprintf(retval, format, args);
+		}
+	} LT_STMT_END;
+#elif HAVE_VSNPRINTF
+	LT_STMT_START {
+		va_list ap;
+		int size = 1024, n;
+		char *p;
+
+		retval = malloc(size);
+		if (!retval)
+			return NULL;
+
+		while (1) {
+			va_copy(ap, args);
+
+			n = vsnprintf(retval, size, format, ap);
+
+			va_end(ap);
+
+			if (n > -1 && n < size)
+				return retval;
+
+			if (n > -1)
+				size = n + 1;
+			else
+				size *= 2;
+
+			p = realloc(retval, size);
+			if (!p) {
+				free(retval);
+				retval = NULL;
+				break;
+			}
+			retval = p;
+		}
+	} LT_STMT_END;
+#else
+#error no vsnprintf function implemented.
+#endif
 
 	return retval;
 }

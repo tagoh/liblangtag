@@ -202,11 +202,42 @@ dnl functions testing
 dnl ======================================================================
 AX_CREATE_STDINT_H([liblangtag/lt-stdint.h])
 AC_CHECK_HEADERS([dirent.h execinfo.h libgen.h sys/param.h])
-AC_CHECK_FUNCS([backtrace dlopen strndup])
+AC_CHECK_FUNCS([backtrace dlopen strndup vasprintf vsnprintf])
 AC_CHECK_VA_COPY
 
 if test "x$ac_cv_func_dlopen" != xyes; then
 	enable_modules=no
+fi
+if test "x$ac_cv_func_vsnprintf" = xyes; then
+	AC_CACHE_CHECK([Whether vsnprintf is C99-compliant], [lt_cv_c99_vsnprintf],
+		[AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <stdarg.h>
+int
+foo(char *format, ...)
+{
+	va_list ap;
+	char c;
+	int retval = 0;
+
+	va_start(ap, format);
+	if (vsnprintf(&c, 1, format, ap) < 0) {
+		retval = -1;
+	}
+	va_end(ap);
+
+	return retval;
+}
+int
+main(void)
+{
+	char c;
+
+	return foo("foo: %s", "bar");
+}]])],
+		[lt_cv_c99_vsnprintf=yes],[lt_cv_c99_vsnprintf=no],[lt_cv_c99_vsnprintf=no])])
+	if test "x$lt_cv_c99_vsnprintf" = xyes; then
+		AC_DEFINE(LT_HAVE_C99_VSNPRINTF, 1, [Have C99-compliant vsnprintf])
+	fi
 fi
 
 dnl ======================================================================
