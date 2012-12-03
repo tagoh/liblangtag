@@ -2061,7 +2061,7 @@ lt_tag_transform(lt_tag_t    *tag,
 				     "Unable to create an instance of xmlXPathContextPtr.");
 			goto bail;
 		}
-		xpath_string = lt_strdup_printf("/supplementalData/likelySubtags/likelySubtag[@from = '%s']", tag_string);
+		xpath_string = lt_strdup_printf("/supplementalData/likelySubtags/likelySubtag[translate(@from,'_', '-') = '%s']", tag_string);
 		xobj = xmlXPathEvalExpression((const xmlChar *)xpath_string, xctxt);
 		if (!xobj) {
 			lt_error_set(&err, LT_ERR_FAIL_ON_XML,
