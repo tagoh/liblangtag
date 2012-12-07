@@ -14,10 +14,6 @@
 #include "config.h"
 #endif
 
-#if HAVE_VASPRINTF
-#define _GNU_SOURCE
-#endif
-
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
