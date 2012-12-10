@@ -158,7 +158,8 @@ void
 lt_error_clear(lt_error_t *error)
 {
 	if (error) {
-		lt_mem_delete_ref(&error->parent, error->data);
+		if (error->data)
+			lt_mem_delete_ref(&error->parent, error->data);
 		error->data = NULL;
 	}
 }
