@@ -125,15 +125,21 @@ lt_xml_read_cldr_bcp47(lt_xml_t     *xml,
 		struct stat st;
 
 		lt_string_append_filename(regfile,
-					  SRCDIR, "data", "common", "bcp47",
+					  BUILDDIR, "data", "common", "bcp47",
 					  filename, NULL);
 		if (stat(lt_string_value(regfile), &st) == -1) {
 			lt_string_clear(regfile);
+			lt_string_append_filename(regfile,
+						  SRCDIR, "data", "common", "bcp47",
+						  filename, NULL);
+			if (stat(lt_string_value(regfile), &st) == -1) {
+				lt_string_clear(regfile);
 #endif
 	lt_string_append_filename(regfile,
 				  lt_db_get_datadir(),
 				  "common", "bcp47", filename, NULL);
 #ifdef GNOME_ENABLE_DEBUG
+			}
 		}
 	} LT_STMT_END;
 #endif
@@ -189,15 +195,22 @@ lt_xml_read_cldr_supplemental(lt_xml_t     *xml,
 		struct stat st;
 
 		lt_string_append_filename(regfile,
-					  SRCDIR, "data", "common", "supplemental",
+					  BUILDDIR, "data", "common", "supplemental",
 					  filename, NULL);
+		lt_info(lt_string_value(regfile));
 		if (stat(lt_string_value(regfile), &st) == -1) {
 			lt_string_clear(regfile);
+			lt_string_append_filename(regfile,
+						  SRCDIR, "data", "common", "supplemental",
+						  filename, NULL);
+			if (stat(lt_string_value(regfile), &st) == -1) {
+				lt_string_clear(regfile);
 #endif
 	lt_string_append_filename(regfile,
 				  lt_db_get_datadir(),
 				  "common", "supplemental", filename, NULL);
 #ifdef GNOME_ENABLE_DEBUG
+			}
 		}
 	} LT_STMT_END;
 #endif
