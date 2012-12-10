@@ -233,6 +233,40 @@ TDEF (lt_tag_match) {
 	lt_tag_unref(t1);
 } TEND
 
+TDEF (lt_tag_transform) {
+	lt_tag_t *t1;
+	char *s;
+
+	t1 = lt_tag_new();
+	fail_unless(t1 != NULL, "OOM");
+	fail_unless(lt_tag_parse(t1, "zh-CN", NULL), "should be valid langtag.");
+	s = lt_tag_transform(t1, NULL);
+	fail_unless(s != NULL, "should be transformed");
+	fail_unless(lt_strcmp0(s, "zh-Hans-CN") == 0, "wrongly transformed");
+	if (s)
+		free(s);
+	fail_unless(lt_tag_parse(t1, "zh-TW", NULL), "should be valid langtag.");
+	s = lt_tag_transform(t1, NULL);
+	fail_unless(s != NULL, "should be transformed");
+	fail_unless(lt_strcmp0(s, "zh-Hant-TW") == 0, "wrongly transformed");
+	if (s)
+		free(s);
+	fail_unless(lt_tag_parse(t1, "zh-ZZZZ-SG", NULL), "should be valid langtag.");
+	s = lt_tag_transform(t1, NULL);
+	fail_unless(s != NULL, "should be transformed");
+	fail_unless(lt_strcmp0(s, "zh-Hans-SG") == 0, "wrongly transformed");
+	if (s)
+		free(s);
+	fail_unless(lt_tag_parse(t1, "und-TW", NULL), "should be valid langtag.");
+	s = lt_tag_transform(t1, NULL);
+	fail_unless(s != NULL, "should be transformed");
+	fail_unless(lt_strcmp0(s, "zh-Hant-TW") == 0, "wrongly transformed");
+	if (s)
+		free(s);
+
+	lt_tag_unref(t1);
+} TEND
+
 /************************************************************/
 Suite *
 tester_suite(void)
@@ -246,6 +280,7 @@ tester_suite(void)
 	T (lt_tag_parse_with_extra_token);
 	T (lt_tag_canonicalize);
 	T (lt_tag_match);
+	T (lt_tag_transform);
 
 	suite_add_tcase(s, tc);
 

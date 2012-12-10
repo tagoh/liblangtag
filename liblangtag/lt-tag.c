@@ -2033,25 +2033,49 @@ char *
 lt_tag_transform(lt_tag_t    *tag,
 		 lt_error_t **error)
 {
-	lt_xml_t *xml = NULL;
-	const char *tag_string;
-	char *retval = NULL;
+	char *retval = NULL, *s;
 	lt_error_t *err = NULL;
+	lt_tag_t *canoned_tag = NULL;
 
 	lt_return_val_if_fail (tag != NULL, NULL);
 
-	tag_string = lt_tag_get_string(tag);
-	if (tag_string) {
+	s = lt_tag_canonicalize(tag, &err);
+	if (s) {
+		const lt_script_t *script;
+		const lt_region_t *region;
+
+		canoned_tag = lt_tag_new();
+		if (!lt_tag_parse(canoned_tag, s, &err))
+			goto bail1;
+		/* See http://www.unicode.org/reports/tr35/#Likely_Subtags
+		 * for further canonicalization for likely Subtags.
+		 */
+		script = lt_tag_get_script(canoned_tag);
+		region = lt_tag_get_region(canoned_tag);
+		if (script && lt_strcasecmp(lt_script_get_tag(script), "zzzz") == 0)
+			lt_tag_free_script(canoned_tag);
+		if (region && lt_strcasecmp(lt_region_get_tag(region), "zz") == 0)
+			lt_tag_free_region(canoned_tag);
+		free(s);
+	} else {
+		goto bail1;
+	}
+	/* clean up for lookup */
+	lt_tag_free_variants(canoned_tag);
+	lt_tag_free_extension(canoned_tag);
+	if (canoned_tag->privateuse)
+		lt_string_clear(canoned_tag->privateuse);
+	lt_tag_free_tag_string(canoned_tag);
+
+	LT_STMT_START {
+		lt_xml_t *xml = NULL;
+		const char *tag_string;
 		xmlDocPtr doc;
 		xmlXPathContextPtr xctxt = NULL;
 		xmlXPathObjectPtr xobj = NULL;
 		xmlNodePtr ent;
-		xmlChar *to;
-		char *xpath_string = NULL;
-		int n;
-		lt_string_t *s;
-		int i;
-		size_t len;
+		int retry;
+		lt_tag_t *wt;
 
 		xml = lt_xml_new();
 		doc = lt_xml_get_cldr(xml, LT_XML_CLDR_SUPPLEMENTAL_LIKELY_SUBTAGS);
@@ -2059,44 +2083,119 @@ lt_tag_transform(lt_tag_t    *tag,
 		if (!xctxt) {
 			lt_error_set(&err, LT_ERR_OOM,
 				     "Unable to create an instance of xmlXPathContextPtr.");
-			goto bail;
+			goto bail2;
 		}
-		xpath_string = lt_strdup_printf("/supplementalData/likelySubtags/likelySubtag[translate(@from,'_', '-') = '%s']", tag_string);
-		xobj = xmlXPathEvalExpression((const xmlChar *)xpath_string, xctxt);
-		if (!xobj) {
-			lt_error_set(&err, LT_ERR_FAIL_ON_XML,
-				     "No valid elements for %s",
-				     doc->name);
-			goto bail;
-		}
-		n = xmlXPathNodeSetGetLength(xobj->nodesetval);
-		if (n > 1)
-			lt_warning("Multiple subtag data to be transformed for %s: %d",
-				   tag_string, n);
 
-		ent = xmlXPathNodeSetItem(xobj->nodesetval, 0);
-		if (!ent) {
-			lt_error_set(&err, LT_ERR_FAIL_ON_XML,
-				     "Unable to obtain the xml node via XPath.");
-			goto bail;
+		for (retry = 4; retry > 0; retry--) {
+			xmlChar *to;
+			char *xpath_string = NULL;
+			int n;
+			lt_string_t *s;
+			int i;
+			size_t len;
+
+			wt = lt_tag_copy(canoned_tag);
+			switch (retry) {
+			    case 1:
+				    lt_tag_free_script(wt);
+				    lt_tag_free_region(wt);
+				    break;
+			    case 2:
+				    lt_tag_free_script(wt);
+				    break;
+			    case 3:
+				    lt_tag_free_region(wt);
+				    break;
+			    default:
+				    break;
+			}
+			tag_string = lt_tag_get_string(wt);
+			lt_debug(LT_MSGCAT_TAG, "transform lookup: %s", tag_string);
+			xpath_string = lt_strdup_printf("/supplementalData/likelySubtags/likelySubtag[translate(@from,'_', '-') = '%s']", tag_string);
+			xobj = xmlXPathEvalExpression((const xmlChar *)xpath_string, xctxt);
+			if (!xobj) {
+				lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+					     "No valid elements for %s",
+					     doc->name);
+				goto bail3;
+			}
+			n = xmlXPathNodeSetGetLength(xobj->nodesetval);
+			if (n > 1)
+				lt_warning("Multiple subtag data to be transformed for %s: %d",
+					   tag_string, n);
+
+			ent = xmlXPathNodeSetItem(xobj->nodesetval, 0);
+			if (!ent) {
+				lt_error_set(&err, LT_ERR_FAIL_ON_XML,
+					     "Unable to obtain the xml node via XPath.");
+				goto bail3;
+			}
+			to = xmlGetProp(ent, (const xmlChar *)"to");
+			s = lt_string_new((const char *)to);
+			xmlFree(to);
+			len = lt_string_length(s);
+			for (i = 0; i < len; i++) {
+				if (lt_string_at(s, i) == '_')
+					lt_string_replace_c(s, i, '-');
+			}
+			retval = lt_string_free(s, FALSE);
+		  bail3:
+			if (retry > 1)
+				lt_error_clear(err);
+			lt_tag_unref(wt);
+			free(xpath_string);
+			if (xobj)
+				xmlXPathFreeObject(xobj);
+
+			if (retval) {
+				const lt_list_t *l, *ll;
+				lt_region_t *r;
+				lt_script_t *sc;
+
+				wt = lt_tag_new();
+				if (lt_tag_parse(wt, retval, &err)) {
+					free(retval);
+
+					switch (retry) {
+					    case 1:
+					    case 2:
+						    sc = (lt_script_t *)lt_tag_get_script(canoned_tag);
+						    lt_tag_set_script(wt, lt_script_ref(sc));
+						    if (retry == 2)
+							    goto copies_variants;
+					    case 3:
+						    r = (lt_region_t *)lt_tag_get_region(canoned_tag);
+						    lt_tag_set_region(wt, lt_region_ref(r));
+					    case 4:
+					    copies_variants:
+						    l = lt_tag_get_variants(canoned_tag);
+						    for (ll = l; ll != NULL; ll = lt_list_next(ll)) {
+							    lt_variant_t *v = lt_list_value(ll);
+
+							    lt_tag_set_variant(wt, lt_variant_ref(v));
+						    }
+						    break;
+					}
+					lt_tag_free_tag_string(wt);
+					retval = strdup(lt_tag_get_string(wt));
+				} else {
+					free(retval);
+					retval = NULL;
+				}
+				lt_tag_unref(wt);
+				break;
+			}
 		}
-		to = xmlGetProp(ent, (const xmlChar *)"to");
-		s = lt_string_new((const char *)to);
-		xmlFree(to);
-		len = lt_string_length(s);
-		for (i = 0; i < len; i++) {
-			if (lt_string_at(s, i) == '_')
-				lt_string_replace_c(s, i, '-');
-		}
-		retval = lt_string_free(s, FALSE);
-	  bail:
-		free(xpath_string);
-		if (xobj)
-			xmlXPathFreeObject(xobj);
+
+	  bail2:
 		if (xctxt)
 			xmlXPathFreeContext(xctxt);
 		lt_xml_unref(xml);
-	}
+	} LT_STMT_END;
+  bail1:
+	if (canoned_tag)
+		lt_tag_unref(canoned_tag);
+
 	if (lt_error_is_set(err, LT_ERR_ANY)) {
 		if (error)
 			*error = lt_error_ref(err);

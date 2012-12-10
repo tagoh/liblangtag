@@ -56,6 +56,7 @@ _lt_message_get_prefix(lt_message_type_t     type,
 		" DEBUG",
 		" TRACE",
 		"MODULE",
+		"   TAG",
 		NULL
 	};
 	static const char unknown_type[] = "?: ";

@@ -53,6 +53,7 @@ enum _lt_message_category_t {
 	LT_MSGCAT_DEBUG,	/* 1 */
 	LT_MSGCAT_TRACE,	/* 2 */
 	LT_MSGCAT_MODULE,	/* 4 */
+	LT_MSGCAT_TAG,		/* 8 */
 	LT_MSGCAT_END
 };
 
