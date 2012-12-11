@@ -267,6 +267,36 @@ TDEF (lt_tag_transform) {
 	lt_tag_unref(t1);
 } TEND
 
+TDEF (lt_tag_convert_from_locale_string) {
+	lt_tag_t *t1;
+
+	t1 = lt_tag_convert_from_locale_string("ja_JP.UTF-8", NULL);
+	fail_unless(t1 != NULL, "should be valid locale");
+	fail_unless(lt_strcasecmp(lt_tag_get_string(t1), "ja-Jpan-JP") == 0, "wrongly converted to the tag");
+	lt_tag_unref(t1);
+
+	t1 = lt_tag_convert_from_locale_string("zh_CN.UTF-8", NULL);
+	fail_unless(t1 != NULL, "should be valid locale");
+	fail_unless(lt_strcasecmp(lt_tag_get_string(t1), "zh-Hans-CN") == 0, "wrongly converted to the tag");
+	lt_tag_unref(t1);
+
+	t1 = lt_tag_convert_from_locale_string("zh_TW.UTF-8", NULL);
+	fail_unless(t1 != NULL, "should be valid locale");
+	fail_unless(lt_strcasecmp(lt_tag_get_string(t1), "zh-Hant-TW") == 0, "wrongly converted to the tag");
+	lt_tag_unref(t1);
+
+	t1 = lt_tag_convert_from_locale_string("zh_SG.UTF-8", NULL);
+	fail_unless(t1 != NULL, "should be valid locale");
+	fail_unless(lt_strcasecmp(lt_tag_get_string(t1), "zh-Hans-SG") == 0, "wrongly converted to the tag");
+	lt_tag_unref(t1);
+
+	t1 = lt_tag_convert_from_locale_string("sr_RS.UTF-8", NULL);
+	fail_unless(t1 != NULL, "should be valid locale");
+	fail_unless(lt_strcasecmp(lt_tag_get_string(t1), "sr-Cyrl-RS") == 0, "wrongly converted to the tag");
+	lt_tag_unref(t1);
+
+} TEND
+
 /************************************************************/
 Suite *
 tester_suite(void)
@@ -281,6 +311,7 @@ tester_suite(void)
 	T (lt_tag_canonicalize);
 	T (lt_tag_match);
 	T (lt_tag_transform);
+	T (lt_tag_convert_from_locale_string);
 
 	suite_add_tcase(s, tc);
 

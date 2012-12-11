@@ -1136,6 +1136,7 @@ _lt_tag_convert_from_locale_string(const char  *locale,
 	} else {
 		lt_string_t *tag_string;
 		const char *script = NULL, *variant = NULL, *privateuse = NULL;
+		char *transform;
 
 		modifier = strchr(s, '@');
 		if (modifier) {
@@ -1182,6 +1183,16 @@ _lt_tag_convert_from_locale_string(const char  *locale,
 			lt_string_append_printf(tag_string, "-%s", territory);
 		if (variant)
 			lt_string_append_printf(tag_string, "-%s", variant);
+		if (!lt_tag_parse(tag, lt_string_value(tag_string), &err)) {
+			lt_string_unref(tag_string);
+			goto bail;
+		}
+		transform = lt_tag_transform(tag, &err);
+		if (!transform)
+			goto bail;
+		lt_string_clear(tag_string);
+		lt_string_append(tag_string, transform);
+		free(transform);
 		if (codeset || privateuse) {
 			lt_string_append(tag_string, "-x");
 			if (codeset)
@@ -1726,6 +1737,24 @@ lt_tag_convert_from_locale(lt_error_t **error)
 	locale = setlocale(LC_CTYPE, NULL);
 	if (!locale)
 		locale = setlocale(LC_ALL, NULL);
+	return _lt_tag_convert_from_locale_string(locale, error);
+}
+
+/**
+ * lt_tag_convert_from_locale_string:
+ * @locale: a locale string
+ * @error: (allow-none): a #lt_error_t or %NULL.
+ *
+ * Convert @locale to the language tag.
+ *
+ * Returns: (transfer full): a #lt_tag_t, %NULL if fails.
+ */
+lt_tag_t *
+lt_tag_convert_from_locale_string(const char  *locale,
+				  lt_error_t **error)
+{
+	lt_return_val_if_fail (locale != NULL, NULL);
+
 	return _lt_tag_convert_from_locale_string(locale, error);
 }
 
