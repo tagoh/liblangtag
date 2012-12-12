@@ -140,6 +140,7 @@ liblangtag_sources =				\
 stamp_files =					\
 	$(NULL)
 included_modules = $(NULL)
+
 if !ENABLE_MODULE
 included_modules +=						\
 	$(top_builddir)/extensions/liblangtag-ext-ldml-t.la	\

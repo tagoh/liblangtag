@@ -203,12 +203,9 @@ dnl functions testing
 dnl ======================================================================
 AX_CREATE_STDINT_H([liblangtag/lt-stdint.h])
 AC_CHECK_HEADERS([dirent.h execinfo.h libgen.h sys/param.h])
-AC_CHECK_FUNCS([backtrace dlopen strndup vasprintf vsnprintf])
+AC_CHECK_FUNCS([backtrace strndup vasprintf vsnprintf])
 AC_CHECK_VA_COPY
 
-if test "x$ac_cv_func_dlopen" != xyes; then
-	enable_modules=no
-fi
 if test "x$ac_cv_func_vsnprintf" = xyes; then
 	AC_CACHE_CHECK([Whether vsnprintf is C99-compliant], [lt_cv_c99_vsnprintf],
 		[AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -322,11 +319,12 @@ if test "x$enable_modules" != "xno"; then
 	if test "x$lt_module_suffix" = x; then
 		AC_MSG_ERROR(Unable to determine shared libreary suffix from libtool)
 	fi
-	AC_CHECK_LIB(dl, dlopen,
-		[AC_CHECK_LIB(dl, dlsym, [MODULE_LIBS=-ldl])])
+	use_modules=0
+	AC_CHECK_LIB([dl], [dlopen],
+		[AC_CHECK_LIB([dl], [dlsym], [MODULE_LIBS=-ldl; use_modules=1])])
 
 	AC_SUBST(MODULE_LIBS)
-	AC_DEFINE(ENABLE_MODULE, 1, [Use modules])
+	AC_DEFINE_UNQUOTED(ENABLE_MODULE, $use_modules, [Use modules])
 	AC_DEFINE_UNQUOTED(LT_MODULE_SUFFIX, "$lt_module_suffix", [Shared library suffix])
 fi
 AM_CONDITIONAL(ENABLE_MODULE, test x$MODULE_LIBS != x)

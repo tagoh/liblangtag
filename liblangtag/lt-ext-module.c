@@ -74,7 +74,7 @@ static lt_bool_t             _lt_ext_eaw_parse_tag       (lt_ext_module_data_t  
 static char                 *_lt_ext_eaw_get_tag         (lt_ext_module_data_t  *data);
 static lt_bool_t             _lt_ext_eaw_validate_tag    (lt_ext_module_data_t  *data);
 
-#ifndef ENABLE_MODULE
+#if !ENABLE_MODULE
 extern const lt_ext_module_funcs_t *LT_MODULE_SYMBOL_ (lt_module_ext_t, get_funcs) (void);
 extern const lt_ext_module_funcs_t *LT_MODULE_SYMBOL_ (lt_module_ext_u, get_funcs) (void);
 #endif
@@ -383,7 +383,7 @@ lt_ext_module_new(const char *name)
 
 	lt_return_val_if_fail (name != NULL, NULL);
 
-#ifdef ENABLE_MODULE
+#if ENABLE_MODULE
 	retval = lt_mem_alloc_object(sizeof (lt_ext_module_t));
 
 	if (retval) {
@@ -568,7 +568,7 @@ lt_ext_module_precheck_tag(lt_ext_module_t       *module,
 void
 lt_ext_modules_load(void)
 {
-#ifdef ENABLE_MODULE
+#if ENABLE_MODULE
 	const char *env = getenv("LANGTAG_EXT_MODULE_PATH");
 	char *path_list, *s, *p, *path;
 	size_t suffix_len = strlen(LT_MODULE_SUFFIX) + 1;
