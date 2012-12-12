@@ -81,12 +81,12 @@ main(int    argc,
 			free(l);
 		}
 	} else if (lt_strcmp0(argv[1], "transform") == 0) {
-		char *r;
+		lt_tag_t *r;
 
 		if (lt_tag_parse(tag, argv[2], NULL)) {
 			r = lt_tag_transform(tag, NULL);
-			printf("%s -> %s\n", argv[2], r);
-			free(r);
+			printf("%s -> %s\n", argv[2], lt_tag_get_string(r));
+			lt_tag_unref(r);
 		}
 	} else {
 		goto help;

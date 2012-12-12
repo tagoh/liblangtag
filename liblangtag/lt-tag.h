@@ -68,7 +68,7 @@ lt_bool_t                 lt_tag_match                     (const lt_tag_t  *v1,
 char                     *lt_tag_lookup                    (const lt_tag_t  *tag,
                                                             const char      *pattern,
                                                             lt_error_t     **error);
-char                     *lt_tag_transform                 (lt_tag_t        *tag,
+lt_tag_t                 *lt_tag_transform                 (lt_tag_t        *tag,
                                                             lt_error_t     **error);
 const lt_lang_t          *lt_tag_get_language              (const lt_tag_t  *tag);
 const lt_extlang_t       *lt_tag_get_extlang               (const lt_tag_t  *tag);

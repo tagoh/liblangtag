@@ -234,35 +234,30 @@ TDEF (lt_tag_match) {
 } TEND
 
 TDEF (lt_tag_transform) {
-	lt_tag_t *t1;
-	char *s;
+	lt_tag_t *t1, *t2;
 
 	t1 = lt_tag_new();
 	fail_unless(t1 != NULL, "OOM");
 	fail_unless(lt_tag_parse(t1, "zh-CN", NULL), "should be valid langtag.");
-	s = lt_tag_transform(t1, NULL);
-	fail_unless(s != NULL, "should be transformed");
-	fail_unless(lt_strcmp0(s, "zh-Hans-CN") == 0, "wrongly transformed");
-	if (s)
-		free(s);
+	t2 = lt_tag_transform(t1, NULL);
+	fail_unless(t2 != NULL, "should be transformed");
+	fail_unless(lt_strcmp0(lt_tag_get_string(t2), "zh-Hans-CN") == 0, "wrongly transformed");
+	lt_tag_unref(t2);
 	fail_unless(lt_tag_parse(t1, "zh-TW", NULL), "should be valid langtag.");
-	s = lt_tag_transform(t1, NULL);
-	fail_unless(s != NULL, "should be transformed");
-	fail_unless(lt_strcmp0(s, "zh-Hant-TW") == 0, "wrongly transformed");
-	if (s)
-		free(s);
+	t2 = lt_tag_transform(t1, NULL);
+	fail_unless(t2 != NULL, "should be transformed");
+	fail_unless(lt_strcmp0(lt_tag_get_string(t2), "zh-Hant-TW") == 0, "wrongly transformed");
+	lt_tag_unref(t2);
 	fail_unless(lt_tag_parse(t1, "zh-ZZZZ-SG", NULL), "should be valid langtag.");
-	s = lt_tag_transform(t1, NULL);
-	fail_unless(s != NULL, "should be transformed");
-	fail_unless(lt_strcmp0(s, "zh-Hans-SG") == 0, "wrongly transformed");
-	if (s)
-		free(s);
+	t2 = lt_tag_transform(t1, NULL);
+	fail_unless(t2 != NULL, "should be transformed");
+	fail_unless(lt_strcmp0(lt_tag_get_string(t2), "zh-Hans-SG") == 0, "wrongly transformed");
+	lt_tag_unref(t2);
 	fail_unless(lt_tag_parse(t1, "und-TW", NULL), "should be valid langtag.");
-	s = lt_tag_transform(t1, NULL);
-	fail_unless(s != NULL, "should be transformed");
-	fail_unless(lt_strcmp0(s, "zh-Hant-TW") == 0, "wrongly transformed");
-	if (s)
-		free(s);
+	t2 = lt_tag_transform(t1, NULL);
+	fail_unless(t2 != NULL, "should be transformed");
+	fail_unless(lt_strcmp0(lt_tag_get_string(t2), "zh-Hant-TW") == 0, "wrongly transformed");
+	lt_tag_unref(t2);
 
 	lt_tag_unref(t1);
 } TEND
