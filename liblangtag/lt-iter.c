@@ -33,6 +33,27 @@ lt_iter_tmpl_init(lt_iter_tmpl_t *tmpl)
 
 /*< public >*/
 lt_iter_t *
+lt_iter_ref(lt_iter_t *iter)
+{
+	lt_iter_tmpl_t *tmpl;
+
+	lt_return_val_if_fail (iter != NULL, NULL);
+
+	tmpl = iter->target;
+
+	return lt_mem_ref(&tmpl->parent);
+}
+
+void
+lt_iter_unref(lt_iter_t *iter)
+{
+	lt_iter_tmpl_t *tmpl = iter->target;
+
+	if (iter)
+		lt_mem_unref(&tmpl->parent);
+}
+
+lt_iter_t *
 lt_iter_init(lt_iter_tmpl_t *tmpl)
 {
 	lt_iter_t *retval;

@@ -28,7 +28,7 @@ s/\([ \t].*\)${__cl};/\\\1${__Cl};/g
 s/\([ \t].*\)_${__cl}/\\\1_${__Cl}/g
 s/\([\t(].*\)${__cl}/\\\1${__Cl}/g
 s/^\([ \t].*\)${__cl}/\\\1${__Cl}/g" > $__tmpsed
-    sed -f $__tmpsed $__in > $__out
+    sed -f $__tmpsed $__in >> $__out
     rm $__tmpsed
 }
 
@@ -39,9 +39,11 @@ _cl=`guess_type $target`
 _ns=`echo $_cl|cut -d'_' -f1`
 
 _tmpgen=`mktemp gengir.XXXXXXXX`
+echo "#include <glib.h>" > $_tmpgen
 capitalize "$srcdir/$target" $_tmpgen $_cl
 
 sed -i -e 's,^\(#include[ \t]<\)liblangtag\(/lt-.*\)\(\.h>\),\1liblangtag-gobject\2.gir\3,' $_tmpgen
+sed -i -e 's/ssize_t/gssize/g' -e 's/size_t/gsize/g' $_tmpgen
 
 while [ 1 ]; do
     if [ "x$type" = "xh" ]; then

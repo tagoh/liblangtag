@@ -25,6 +25,7 @@ G_BEGIN_DECLS
 #define LT_TYPE_EXTLANG			lt_extlang_get_type()
 #define LT_TYPE_GRANDFATHERED_DB	lt_grandfathered_db_get_type()
 #define LT_TYPE_GRANDFATHERED		lt_grandfathered_get_type()
+#define LT_TYPE_ITER			lt_iter_get_type()
 #define LT_TYPE_LANG_DB			lt_lang_db_get_type()
 #define LT_TYPE_LANG			lt_lang_get_type()
 #define LT_TYPE_LIST			lt_list_get_type()
@@ -48,6 +49,7 @@ GType lt_extlang_db_get_type      (void);
 GType lt_extlang_get_type         (void);
 GType lt_grandfathered_db_get_type(void);
 GType lt_grandfathered_get_type   (void);
+GType lt_iter_get_type            (void);
 GType lt_lang_db_get_type         (void);
 GType lt_lang_get_type            (void);
 GType lt_list_get_type            (void);

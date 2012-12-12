@@ -28,6 +28,8 @@ struct _lt_iter_t {
 	lt_iter_tmpl_t *target;
 };
 
+lt_iter_t *lt_iter_ref   (lt_iter_t      *iter);
+void       lt_iter_unref (lt_iter_t      *iter);
 lt_iter_t *lt_iter_init  (lt_iter_tmpl_t *tmpl);
 void       lt_iter_finish(lt_iter_t      *iter);
 lt_bool_t  lt_iter_next  (lt_iter_t      *iter,
