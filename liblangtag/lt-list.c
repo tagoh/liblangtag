@@ -272,6 +272,16 @@ lt_list_append(lt_list_t         *list,
 	return list;
 }
 
+/**
+ * lt_list_prepend:
+ * @list: a #lt_list_t
+ * @data: the data for the new element
+ * @func: (scope async): the call back function to destroy @data or %NULL
+ *
+ * Adds a new element on to the start of the list.
+ *
+ * Returns: the new start of the #lt_list_t.
+ */
 lt_list_t *
 lt_list_prepend(lt_list_t         *list,
 		lt_pointer_t       data,
