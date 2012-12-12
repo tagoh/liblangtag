@@ -84,7 +84,7 @@ git-mk-install:
 
 ### .gitignore generation
 
-$(srcdir)/.gitignore: Makefile.am $(top_srcdir)/git.mk
+$(abs_srcdir)/.gitignore: $(srcdir)/Makefile.am $(top_srcdir)/git.mk
 	$(AM_V_GEN) \
 	{ \
 		if test "x$(DOC_MODULE)" = x -o "x$(DOC_MAIN_SGML_FILE)" = x; then :; else \
@@ -185,7 +185,7 @@ $(srcdir)/.gitignore: Makefile.am $(top_srcdir)/git.mk
 	LC_ALL=C sort | uniq > $@.tmp && \
 	mv $@.tmp $@;
 
-all: $(srcdir)/.gitignore gitignore-recurse-maybe
+all: $(abs_srcdir)/.gitignore gitignore-recurse-maybe
 gitignore-recurse-maybe:
 	@if test "x$(SUBDIRS)" = "x$(DIST_SUBDIRS)"; then :; else \
 		$(MAKE) $(AM_MAKEFLAGS) gitignore-recurse; \
